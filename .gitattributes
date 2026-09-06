@@ -1,0 +1,5 @@
+packages/typescript/src/generated/** linguist-generated=true
+packages/python/src/verimor/*/generated/** linguist-generated=true
+packages/go/*/client.gen.go linguist-generated=true
+packages/dart/*/lib/** linguist-generated=true
+packages/dart/*/doc/** linguist-generated=true

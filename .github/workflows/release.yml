@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - run: python3 scripts/check_version.py "${GITHUB_REF_NAME}"
+
+  build-typescript:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "24"
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm test --workspace packages/typescript
+      - run: npm run typecheck --workspace packages/typescript
+      - run: npm run build --workspace packages/typescript
+      - run: mkdir -p build/npm-artifact
+      - run: npm pack --workspace packages/typescript --pack-destination build/npm-artifact
+      - run: python3 scripts/smoke_package.py npm build/npm-artifact/*.tgz
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: npm-package
+          path: build/npm-artifact/*.tgz
+          if-no-files-found: error
+
+  build-python:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9 # v9.0.0
+        with:
+          version: "0.9.24"
+          python-version: "3.11"
+          enable-cache: false
+      - run: uv sync --project packages/python --extra dev --locked --python 3.11
+      - run: uv run --project packages/python python -m pytest packages/python/tests
+      - run: uv run --project packages/python ruff check --config packages/python/pyproject.toml packages/python/src/verimor packages/python/tests scripts
+      - run: uv run --project packages/python mypy --config-file packages/python/pyproject.toml packages/python/src/verimor
+      - run: uv build --project packages/python
+      - run: uv run --project packages/python python scripts/smoke_package.py python packages/python/dist/*.whl packages/python/dist/*.tar.gz
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pypi-package
+          path: packages/python/dist/*
+          if-no-files-found: error
+
+  publish-npm:
+    needs: [build-typescript, build-python]
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: npm-package
+          path: build/npm-artifact
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+      - run: npm install --global npm@11.17.0
+      - run: npm publish build/npm-artifact/*.tgz --access public
+
+  publish-pypi:
+    needs: [build-typescript, build-python]
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pypi-package
+          path: packages/python/dist
+      - uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # v1.14.2
+        with:
+          packages-dir: packages/python/dist

@@ -1,0 +1,52 @@
+{
+  "name": "@bariscemant/verimor",
+  "version": "0.1.0",
+  "description": "Unofficial TypeScript SDK for Verimor APIs",
+  "type": "module",
+  "sideEffects": false,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0Baris/verimor-sdk.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./sms": {
+      "types": "./dist/generated/sms.d.ts",
+      "import": "./dist/generated/sms.js"
+    },
+    "./switch": {
+      "types": "./dist/generated/switch.d.ts",
+      "import": "./dist/generated/switch.js"
+    },
+    "./whatsapp": {
+      "types": "./dist/generated/whatsapp.d.ts",
+      "import": "./dist/generated/whatsapp.js"
+    }
+  },
+  "scripts": {
+    "build": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\" && tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vitest": "5.0.0"
+  }
+}

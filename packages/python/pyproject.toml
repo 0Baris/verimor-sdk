@@ -1,0 +1,55 @@
+[build-system]
+requires = ["hatchling==1.32.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "verimor-sdk"
+version = "0.1.0"
+description = "Unofficial Python SDK for Verimor APIs"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Bariscemant contributors" }]
+dependencies = [
+  "attrs>=26.1,<27",
+  "httpx>=0.28.1,<0.29",
+  "python-dateutil>=2.9,<3",
+]
+
+[project.optional-dependencies]
+dev = [
+  "build==1.6.0",
+  "mypy==2.3.1",
+  "pytest==9.1.1",
+  "pyyaml>=6.0,<7",
+  "ruff==0.16.6",
+  "types-python-dateutil>=2.9,<3",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/verimor"]
+
+[project.urls]
+Repository = "https://github.com/0Baris/verimor-sdk"
+Documentation = "https://github.com/0Baris/verimor-sdk#readme"
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "../../tests"]
+pythonpath = ["src", "../.."]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = ["**/generated/**"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+exclude = ["(^|/)generated/"]
+
+[[tool.mypy.overrides]]
+module = ["verimor.sms.generated.*", "verimor.switch.generated.*", "verimor.whatsapp.generated.*"]
+follow_imports = "skip"

@@ -1,0 +1,47 @@
+name: SDK CI
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  typescript:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - run: npm ci
+      - run: npm test --workspace packages/typescript
+      - run: npm run typecheck --workspace packages/typescript
+      - run: npm run build --workspace packages/typescript
+      - run: mkdir -p build/npm-artifact
+      - run: npm pack --workspace packages/typescript --pack-destination build/npm-artifact
+      - run: python3 scripts/smoke_package.py npm build/npm-artifact/*.tgz
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - uses: astral-sh/setup-uv@c771a70e6277c0a99b617c7a806ffedaca235ff9
+        with:
+          version: '0.9.24'
+          python-version: '3.11'
+      - run: uv sync --project packages/python --extra dev --locked
+      - run: uv run --project packages/python python -m pytest packages/python/tests
+      - run: uv run --project packages/python ruff check --config packages/python/pyproject.toml packages/python/src packages/python/tests
+      - run: uv run --project packages/python mypy --config-file packages/python/pyproject.toml packages/python/src/verimor
+      - run: uv build --project packages/python
+      - run: uv run --project packages/python python scripts/smoke_package.py python packages/python/dist/*.whl packages/python/dist/*.tar.gz
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - run: docker run --rm --user "$(id -u):$(id -g)" -e GOPATH=/tmp/go -e GOCACHE=/tmp/go-build -v "$PWD:/sdk" -w /sdk/packages/go golang:1.26.0-bookworm sh -ec 'go test ./...; sh ../../scripts/smoke_go.sh'
+  dart:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        product: [sms, switch, whatsapp]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+      - run: docker run --rm --user "$(id -u):$(id -g)" -e PUB_CACHE=/tmp/pub-cache --tmpfs /.dart-tool:mode=1777 --tmpfs /.dartServer:mode=1777 -v "$PWD:/sdk" -w /sdk/packages/dart/${{ matrix.product }} dart:3.11.0 sh -ec 'dart pub get --enforce-lockfile; dart analyze --no-fatal-warnings; dart test; dart pub publish --dry-run; sh ../../../scripts/smoke_dart.sh'

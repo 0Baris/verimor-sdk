@@ -25,14 +25,15 @@ const fixtures: Record<string, Fixture> = {
   send_otp_v1_messages_otp_post: f(undefined, { to: "905001112233", template_name: "otp", language: "tr", use_tenant_queue: false }, "application/json"), send_utility_v1_messages_utility_post: f(undefined, { to: "905001112233", template_name: "utility", language: "tr", use_tenant_queue: false }, "application/json"), health_health_get: f(),
 };
 
-const route = (entry: Pick<Entry, "product" | "method" | "path">) => `${entry.product} ${entry.method} ${entry.path}`;
-function assertRoutes(actual: Array<Pick<Entry, "product" | "method" | "path">>, expected: Array<Pick<Entry, "product" | "method" | "path">>) {
-  const routes = actual.map(route);
-  if (new Set(routes).size !== routes.length) throw new Error("duplicate generated route");
-  if (routes.length !== expected.length || routes.some(value => !expected.some(entry => route(entry) === value))) throw new Error("generated routes differ from manifest");
+const identity = (entry: Pick<Entry, "product" | "operationId" | "method" | "path">) => `${entry.product} ${entry.operationId} ${entry.method} ${entry.path}`;
+const fallbackOperationId = (method: Method, path: string) => `${method.toLowerCase()}_${path.toLowerCase()}`.replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+function assertRoutes(actual: Array<Pick<Entry, "product" | "operationId" | "method" | "path">>, expected: Array<Pick<Entry, "product" | "operationId" | "method" | "path">>) {
+  const identities = actual.map(identity);
+  if (new Set(identities).size !== identities.length) throw new Error("duplicate generated identity");
+  if (identities.length !== expected.length || identities.some(value => !expected.some(entry => identity(entry) === value))) throw new Error("generated identities differ from manifest");
 }
 
-async function generatedRoutes(product: Product): Promise<Array<Pick<Entry, "product" | "method" | "path">>> {
+async function generatedRoutes(product: Product): Promise<Entry[]> {
   const source = await readFile(resolve(import.meta.dirname, `../src/generated/${product}.ts`), "utf8");
   const starts = [...source.matchAll(/^    "([^"]+)": \{/gm)];
   const pathSectionEnd = source.indexOf("export interface webhooks");
@@ -40,7 +41,12 @@ async function generatedRoutes(product: Product): Promise<Array<Pick<Entry, "pro
     const path = match[1];
     if (!path) return [];
     const block = source.slice(match.index, starts[index + 1]?.index ?? pathSectionEnd);
-    return (["GET", "POST", "PATCH", "DELETE"] as Method[]).filter(method => new RegExp(`^        ${method.toLowerCase()}:`, "m").test(block)).map(method => ({ product, method, path }));
+    return (["GET", "POST", "PATCH", "DELETE"] as Method[]).filter(method => new RegExp(`^        ${method.toLowerCase()}:`, "m").test(block)).map(method => ({
+      product,
+      operationId: block.match(new RegExp(`^        ${method.toLowerCase()}: operations\\["([^"]+)"\\];`, "m"))?.[1] ?? fallbackOperationId(method, path),
+      method,
+      path,
+    }));
   });
 }
 async function bodyOf(request: IncomingMessage) { let body = ""; for await (const chunk of request) body += chunk; return body; }
@@ -54,10 +60,11 @@ it("matches all generated TypeScript routes to the 68 identity manifest", async 
 });
 
 it("rejects missing, duplicate, and wrong generated routes", () => {
-  const routes = [{ product: "whatsapp" as const, method: "GET" as const, path: "/health" }, { product: "whatsapp" as const, method: "POST" as const, path: "/v1/messages/otp" }];
+  const routes = [{ product: "whatsapp" as const, operationId: "health_health_get", method: "GET" as const, path: "/health" }, { product: "whatsapp" as const, operationId: "send_otp_v1_messages_otp_post", method: "POST" as const, path: "/v1/messages/otp" }];
   expect(() => assertRoutes(routes.slice(1), routes)).toThrow("differ");
   expect(() => assertRoutes([...routes, routes[0]!], routes)).toThrow("duplicate");
   expect(() => assertRoutes([{ ...routes[0]!, path: "/wrong" }, routes[1]!], routes)).toThrow("differ");
+  expect(() => assertRoutes([{ ...routes[0]!, operationId: "wrong" }, routes[1]!], routes)).toThrow("differ");
 });
 
 it("calls every raw generated operation once against loopback with explicit fixtures", async () => {

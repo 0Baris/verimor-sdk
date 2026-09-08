@@ -5,13 +5,14 @@ from __future__ import annotations
 import asyncio
 import importlib
 import json
+import pkgutil
 import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -600,6 +601,34 @@ def assert_identities(
     assert set(actual) == set(expected), "generated identities differ from manifest"
 
 
+def generated_operation_modules() -> list[tuple[str, str]]:
+    modules: list[tuple[str, str]] = []
+    for product in ("sms", "switch", "whatsapp"):
+        package_name = f"verimor.{product}.generated.api"
+        package = importlib.import_module(package_name)
+        package_paths = cast(list[str], package.__dict__["__path__"])
+        for module_info in pkgutil.walk_packages(package_paths, f"{package_name}."):
+            if module_info.ispkg:
+                continue
+            endpoint = importlib.import_module(module_info.name)
+            assert callable(getattr(endpoint, "sync_detailed", None)), (
+                f"{module_info.name} lacks sync_detailed"
+            )
+            assert callable(getattr(endpoint, "asyncio_detailed", None)), (
+                f"{module_info.name} lacks asyncio_detailed"
+            )
+            modules.append((product, module_info.name.removeprefix(f"{package_name}.")))
+    return modules
+
+
+def assert_operation_modules(
+    actual: list[tuple[str, str]], expected: list[tuple[str, str]]
+) -> None:
+    assert len(actual) == len(set(actual)), "duplicate generated operation module"
+    assert len(expected) == len(set(expected)), "duplicate fixture operation module"
+    assert set(actual) == set(expected), "generated operation modules differ from fixtures"
+
+
 def call_kwargs(case: Case) -> dict[str, Any]:
     result = dict(case.params)
     if case.body is not None:
@@ -725,6 +754,20 @@ def test_identity_guard_rejects_missing_duplicate_wrong_id_and_wrong_route() -> 
         assert_identities([replace(CASES[0], operation_id="wrong").identity, expected[1]], expected)
     with pytest.raises(AssertionError, match="differ"):
         assert_identities([replace(CASES[0], path="/wrong").identity, expected[1]], expected)
+
+
+def test_every_generated_operation_module_has_one_explicit_case() -> None:
+    expected = [(case.product, case.module) for case in CASES]
+    actual = generated_operation_modules()
+    assert len(actual) == 68
+    assert_operation_modules(actual, expected)
+
+
+def test_operation_module_guard_rejects_an_unrepresented_module() -> None:
+    expected = [(case.product, case.module) for case in CASES[:2]]
+    actual = [*expected, ("sms", "unrepresented")]
+    with pytest.raises(AssertionError, match="differ"):
+        assert_operation_modules(actual, expected)
 
 
 def test_every_generated_operation_has_equal_sync_and_async_loopback_wire() -> None:

@@ -16,7 +16,7 @@ jobs:
       - run: npm run typecheck --workspace packages/typescript
       - run: npm run build --workspace packages/typescript
       - run: mkdir -p build/npm-artifact
-      - run: npm pack --workspace packages/typescript --pack-destination build/npm-artifact
+      - run: npm pack --workspace=@bariscemant/verimor --pack-destination build/npm-artifact
       - run: python3 scripts/smoke_package.py npm build/npm-artifact/*.tgz
   python:
     runs-on: ubuntu-latest

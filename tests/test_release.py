@@ -27,3 +27,19 @@ def test_publishers_wait_for_go_validation() -> None:
     jobs = release_jobs()
     for publisher in ("publish-npm", "publish-pypi"):
         assert "validate-go" in jobs[publisher]["needs"]
+
+
+def test_npm_artifact_uses_the_public_workspace_name() -> None:
+    workflow = yaml.load(
+        (ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader
+    )
+    for jobs in (workflow["jobs"], release_jobs()):
+        commands = [
+            step.get("run", "")
+            for job in jobs.values()
+            for step in job.get("steps", [])
+            if isinstance(step, dict)
+        ]
+        assert any(
+            "npm pack --workspace=@bariscemant/verimor" in command for command in commands
+        )

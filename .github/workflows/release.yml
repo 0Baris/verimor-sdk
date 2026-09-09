@@ -29,7 +29,7 @@ jobs:
       - run: npm run typecheck --workspace packages/typescript
       - run: npm run build --workspace packages/typescript
       - run: mkdir -p build/npm-artifact
-      - run: npm pack --workspace packages/typescript --pack-destination build/npm-artifact
+      - run: npm pack --workspace=@bariscemant/verimor --pack-destination build/npm-artifact
       - run: python3 scripts/smoke_package.py npm build/npm-artifact/*.tgz
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

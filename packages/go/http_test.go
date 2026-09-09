@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -300,13 +301,21 @@ func TestGeneratedClientsHonorContextCancellationWithoutRetry(t *testing.T) {
 			t.Parallel()
 			var calls atomic.Int32
 			started := make(chan struct{})
+			release := make(chan struct{})
+			var startOnce sync.Once
 			server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, request *http.Request) {
 				calls.Add(1)
 				product.verify(t, request)
-				close(started)
-				<-request.Context().Done()
+				startOnce.Do(func() { close(started) })
+				select {
+				case <-request.Context().Done():
+				case <-release:
+				}
 			}))
-			defer server.Close()
+			defer func() {
+				close(release)
+				server.Close()
+			}()
 
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
@@ -343,12 +352,19 @@ func TestGeneratedClientsDoNotRetryDeadlineOrConnectionAbort(t *testing.T) {
 		t.Run(product.name+"/deadline", func(t *testing.T) {
 			t.Parallel()
 			var calls atomic.Int32
+			release := make(chan struct{})
 			server := httptest.NewServer(http.HandlerFunc(func(_ http.ResponseWriter, request *http.Request) {
 				calls.Add(1)
 				product.verify(t, request)
-				<-request.Context().Done()
+				select {
+				case <-request.Context().Done():
+				case <-release:
+				}
 			}))
-			defer server.Close()
+			defer func() {
+				close(release)
+				server.Close()
+			}()
 			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Millisecond)
 			defer cancel()
 			_, err := product.call(ctx, server.URL)
@@ -380,6 +396,55 @@ func TestGeneratedClientsDoNotRetryDeadlineOrConnectionAbort(t *testing.T) {
 			}
 			if got := calls.Load(); got != 1 {
 				t.Fatalf("requests = %d, want one", got)
+			}
+		})
+	}
+}
+
+func TestGeneratedClientsDoNotRetryDelayedBodiesOrConnectionRefusals(t *testing.T) {
+	t.Parallel()
+	for _, product := range generatedProducts(t) {
+		product := product
+		t.Run(product.name+"/delayed_body", func(t *testing.T) {
+			t.Parallel()
+			var calls atomic.Int32
+			release := make(chan struct{})
+			server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+				calls.Add(1)
+				product.verify(t, request)
+				writer.Header().Set("Content-Type", "application/json")
+				writer.WriteHeader(http.StatusOK)
+				if flusher, ok := writer.(http.Flusher); ok {
+					flusher.Flush()
+				}
+				select {
+				case <-request.Context().Done():
+				case <-release:
+				}
+			}))
+			defer func() {
+				close(release)
+				server.Close()
+			}()
+
+			ctx, cancel := context.WithTimeout(context.Background(), 40*time.Millisecond)
+			defer cancel()
+			_, err := product.call(ctx, server.URL)
+			if !errors.Is(err, context.DeadlineExceeded) {
+				t.Fatalf("error = %v, want context deadline exceeded", err)
+			}
+			if got := calls.Load(); got != 1 {
+				t.Fatalf("requests = %d, want one", got)
+			}
+		})
+
+		t.Run(product.name+"/connection_refused", func(t *testing.T) {
+			t.Parallel()
+			server := httptest.NewServer(http.NotFoundHandler())
+			baseURL := server.URL
+			server.Close()
+			if _, err := product.call(context.Background(), baseURL); err == nil {
+				t.Fatal("connection refusal returned nil error")
 			}
 		})
 	}

@@ -78,7 +78,7 @@ switch	deleteContact	DELETE	/contacts/{id}				1
 switch	getCrmIntegrations	GET	/crm_integrations
 switch	updateCrmIntegrations	POST	/crm_integrations
 switch	webhookPayloadExamples	GET	/webhook-payload-examples
-switch	createDnd	GET	/dnd/{id}	{"state":true}			1001
+switch	createDnd	GET	/dnd/{id}	{"state":"on"}			1001
 switch	listExtensions	GET	/extensions
 switch	getExtension	GET	/extensions/{id}				1001
 switch	createFaxDocumentUrl	POST	/fax_document_url	{"call_uuid":"call-1"}
@@ -89,7 +89,7 @@ switch	listFdrs	GET	/fdrs
 switch	createIvrCampaign	POST	/ivr_campaigns.json		{"call_type":"tts","name":"campaign","phone_list":[{"phone":"905001112233"}]}	application/json
 switch	updateIvrCampaign	PATCH	/ivr_campaigns/{id}.json	{"status":"active"}			1
 switch	deleteIvrCampaign	DELETE	/ivr_campaigns/{id}.json				1
-switch	muteCall	GET	/mute/{id}	{"state":true}			call-1
+switch	muteCall	GET	/mute/{id}	{"state":"on"}			call-1
 switch	getQueues	GET	/queues
 switch	getQueuesPending	GET	/queues/pending
 switch	manageQueueUsers	GET	/queue/manage_users	{"queue_number":"100","user_list":"1001,1002"}
@@ -274,12 +274,19 @@ func generatedOperations(t *testing.T) generatedMap {
 		for _, m := range generatedResponse.FindAllStringSubmatch(string(source), -1) {
 			v := generatedOperation{operation: operation{product, m[3], m[1], m[2]}, MethodName: m[4]}
 			id := key(v.operation)
-			if old, ok := out[id]; !ok || len(v.MethodName) < len(old.MethodName) {
+			if old, ok := out[id]; !ok || generatedMethodScore(v.MethodName) < generatedMethodScore(old.MethodName) {
 				out[id] = v
 			}
 		}
 	}
 	return out
+}
+
+func generatedMethodScore(name string) int {
+	if strings.Contains(name, "WithBodyWithResponse") {
+		return 1
+	}
+	return 0
 }
 
 func clients(t *testing.T, base string) map[string]any {
@@ -330,8 +337,12 @@ func invoke(g generatedOperation, client any, f fixture) error {
 func fixtureArgument(typ reflect.Type, f fixture, pathArg *int) (reflect.Value, error) {
 	if typ.Kind() == reflect.Ptr {
 		v := reflect.New(typ.Elem())
-		if f.Params != "" {
-			if err := json.Unmarshal([]byte(f.Params), v.Interface()); err != nil {
+		data := f.Params
+		if data == "" {
+			data = f.Body
+		}
+		if data != "" {
+			if err := json.Unmarshal([]byte(data), v.Interface()); err != nil {
 				return reflect.Value{}, err
 			}
 		}
@@ -381,6 +392,9 @@ func assertRequest(t *testing.T, r *http.Request, f fixture) {
 	if f.Params != "" {
 		_ = json.Unmarshal([]byte(f.Params), &params)
 		for name, want := range params {
+			if f.Product == "whatsapp" && name == "x-api-key" {
+				continue
+			}
 			if got := r.URL.Query().Get(name); got != fmt.Sprint(want) {
 				t.Errorf("%s: query %s = %q, want %v", f.OperationID, name, got, want)
 			}

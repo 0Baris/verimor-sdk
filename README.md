@@ -14,9 +14,11 @@ resmî Verimor desteği veya bağlantısı iddia edilmez.
 | Go | `github.com/0Baris/verimor-sdk/packages/go` |
 | Dart | `verimor_sms`, `verimor_switch`, `verimor_whatsapp` |
 
-Paketler henüz yayımlanmadı. Generated istemciler SMS 13, Switch 52, WhatsApp 3
-operasyonu kapsar. Bu repo SDK kaynakları, testleri ve yayın araçlarını içerir;
-üretim altyapısı ayrı tutulur. Kullanıcının generator'a erişmesi gerekmez.
+TypeScript ve Python paketleri `0.1.0` sürümüyle npm ve PyPI'de yayımlandı.
+Dart paketlerinin pub.dev yayını ertelendi. Generated istemciler SMS 13, Switch
+52, WhatsApp 3 operasyonu kapsar. Bu repo SDK kaynakları, testleri ve yayın
+araçlarını içerir; üretim altyapısı ayrı tutulur. Kullanıcının generator'a
+erişmesi gerekmez.
 
 TypeScript/Python örnekleri paket README'lerinde, Dart örnekleri ürün
 paketlerinin README/doc dizinlerinde, Go örnekleri packages/go/README.md içinde.

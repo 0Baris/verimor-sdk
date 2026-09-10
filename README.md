@@ -3,6 +3,10 @@
 Verimor SMS, Switch ve WhatsApp için community SDK'ları. MIT lisanslıdır;
 resmî Verimor desteği veya bağlantısı iddia edilmez.
 
+> **Test durumu:** Bu SDK'lar şu anda yalnızca offline ve localhost testleriyle
+> doğrulanmıştır. Gerçek Verimor servisleri ve canlı credentials ile henüz test
+> edilmemiştir. Production kullanımı öncesinde kendi ortamınızda doğrulayın.
+
 | Dil | Paket |
 | --- | --- |
 | TypeScript | `@bariscemant/verimor` |

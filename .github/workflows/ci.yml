@@ -29,6 +29,7 @@ jobs:
       - run: uv sync --project packages/python --extra dev --locked
       - run: uv run --project packages/python python -m pytest packages/python/tests tests
       - run: uv run --project packages/python ruff check --config packages/python/pyproject.toml packages/python/src packages/python/tests
+      - run: uv run --project packages/python ruff format --check --config packages/python/pyproject.toml packages/python/src packages/python/tests scripts tests
       - run: uv run --project packages/python mypy --config-file packages/python/pyproject.toml packages/python/src/verimor
       - run: uv build --project packages/python
       - run: uv run --project packages/python python scripts/smoke_package.py python packages/python/dist/*.whl packages/python/dist/*.tar.gz

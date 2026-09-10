@@ -30,9 +30,7 @@ def test_publishers_wait_for_go_validation() -> None:
 
 
 def test_npm_artifact_uses_the_public_workspace_name() -> None:
-    workflow = yaml.load(
-        (ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader
-    )
+    workflow = yaml.load((ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader)
     for jobs in (workflow["jobs"], release_jobs()):
         commands = [
             step.get("run", "")
@@ -40,6 +38,11 @@ def test_npm_artifact_uses_the_public_workspace_name() -> None:
             for step in job.get("steps", [])
             if isinstance(step, dict)
         ]
-        assert any(
-            "npm pack --workspace=@bariscemant/verimor" in command for command in commands
-        )
+        assert any("npm pack --workspace=@bariscemant/verimor" in command for command in commands)
+
+
+def test_python_jobs_enforce_ruff_formatting() -> None:
+    ci = yaml.load((ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader)
+    for job in (ci["jobs"]["python"], release_jobs()["build-python"]):
+        commands = [step.get("run", "") for step in job["steps"] if isinstance(step, dict)]
+        assert any("ruff format --check" in command for command in commands)

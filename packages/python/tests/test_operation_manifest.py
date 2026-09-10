@@ -647,9 +647,7 @@ def raw_client(case: Case, base_url: str, asynchronous: bool) -> Any:
             return AsyncSmsClient(
                 username=SMS["username"], password=SMS["password"], base_url=base_url
             ).raw
-        return SmsClient(
-            username=SMS["username"], password=SMS["password"], base_url=base_url
-        ).raw
+        return SmsClient(username=SMS["username"], password=SMS["password"], base_url=base_url).raw
     if case.product == "switch":
         return (AsyncSwitchClient if asynchronous else SwitchClient)(
             SWITCH_KEY, base_url=base_url

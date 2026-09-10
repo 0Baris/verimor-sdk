@@ -8,6 +8,7 @@ from urllib.parse import parse_qs, urlparse
 
 import httpx
 import pytest
+
 from verimor import AsyncSmsClient, AsyncSwitchClient, SmsClient, VerimorApiError
 
 

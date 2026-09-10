@@ -29,7 +29,7 @@ jobs:
       - run: npm run typecheck --workspace packages/typescript
       - run: npm run build --workspace packages/typescript
       - run: mkdir -p build/npm-artifact
-      - run: npm pack --workspace packages/typescript --pack-destination build/npm-artifact
+      - run: npm pack --workspace=@bariscemant/verimor --pack-destination build/npm-artifact
       - run: python3 scripts/smoke_package.py npm build/npm-artifact/*.tgz
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
@@ -48,19 +48,29 @@ jobs:
           python-version: "3.11"
           enable-cache: false
       - run: uv sync --project packages/python --extra dev --locked --python 3.11
-      - run: uv run --project packages/python python -m pytest packages/python/tests
+      - run: uv run --project packages/python python -m pytest packages/python/tests tests
       - run: uv run --project packages/python ruff check --config packages/python/pyproject.toml packages/python/src/verimor packages/python/tests scripts
+      - run: uv run --project packages/python ruff format --check --config packages/python/pyproject.toml packages/python/src packages/python/tests scripts tests
       - run: uv run --project packages/python mypy --config-file packages/python/pyproject.toml packages/python/src/verimor
       - run: uv build --project packages/python
-      - run: uv run --project packages/python python scripts/smoke_package.py python packages/python/dist/*.whl packages/python/dist/*.tar.gz
+      - run: mkdir -p build/python-wheelhouse
+      - run: uvx --from pip pip download --dest build/python-wheelhouse hatchling==1.32.0 packages/python/dist/*.whl
+      - run: VERIMOR_WHEELHOUSE="$PWD/build/python-wheelhouse" uv run --project packages/python python scripts/smoke_package.py python packages/python/dist/*.whl packages/python/dist/*.tar.gz
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: pypi-package
           path: packages/python/dist/*
           if-no-files-found: error
 
+  validate-go:
+    needs: verify-version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - run: docker run --rm --user "$(id -u):$(id -g)" -e GOPATH=/tmp/go -e GOCACHE=/tmp/go-build -v "$PWD:/sdk" -w /sdk/packages/go golang:1.26.0-bookworm sh -ec 'go test ./...; sh ../../scripts/smoke_go.sh'
+
   publish-npm:
-    needs: [build-typescript, build-python]
+    needs: [build-typescript, build-python, validate-go]
     runs-on: ubuntu-latest
     environment: npm
     permissions:
@@ -80,7 +90,7 @@ jobs:
       - run: npm publish build/npm-artifact/*.tgz --access public
 
   publish-pypi:
-    needs: [build-typescript, build-python]
+    needs: [build-typescript, build-python, validate-go]
     runs-on: ubuntu-latest
     environment: pypi
     permissions:

@@ -32,7 +32,9 @@ jobs:
       - run: uv run --project packages/python ruff format --check --config packages/python/pyproject.toml packages/python/src packages/python/tests scripts tests
       - run: uv run --project packages/python mypy --config-file packages/python/pyproject.toml packages/python/src/verimor
       - run: uv build --project packages/python
-      - run: uv run --project packages/python python scripts/smoke_package.py python packages/python/dist/*.whl packages/python/dist/*.tar.gz
+      - run: mkdir -p build/python-wheelhouse
+      - run: uvx --from pip pip download --dest build/python-wheelhouse hatchling==1.32.0 packages/python/dist/*.whl
+      - run: VERIMOR_WHEELHOUSE="$PWD/build/python-wheelhouse" uv run --project packages/python python scripts/smoke_package.py python packages/python/dist/*.whl packages/python/dist/*.tar.gz
   go:
     runs-on: ubuntu-latest
     steps:

@@ -46,3 +46,13 @@ def test_python_jobs_enforce_ruff_formatting() -> None:
     for job in (ci["jobs"]["python"], release_jobs()["build-python"]):
         commands = [step.get("run", "") for step in job["steps"] if isinstance(step, dict)]
         assert any("ruff format --check" in command for command in commands)
+
+
+def test_python_jobs_prepare_dependencies_before_offline_smoke() -> None:
+    ci = yaml.load((ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader)
+    for job in (ci["jobs"]["python"], release_jobs()["build-python"]):
+        commands = [step.get("run", "") for step in job["steps"] if isinstance(step, dict)]
+        download = next(command for command in commands if "pip download" in command)
+        assert "hatchling==1.32.0" in download
+        smoke = next(command for command in commands if "smoke_package.py python" in command)
+        assert "VERIMOR_WHEELHOUSE=" in smoke

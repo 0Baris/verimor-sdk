@@ -97,22 +97,19 @@ void typedPath;
 """
             )
             typescript = Path(__file__).resolve().parents[1] / "node_modules/.bin/tsc"
-            subprocess.run(
-                [
-                    str(typescript),
-                    "--target",
-                    "es2022",
-                    "--module",
-                    "nodenext",
-                    "--moduleResolution",
-                    "nodenext",
-                    "--strict",
-                    "--noEmit",
-                    str(consumer),
-                ],
-                cwd=root,
-                check=True,
-            )
+            typecheck = [
+                str(typescript),
+                "--target",
+                "es2022",
+                "--module",
+                "nodenext",
+                "--moduleResolution",
+                "nodenext",
+                "--strict",
+                "--noEmit",
+                str(consumer),
+            ]
+            subprocess.run(typecheck, cwd=root, check=True)
             consumer.write_text(
                 """
 import { createSmsClient } from '@bariscemant/verimor';
@@ -120,18 +117,7 @@ createSmsClient({ username: 'u', password: 'p' }).status({});
 """
             )
             rejected = subprocess.run(
-                [
-                    str(typescript),
-                    "--target",
-                    "es2022",
-                    "--module",
-                    "nodenext",
-                    "--moduleResolution",
-                    "nodenext",
-                    "--strict",
-                    "--noEmit",
-                    str(consumer),
-                ],
+                typecheck,
                 cwd=root,
                 check=False,
                 stdout=subprocess.DEVNULL,
@@ -149,9 +135,7 @@ createSmsClient({ username: 'u', password: 'p' }).status({});
             install = ["uv", "pip", "install", "--offline", "--python", str(python)]
             if wheelhouse := os.environ.get("VERIMOR_WHEELHOUSE"):
                 install.extend(["--find-links", wheelhouse])
-            subprocess.run(
-                [*install, str(artifact)], check=True
-            )
+            subprocess.run([*install, str(artifact)], check=True)
             runtime_smoke = root / "consumer.py"
             source_root = Path(__file__).resolve().parents[1]
             runtime_smoke.write_text((source_root / "scripts/smoke_python.py").read_text())

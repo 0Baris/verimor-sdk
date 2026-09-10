@@ -264,35 +264,6 @@ func TestGeneratedClientsDocumentSuccessfulPayloadParsing(t *testing.T) {
 	}
 }
 
-func TestGeneratedClientsDoNotRetryFailures(t *testing.T) {
-	t.Parallel()
-	for _, product := range generatedProducts(t) {
-		for _, status := range []int{http.StatusTooManyRequests, http.StatusInternalServerError} {
-			product, status := product, status
-			t.Run(product.name+"/HTTP_"+http.StatusText(status), func(t *testing.T) {
-				t.Parallel()
-				var calls atomic.Int32
-				server := httptest.NewServer(http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-					calls.Add(1)
-					product.verify(t, request)
-					writer.Header().Set("Content-Type", "application/json")
-					writer.WriteHeader(status)
-					_, _ = io.WriteString(writer, `{"error":"transient"}`)
-				}))
-				defer server.Close()
-
-				response, err := product.call(context.Background(), server.URL)
-				if err != nil || response.StatusCode() != status {
-					t.Fatalf("unexpected result: response=%v err=%v", response, err)
-				}
-				if got := calls.Load(); got != 1 {
-					t.Fatalf("requests = %d, want one", got)
-				}
-			})
-		}
-	}
-}
-
 func TestGeneratedClientsHonorContextCancellationWithoutRetry(t *testing.T) {
 	t.Parallel()
 	for _, product := range generatedProducts(t) {

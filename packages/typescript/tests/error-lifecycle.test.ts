@@ -66,15 +66,15 @@ it.each((['sms', 'switch', 'whatsapp'] as Product[]).flatMap(product =>
 });
 
 const successfulMethods = [
-  ["SMS send", "/v2/send.json", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).send({ source_addr: "ACME", messages: [{ dest: "905001112233", msg: "hello" }] }), "sent"],
-  ["SMS balance", "/v2/balance", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).balance(), 42],
-  ["SMS status", "/v2/status", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).status({ id: 1 }), []],
-  ["Switch originate", "/originate", (baseUrl: string) => createSwitchClient({ apiKey: "key", baseUrl }).originate({ extension: "1001", destination: "905001112233" }), "OK"],
-  ["WhatsApp OTP", "/v1/messages/otp", (baseUrl: string) => createWhatsAppClient({ apiKey: "key", baseUrl }).sendOtp(message), { id: "message-1", status: "queued" }],
-  ["WhatsApp utility", "/v1/messages/utility", (baseUrl: string) => createWhatsAppClient({ apiKey: "key", baseUrl }).sendUtility(message), { id: "message-1", status: "queued" }],
+  ["SMS send", "sms", "/v2/send.json", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).send({ source_addr: "ACME", messages: [{ dest: "905001112233", msg: "hello" }] }), "sent"],
+  ["SMS balance", "sms", "/v2/balance", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).balance(), 42],
+  ["SMS status", "sms", "/v2/status", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).status({ id: 1 }), []],
+  ["Switch originate", "switch", "/originate", (baseUrl: string) => createSwitchClient({ apiKey: "key", baseUrl }).originate({ extension: "1001", destination: "905001112233" }), "OK"],
+  ["WhatsApp OTP", "whatsapp", "/v1/messages/otp", (baseUrl: string) => createWhatsAppClient({ apiKey: "key", baseUrl }).sendOtp(message), { id: "message-1", status: "queued" }],
+  ["WhatsApp utility", "whatsapp", "/v1/messages/utility", (baseUrl: string) => createWhatsAppClient({ apiKey: "key", baseUrl }).sendUtility(message), { id: "message-1", status: "queued" }],
 ] as const;
 
-it.each(successfulMethods)("returns documented success for %s", async (_name, path, call, expected) => {
+it.each(successfulMethods)("returns documented success for %s", async (_name, _product, path, call, expected) => {
   const baseUrl = await serve((request, reply) => {
     expect(new URL(request.url ?? "", "http://loopback").pathname).toBe(path);
     const isJson = typeof expected === "object";
@@ -100,14 +100,7 @@ it("keeps existing malformed-success behavior without inventing response validat
   await expect(createSmsClient({ username: "u", password: "p", baseUrl: malformedUrl }).status({ id: 1 })).rejects.toBeInstanceOf(SyntaxError);
 });
 
-it.each([
-  ["SMS send", "sms", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).send({ source_addr: "ACME", messages: [{ dest: "905001112233", msg: "hello" }] })],
-  ["SMS balance", "sms", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).balance()],
-  ["SMS status", "sms", (baseUrl: string) => createSmsClient({ username: "u", password: "p", baseUrl }).status({ id: 1 })],
-  ["Switch originate", "switch", (baseUrl: string) => createSwitchClient({ apiKey: "key", baseUrl }).originate({ extension: "1001", destination: "905001112233" })],
-  ["WhatsApp OTP", "whatsapp", (baseUrl: string) => createWhatsAppClient({ apiKey: "key", baseUrl }).sendOtp(message)],
-  ["WhatsApp utility", "whatsapp", (baseUrl: string) => createWhatsAppClient({ apiKey: "key", baseUrl }).sendUtility(message)],
-] as const)("preserves one HTTP error for %s", async (_name, product, call) => {
+it.each(successfulMethods)("preserves one HTTP error for %s", async (_name, product, _path, call) => {
   let requests = 0;
   const baseUrl = await serve((_request, reply) => {
     requests++;

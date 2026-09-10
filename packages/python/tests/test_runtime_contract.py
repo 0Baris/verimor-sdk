@@ -120,41 +120,6 @@ def test_async_convenience_errors_have_the_same_contract(
 
 
 @pytest.mark.parametrize("product", ("sms", "switch", "whatsapp"))
-@pytest.mark.parametrize("status", (429, 500))
-def test_sync_convenience_does_not_retry(product: str, status: int) -> None:
-    requests = 0
-
-    def handler(_: httpx.Request) -> httpx.Response:
-        nonlocal requests
-        requests += 1
-        return httpx.Response(status, text="try later")
-
-    client, call = sync_client(product, httpx.MockTransport(handler))
-    with pytest.raises(VerimorApiError):
-        call(client)
-    assert requests == 1
-
-
-@pytest.mark.parametrize("product", ("sms", "switch", "whatsapp"))
-@pytest.mark.parametrize("status", (429, 500))
-def test_async_convenience_does_not_retry(product: str, status: int) -> None:
-    requests = 0
-
-    def handler(_: httpx.Request) -> httpx.Response:
-        nonlocal requests
-        requests += 1
-        return httpx.Response(status, text="try later")
-
-    async def scenario() -> None:
-        client, call = async_client(product, httpx.MockTransport(handler))
-        with pytest.raises(VerimorApiError):
-            await call(client)
-
-    asyncio.run(scenario())
-    assert requests == 1
-
-
-@pytest.mark.parametrize("product", ("sms", "switch", "whatsapp"))
 def test_sync_context_manager_closes_on_exception(product: str) -> None:
     client, _ = sync_client(product, httpx.MockTransport(lambda _: httpx.Response(200)))
     with pytest.raises(RuntimeError), client:

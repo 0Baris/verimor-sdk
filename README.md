@@ -13,8 +13,8 @@ tarafından desteklendiğini iddia etmez.
 
 | Dil | Paket | Durum | Gereksinim |
 | --- | --- | --- | --- |
-| TypeScript | `@bariscemant/verimor` | npm'de `0.1.0` | Node.js >=22.14, ESM |
-| Python | `verimor-sdk` / import `verimor` | PyPI'da `0.1.0` | Python >=3.11 |
+| TypeScript | `@bariscemant/verimor` | npm'de `0.1.1` | Node.js >=22.14, ESM |
+| Python | `verimor-sdk` / import `verimor` | PyPI'da `0.1.1` | Python >=3.11 |
 | Go | `github.com/0Baris/verimor-sdk/packages/go` | Kaynak kod mevcut | Go >=1.24 |
 | Dart | `verimor_sms`, `verimor_switch`, `verimor_whatsapp` | Deneysel, pub.dev'de değil | Dart >=2.18 |
 
@@ -185,7 +185,7 @@ Katkı süreci için [CONTRIBUTING.md](CONTRIBUTING.md), sürüm notları için
 ## English summary
 
 Community-maintained, unofficial Verimor SDKs for SMS, Cloud Switch and
-WhatsApp. TypeScript and Python `0.1.0` packages are available on npm and PyPI;
+WhatsApp. TypeScript and Python `0.1.1` packages are available on npm and PyPI;
 Go sources are available from this repository, while Dart packages are
 experimental and not published to pub.dev. All clients have been verified only
 with offline and localhost tests, not against live Verimor services. See the

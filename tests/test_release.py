@@ -56,3 +56,25 @@ def test_python_jobs_prepare_dependencies_before_offline_smoke() -> None:
         assert "hatchling==1.32.0" in download
         smoke = next(command for command in commands if "smoke_package.py python" in command)
         assert "VERIMOR_WHEELHOUSE=" in smoke
+
+
+def test_ci_runs_feature_branches_only_through_pull_requests() -> None:
+    ci = yaml.load((ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader)
+
+    assert ci["on"]["push"] == {"branches": ["main"]}
+    assert "pull_request" in ci["on"]
+    assert ci["concurrency"]["cancel-in-progress"] == "true"
+
+
+def test_release_creates_documented_github_release_after_publish() -> None:
+    jobs = release_jobs()
+    release = jobs["github-release"]
+
+    assert release["needs"] == ["publish-npm", "publish-pypi", "validate-go"]
+    assert release["permissions"] == {"contents": "write"}
+    command = "\n".join(
+        step.get("run", "") for step in release["steps"] if isinstance(step, dict)
+    )
+    assert "gh release create" in command
+    assert "--verify-tag" in command
+    assert "--generate-notes" in command

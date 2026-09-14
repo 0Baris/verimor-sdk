@@ -72,9 +72,7 @@ def test_release_creates_documented_github_release_after_publish() -> None:
 
     assert release["needs"] == ["publish-npm", "publish-pypi", "validate-go"]
     assert release["permissions"] == {"contents": "write"}
-    command = "\n".join(
-        step.get("run", "") for step in release["steps"] if isinstance(step, dict)
-    )
+    command = "\n".join(step.get("run", "") for step in release["steps"] if isinstance(step, dict))
     assert "gh release create" in command
     assert "--verify-tag" in command
     assert "--generate-notes" in command

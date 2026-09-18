@@ -53,6 +53,54 @@ def test_sms_send_injects_credentials_without_mutating_input() -> None:
     }
 
 
+def test_sms_client_default_source_addr_is_used_and_can_be_overridden() -> None:
+    captured: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append(request)
+        return httpx.Response(200, text="123")
+
+    client = SmsClient(
+        "user", "secret", source_addr="VERIMOR", transport=httpx.MockTransport(handler)
+    )
+    body = {"messages": [{"dest": "905001112233", "msg": "Merhaba"}]}
+
+    assert client.send(body) == "123"
+    assert body == {"messages": [{"dest": "905001112233", "msg": "Merhaba"}]}
+    assert json.loads(captured[-1].content)["source_addr"] == "VERIMOR"
+    assert client.send({**body, "source_addr": "OVERRIDE"}) == "123"
+    assert json.loads(captured[-1].content)["source_addr"] == "OVERRIDE"
+
+
+def test_generated_sms_facade_encodes_query_and_credentials() -> None:
+    captured: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        captured.append(request)
+        return json_response(200, {"total": 0, "records": []})
+
+    client = SmsClient("u", "p", transport=httpx.MockTransport(handler))
+
+    assert client.list_blacklist_entries(offset=4) == {"total": 0, "records": []}
+    assert dict(captured[0].url.params) == {"offset": "4", "username": "u", "password": "p"}
+
+
+def test_generated_async_switch_facade_matches_sync_wire_shape() -> None:
+    captured: list[httpx.Request] = []
+
+    async def scenario() -> None:
+        async def handler(request: httpx.Request) -> httpx.Response:
+            captured.append(request)
+            return json_response(200, [])
+
+        client = AsyncSwitchClient("key value", transport=httpx.MockTransport(handler))
+
+        assert await client.list_announcements() == []
+
+    asyncio.run(scenario())
+    assert dict(captured[0].url.params) == {"key": "key value"}
+
+
 def test_sms_balance_encodes_credentials_and_parses_number() -> None:
     captured: list[httpx.Request] = []
 

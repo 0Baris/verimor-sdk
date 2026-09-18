@@ -64,3 +64,6 @@ export 'package:verimor_switch/src/model/webhook_payload_examples200_response_an
 export 'package:verimor_switch/src/model/webhook_payload_examples200_response_hangup_event.dart';
 export 'package:verimor_switch/src/model/webhook_payload_examples200_response_ringing_event.dart';
 
+export 'package:verimor_switch/src/client.dart';
+export 'package:verimor_switch/src/facade.gen.dart';
+export 'package:verimor_switch/src/facade_core.dart';

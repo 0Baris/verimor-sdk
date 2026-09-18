@@ -1012,9 +1012,9 @@ export interface webhooks {
                         queue_wait_duration?: number;
                         /** @description Çağrının kimin tarafından kapatıldığı. caller ya da callee olarak döner. */
                         sip_hangup_disposition?: string;
-                        /** @description Çağrının kapanma sebebi. */
+                        /** @description Çağrının kapanma sebebi. Alabileceği değerler için <a href="/developer/errors/cagri-sonuc-kodlari">Çağrı Sonuç Kodları</a> sayfasına bakın. */
                         hangup_cause?: string;
-                        /** @description Çağrı başarısız ise hata kodu. */
+                        /** @description Çağrı başarısız ise hata kodu. Bkz. <a href="/developer/errors/cagri-sonuc-kodlari">Çağrı Sonuç Kodları</a>. */
                         failure_status?: string;
                         /** @description Çağrı başarısız ise hata mesajı. */
                         failure_phrase?: string;

@@ -6,6 +6,20 @@ Dart/Dio istemcisi. Community paketidir; Verimor'un resmî SDK'sı değildir.
 > Bu paket henüz pub.dev'de yayımlanmadı. Offline ve localhost testleriyle
 > doğrulandı; canlı Verimor hesabıyla henüz test edilmedi.
 
+## Public façade
+
+```dart
+final client = WhatsAppClient(apiKey: 'WHATSAPP_KEY');
+await client.sendOtp({'to': '905001112233', 'template_name': 'otp'});
+await client.sendUtility({'to': '905001112233', 'template_name': 'utility'});
+await client.health();
+client.close();
+```
+
+Üç operasyonun tamamı `WhatsAppClient` üzerinde; `x-api-key` otomatik eklenir,
+30 saniye timeout uygulanır ve generated istemci `client.raw` alanında kalır.
+Otomatik retry yoktur.
+
 ## Git üzerinden kurulum
 
 ```yaml
@@ -25,7 +39,7 @@ Reproducible build için `main` yerine doğruladığınız bir commit SHA kullan
 Flutter projelerinde aynı dependency tanımı geçerlidir. Generated `.g.dart`
 dosyaları pakete dahildir.
 
-## OTP gönderme
+## Generated/raw ile OTP gönderme
 
 ```dart
 import 'dart:io';

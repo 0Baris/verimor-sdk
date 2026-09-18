@@ -19,3 +19,6 @@ export 'package:verimor_whatsapp/src/model/message_response.dart';
 export 'package:verimor_whatsapp/src/model/template_message_request.dart';
 export 'package:verimor_whatsapp/src/model/validation_error.dart';
 
+export 'package:verimor_whatsapp/src/client.dart';
+export 'package:verimor_whatsapp/src/facade.gen.dart';
+export 'package:verimor_whatsapp/src/facade_core.dart';

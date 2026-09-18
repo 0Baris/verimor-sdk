@@ -7,6 +7,24 @@ resmî SDK'sı değildir.
 > Paket offline ve localhost testleriyle doğrulanmıştır; canlı Verimor hesabıyla
 > henüz doğrulanmamıştır.
 
+## 0.2.0 public façade
+
+SMS 13, Switch 52 ve WhatsApp 3 operasyonun tamamı ürün client'larında doğrudan
+metottur; credentials her çağrıda tekrar verilmez. Tam liste:
+[`docs/operations.md`](../../docs/operations.md). `raw` düşük seviye kullanım için
+korunur.
+
+```ts
+const sms = createSmsClient({
+  username: "SMS_USER", password: "SMS_PASSWORD", sourceAddr: "VERIMOR",
+});
+await sms.send({ messages: [{ dest: "905001112233", msg: "Merhaba" }] });
+await sms.listSenderIds();
+
+await createSwitchClient({ apiKey: "SWITCH_KEY" }).listExtensions();
+await createWhatsAppClient({ apiKey: "WHATSAPP_KEY" }).health();
+```
+
 ## Kurulum
 
 Node.js 22.14 veya daha yeni bir sürüm gerekir.
@@ -63,7 +81,8 @@ ise runtime kontrolü tarafından reddedilir.
 
 ### SMS raw endpoint
 
-Convenience katmanında olmayan 13 SMS operasyonuna `raw` üzerinden erişilir.
+13 SMS operasyonunun tamamı `sms` üzerinde metottur; aynı endpointlere `raw`
+üzerinden de erişilebilir.
 SMS raw çağrılarında `username` ve `password` ilgili endpoint'in query veya body
 alanına açıkça verilmelidir:
 
@@ -107,7 +126,8 @@ console.log(result);
 ```
 
 `originate()` anahtarı `key` query parametresine ekler ve başarılı yanıtı metin
-olarak döndürür. Diğer 51 Switch işlemi typed raw istemcidedir. `raw` üzerindeki
+olarak döndürür. Diğer 51 Switch işlemi de `switchClient` üzerinde doğrudan metot
+olarak bulunur. `raw` üzerindeki
 tüm isteklerde API key middleware tarafından otomatik eklenir:
 
 ```ts
@@ -152,7 +172,7 @@ const utility = await whatsapp.sendUtility({
 ```
 
 Her iki metot `x-api-key` header'ını otomatik ekler ve JSON object yanıtı döndürür.
-Health dahil üç WhatsApp operasyonu raw istemcide kullanılabilir:
+Health dahil üç WhatsApp operasyonu client üzerinde ve raw istemcide kullanılabilir:
 
 ```ts
 const { data, error, response } = await whatsapp.raw.GET("/health");
@@ -206,7 +226,7 @@ try {
 }
 ```
 
-`VerimorApiError` yalnız convenience metotlarının 2xx dışı HTTP yanıtları için
+`VerimorApiError` façade metotlarının 2xx dışı HTTP yanıtları için
 kullanılır. Raw `openapi-fetch` çağrıları `data`, `error` ve `response` döndürür.
 Bozuk veya beklenmeyen başarılı response tipi `TypeError` ya da JSON parse hatası
 oluşturabilir.
@@ -224,9 +244,7 @@ createSwitchClient({ apiKey, baseUrl?, timeoutMs?, fetch? })
 createWhatsAppClient({ apiKey, baseUrl?, timeoutMs?, fetch? })
 ```
 
-- SMS convenience: `send`, `balance`, `status`
-- Switch convenience: `originate`
-- WhatsApp convenience: `sendOtp`, `sendUtility`
+- SMS 13, Switch 52 ve WhatsApp 3 operasyon için doğrudan client metotları
 - Her üründe tüm OpenAPI işlemleri için typed `raw`
 
 ## English summary
@@ -234,6 +252,7 @@ createWhatsAppClient({ apiKey, baseUrl?, timeoutMs?, fetch? })
 Install `@bariscemant/verimor` on Node.js 22.14+ and create an SMS, Switch or
 WhatsApp client from the package root. Convenience methods add credentials,
 apply a 30-second default timeout and throw `VerimorApiError` for non-2xx HTTP
-responses. Use each client's typed `raw` property for the full OpenAPI surface.
+responses. All 68 operations have first-class client methods; use each client's
+typed `raw` property when low-level generated access is needed.
 There are no automatic retries. This community SDK has not yet been tested
 against live Verimor services.

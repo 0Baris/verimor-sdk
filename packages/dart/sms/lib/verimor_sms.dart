@@ -34,3 +34,6 @@ export 'package:verimor_sms/src/model/v2_iys_campaigns_id_consents_get200_respon
 export 'package:verimor_sms/src/model/v2_iys_consents_json_post_request.dart';
 export 'package:verimor_sms/src/model/v2_iys_consents_json_post_request_consents_inner.dart';
 
+export 'package:verimor_sms/src/client.dart';
+export 'package:verimor_sms/src/facade.gen.dart';
+export 'package:verimor_sms/src/facade_core.dart';

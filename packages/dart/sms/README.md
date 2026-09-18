@@ -6,6 +6,21 @@ Community paketidir; Verimor'un resmî SDK'sı değildir.
 > Bu paket henüz pub.dev'de yayımlanmadı. Offline ve localhost testleriyle
 > doğrulandı; canlı Verimor hesabıyla henüz test edilmedi.
 
+## Public façade
+
+```dart
+final sms = SmsClient(
+  username: 'SMS_USER', password: 'SMS_PASSWORD', sourceAddr: 'VERIMOR',
+);
+await sms.send({'messages': [{'dest': '905001112233', 'msg': 'Merhaba'}]});
+final senderIds = await sms.listSenderIds();
+sms.close();
+```
+
+13 operasyonun tamamı `SmsClient` üzerinde; credentials otomatik eklenir ve
+generated istemci `sms.raw` alanında kalır. `sourceAddr` çağrıdaki `source_addr`
+ile override edilebilir. 30 saniye timeout, otomatik retry yoktur.
+
 ## Git üzerinden kurulum
 
 `pubspec.yaml` dosyanıza ekleyin:
@@ -31,8 +46,8 @@ dosyaları pakete dahildir; `build_runner` çalıştırmanız gerekmez.
 
 ## SMS gönderme
 
-SMS credentials'ı ilgili endpoint'in body veya query parametrelerine açıkça
-verilir:
+Alttaki bölüm generated/raw istemci örneğidir; raw kullanımda SMS credentials'ı
+ilgili endpoint'in body veya query parametrelerine açıkça verilir:
 
 ```dart
 import 'dart:io';

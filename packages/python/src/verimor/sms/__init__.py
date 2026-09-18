@@ -4,13 +4,14 @@ from collections.abc import Mapping
 
 import httpx
 
-from verimor._core import AsyncClientBase, SyncClientBase, balance_value, httpx_args, request_data
+from verimor._core import balance_value, httpx_args, request_data
+from verimor.sms._facade_gen import AsyncSmsFacadeMixin, SmsFacadeMixin
 from verimor.sms.generated.client import Client as GeneratedClient
 
 DEFAULT_BASE_URL = "https://sms.verimor.com.tr"
 
 
-class SmsClient(SyncClientBase):
+class SmsClient(SmsFacadeMixin):
     product = "sms"
 
     def __init__(
@@ -20,10 +21,14 @@ class SmsClient(SyncClientBase):
         *,
         base_url: str = DEFAULT_BASE_URL,
         timeout: float = 30.0,
+        source_addr: str | None = None,
         transport: httpx.BaseTransport | None = None,
     ) -> None:
         self.username = username
         self.password = password
+        self.source_addr = source_addr
+        self._facade_credentials = {"username": username, "password": password}
+        self._facade_defaults = {"sourceAddr": source_addr} if source_addr is not None else {}
         self.raw = GeneratedClient(
             base_url=base_url.rstrip("/"),
             timeout=httpx.Timeout(timeout),
@@ -31,10 +36,17 @@ class SmsClient(SyncClientBase):
         )
 
     def send(self, body: Mapping[str, object]) -> str:
+        source_addr = body.get("source_addr", self.source_addr)
+        if source_addr is None:
+            raise TypeError("send requires source_addr")
         response = self._request(
             "POST",
             "/v2/send.json",
-            json=request_data(body, username=self.username, password=self.password),
+            json=request_data(
+                {**body, "source_addr": source_addr},
+                username=self.username,
+                password=self.password,
+            ),
         )
         return response.text.strip()
 
@@ -67,7 +79,7 @@ class SmsClient(SyncClientBase):
         return self._request("GET", "/v2/status", params=params).json()
 
 
-class AsyncSmsClient(AsyncClientBase):
+class AsyncSmsClient(AsyncSmsFacadeMixin):
     product = "sms"
 
     def __init__(
@@ -77,10 +89,14 @@ class AsyncSmsClient(AsyncClientBase):
         *,
         base_url: str = DEFAULT_BASE_URL,
         timeout: float = 30.0,
+        source_addr: str | None = None,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self.username = username
         self.password = password
+        self.source_addr = source_addr
+        self._facade_credentials = {"username": username, "password": password}
+        self._facade_defaults = {"sourceAddr": source_addr} if source_addr is not None else {}
         self.raw = GeneratedClient(
             base_url=base_url.rstrip("/"),
             timeout=httpx.Timeout(timeout),
@@ -88,10 +104,17 @@ class AsyncSmsClient(AsyncClientBase):
         )
 
     async def send(self, body: Mapping[str, object]) -> str:
+        source_addr = body.get("source_addr", self.source_addr)
+        if source_addr is None:
+            raise TypeError("send requires source_addr")
         response = await self._request(
             "POST",
             "/v2/send.json",
-            json=request_data(body, username=self.username, password=self.password),
+            json=request_data(
+                {**body, "source_addr": source_addr},
+                username=self.username,
+                password=self.password,
+            ),
         )
         return response.text.strip()
 

@@ -8,7 +8,6 @@ from verimor._core import AsyncClientBase, SyncClientBase
 
 _OPERATIONS: dict[str, dict[str, object]] = {
     "answerCallPost": {
-        "bodyRequired": True,
         "bodyRequiredFields": ["id"],
         "clientDefaults": {},
         "contentType": "application/json",
@@ -21,7 +20,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "answerCall": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -36,7 +34,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createBridge": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -87,7 +84,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createAnnouncement": {
-        "bodyRequired": False,
         "bodyRequiredFields": ["name", "sounddata"],
         "clientDefaults": {},
         "contentType": "application/x-www-form-urlencoded",
@@ -100,7 +96,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createBlockedNumber": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -121,7 +116,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createContact": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -215,7 +209,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createContactGroup": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -230,7 +223,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createFaxDocumentUrl": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -250,7 +242,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createFaxOrder": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -288,7 +279,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createIvrCampaign": {
-        "bodyRequired": True,
         "bodyRequiredFields": ["call_type", "name", "phone_list"],
         "clientDefaults": {},
         "contentType": "application/json",
@@ -301,7 +291,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createRecordingUrl": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -321,7 +310,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createVoicemailRecordingUrl": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -336,7 +324,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createWebphoneToken": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -356,7 +343,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "deleteAnnouncement": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -371,7 +357,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "deleteBlockedNumber": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -392,7 +377,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "deleteContact": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -407,7 +391,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "deleteContactGroup": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -422,7 +405,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "deleteIvrCampaign": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -437,7 +419,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "downloadFaxDocument": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -452,7 +433,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "binary",
     },
     "getCdr": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -467,7 +447,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getCrmIntegrations": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -480,7 +459,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getExtension": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -495,7 +473,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "webhookPayloadExamples": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -508,7 +485,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "hangupCall": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -523,7 +499,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "listAgentStatuses": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -540,7 +515,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getAnnouncements": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -553,7 +527,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "listBlockedNumbers": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -569,7 +542,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getCallerIds": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -582,7 +554,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getCdrs": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -636,7 +607,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "listContactGroups": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -649,7 +619,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "listContacts": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -665,7 +634,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "listExtensions": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -678,7 +646,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "listFaxOrders": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -694,7 +661,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "listFdrs": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -746,7 +712,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getQueuesPending": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -759,7 +724,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getQueueUserList": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -779,7 +743,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getQueues": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -792,7 +755,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "listUserStatuses": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -808,7 +770,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "getVoicemailMessages": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -844,7 +805,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "manageQueueUsers": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -870,7 +830,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "originateCallPost": {
-        "bodyRequired": True,
         "bodyRequiredFields": ["extension", "destination"],
         "clientDefaults": {},
         "contentType": "application/json",
@@ -883,7 +842,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "originateCall": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -945,7 +903,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "muteCall": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -961,7 +918,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "createDnd": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -977,7 +933,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "transferCallPost": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -998,7 +953,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "transferCall": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -1019,7 +973,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "updateAnnouncement": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": "application/x-www-form-urlencoded",
@@ -1034,7 +987,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "updateContact": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -1134,7 +1086,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "updateContactGroup": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -1150,7 +1101,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "updateCrmIntegrations": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -1183,7 +1133,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "updateIvrCampaign": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -1199,7 +1148,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "updateOutboundCallerId": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,

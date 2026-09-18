@@ -9,14 +9,14 @@ class SmsFacade {
 
   Future<dynamic> addBlacklistEntry([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"post_v2_blacklists","method":"POST","path":"/v2/blacklists","parameters":[{"wireName":"phones","publicName":"phones","location":"query","required":true}],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"text","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"post_v2_blacklists","method":"POST","path":"/v2/blacklists","parameters":[{"wireName":"phones","publicName":"phones","location":"query","required":true}],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"text","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
 
   Future<dynamic> cancel([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"post_v2_cancel_id","method":"POST","path":"/v2/cancel/{id}","parameters":[{"wireName":"id","publicName":"id","location":"path","required":true}],"hasBody":true,"bodyRequired":false,"bodyRequiredFields":["username","password"],"contentType":"application/json","responseKind":"text","clientDefaults":{},"credentials":{"password":"body","username":"body"}}''',
+      r'''{"operationId":"post_v2_cancel_id","method":"POST","path":"/v2/cancel/{id}","parameters":[{"wireName":"id","publicName":"id","location":"path","required":true}],"hasBody":true,"bodyRequiredFields":["username","password"],"contentType":"application/json","responseKind":"text","clientDefaults":{},"credentials":{"password":"body","username":"body"}}''',
       input,
     );
   }
@@ -24,7 +24,7 @@ class SmsFacade {
   Future<dynamic> deleteBlacklistEntry(
       [Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"delete_v2_blacklists_id","method":"DELETE","path":"/v2/blacklists/{id}","parameters":[{"wireName":"id","publicName":"id","location":"path","required":true}],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"text","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"delete_v2_blacklists_id","method":"DELETE","path":"/v2/blacklists/{id}","parameters":[{"wireName":"id","publicName":"id","location":"path","required":true}],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"text","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
@@ -32,14 +32,14 @@ class SmsFacade {
   Future<dynamic> listBlacklistEntries(
       [Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"get_v2_blacklists","method":"GET","path":"/v2/blacklists","parameters":[{"wireName":"offset","publicName":"offset","location":"query","required":false},{"wireName":"limit","publicName":"limit","location":"query","required":false}],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"get_v2_blacklists","method":"GET","path":"/v2/blacklists","parameters":[{"wireName":"offset","publicName":"offset","location":"query","required":false},{"wireName":"limit","publicName":"limit","location":"query","required":false}],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
 
   Future<dynamic> listInboundMessages([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"get_v2_inbound_messages","method":"GET","path":"/v2/inbound_messages","parameters":[{"wireName":"from_time","publicName":"fromTime","location":"query","required":false},{"wireName":"to_time","publicName":"toTime","location":"query","required":false},{"wireName":"greater_than","publicName":"greaterThan","location":"query","required":false}],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"get_v2_inbound_messages","method":"GET","path":"/v2/inbound_messages","parameters":[{"wireName":"from_time","publicName":"fromTime","location":"query","required":false},{"wireName":"to_time","publicName":"toTime","location":"query","required":false},{"wireName":"greater_than","publicName":"greaterThan","location":"query","required":false}],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
@@ -47,35 +47,35 @@ class SmsFacade {
   Future<dynamic> listIysCampaignConsents(
       [Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"get_v2_iys_campaigns_id_consents","method":"GET","path":"/v2/iys/campaigns/{id}/consents","parameters":[{"wireName":"id","publicName":"id","location":"path","required":true},{"wireName":"offset","publicName":"offset","location":"query","required":false},{"wireName":"limit","publicName":"limit","location":"query","required":false}],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"get_v2_iys_campaigns_id_consents","method":"GET","path":"/v2/iys/campaigns/{id}/consents","parameters":[{"wireName":"id","publicName":"id","location":"path","required":true},{"wireName":"offset","publicName":"offset","location":"query","required":false},{"wireName":"limit","publicName":"limit","location":"query","required":false}],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
 
   Future<dynamic> listIysCampaigns([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"get_v2_iys_campaigns","method":"GET","path":"/v2/iys/campaigns","parameters":[{"wireName":"offset","publicName":"offset","location":"query","required":false},{"wireName":"limit","publicName":"limit","location":"query","required":false},{"wireName":"source","publicName":"source","location":"query","required":false}],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"get_v2_iys_campaigns","method":"GET","path":"/v2/iys/campaigns","parameters":[{"wireName":"offset","publicName":"offset","location":"query","required":false},{"wireName":"limit","publicName":"limit","location":"query","required":false},{"wireName":"source","publicName":"source","location":"query","required":false}],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
 
   Future<dynamic> listSenderIds([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"get_v2_headers","method":"GET","path":"/v2/headers","parameters":[],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"get_v2_headers","method":"GET","path":"/v2/headers","parameters":[],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
 
   Future<dynamic> sendLegacy([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"get_v2_send","method":"GET","path":"/v2/send","parameters":[{"wireName":"dest","publicName":"dest","location":"query","required":true},{"wireName":"msg","publicName":"msg","location":"query","required":true},{"wireName":"source_addr","publicName":"sourceAddr","location":"query","required":false},{"wireName":"valid_for","publicName":"validFor","location":"query","required":false},{"wireName":"datacoding","publicName":"datacoding","location":"query","required":false},{"wireName":"is_commercial","publicName":"isCommercial","location":"query","required":false},{"wireName":"iys_recipient_type","publicName":"iysRecipientType","location":"query","required":false},{"wireName":"send_at","publicName":"sendAt","location":"query","required":false}],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"text","clientDefaults":{"source_addr":"sourceAddr"},"credentials":{"password":"query","username":"query"}}''',
+      r'''{"operationId":"get_v2_send","method":"GET","path":"/v2/send","parameters":[{"wireName":"dest","publicName":"dest","location":"query","required":true},{"wireName":"msg","publicName":"msg","location":"query","required":true},{"wireName":"source_addr","publicName":"sourceAddr","location":"query","required":false},{"wireName":"valid_for","publicName":"validFor","location":"query","required":false},{"wireName":"datacoding","publicName":"datacoding","location":"query","required":false},{"wireName":"is_commercial","publicName":"isCommercial","location":"query","required":false},{"wireName":"iys_recipient_type","publicName":"iysRecipientType","location":"query","required":false},{"wireName":"send_at","publicName":"sendAt","location":"query","required":false}],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"text","clientDefaults":{"source_addr":"sourceAddr"},"credentials":{"password":"query","username":"query"}}''',
       input,
     );
   }
 
   Future<dynamic> submitIysConsents([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"post_v2_iys_consents_json","method":"POST","path":"/v2/iys_consents.json","parameters":[],"hasBody":true,"bodyRequired":false,"bodyRequiredFields":["username","password","source_addr","consents"],"contentType":"application/json","responseKind":"text","clientDefaults":{"source_addr":"sourceAddr"},"credentials":{"password":"body","username":"body"}}''',
+      r'''{"operationId":"post_v2_iys_consents_json","method":"POST","path":"/v2/iys_consents.json","parameters":[],"hasBody":true,"bodyRequiredFields":["username","password","source_addr","consents"],"contentType":"application/json","responseKind":"text","clientDefaults":{"source_addr":"sourceAddr"},"credentials":{"password":"body","username":"body"}}''',
       input,
     );
   }

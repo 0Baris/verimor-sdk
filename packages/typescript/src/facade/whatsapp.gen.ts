@@ -11,10 +11,10 @@ export interface WhatsAppFacade {
 export function createWhatsAppFacade(transport: FacadeTransport): WhatsAppFacade {
   return {
     health: async (input = {}) =>
-      transport.request({"operationId":"health_health_get","method":"GET","path":"/health","parameters":[],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{}}, input) as Promise<unknown>,
+      transport.request({"operationId":"health_health_get","method":"GET","path":"/health","parameters":[],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{}}, input) as Promise<unknown>,
     sendOtp: async (input = {}) =>
-      transport.request({"operationId":"send_otp_v1_messages_otp_post","method":"POST","path":"/v1/messages/otp","parameters":[],"hasBody":true,"bodyRequired":true,"bodyRequiredFields":["to","template_name"],"contentType":"application/json","responseKind":"json","clientDefaults":{},"credentials":{"x-api-key":"header"}}, input) as Promise<unknown>,
+      transport.request({"operationId":"send_otp_v1_messages_otp_post","method":"POST","path":"/v1/messages/otp","parameters":[],"hasBody":true,"bodyRequiredFields":["to","template_name"],"contentType":"application/json","responseKind":"json","clientDefaults":{},"credentials":{"x-api-key":"header"}}, input) as Promise<unknown>,
     sendUtility: async (input = {}) =>
-      transport.request({"operationId":"send_utility_v1_messages_utility_post","method":"POST","path":"/v1/messages/utility","parameters":[],"hasBody":true,"bodyRequired":true,"bodyRequiredFields":["to","template_name"],"contentType":"application/json","responseKind":"json","clientDefaults":{},"credentials":{"x-api-key":"header"}}, input) as Promise<unknown>
+      transport.request({"operationId":"send_utility_v1_messages_utility_post","method":"POST","path":"/v1/messages/utility","parameters":[],"hasBody":true,"bodyRequiredFields":["to","template_name"],"contentType":"application/json","responseKind":"json","clientDefaults":{},"credentials":{"x-api-key":"header"}}, input) as Promise<unknown>
   };
 }

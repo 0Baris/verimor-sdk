@@ -53,8 +53,7 @@ def check_response(product: Product, response: httpx.Response) -> httpx.Response
     return response
 
 
-def json_object(response: httpx.Response) -> JsonObject:
-    value = response.json()
+def json_object(value: object) -> JsonObject:
     if not isinstance(value, dict):
         raise TypeError("Expected a JSON object response")
     return cast(JsonObject, value)
@@ -283,15 +282,19 @@ class AsyncClientBase:
         await self.raw.get_async_httpx_client().aclose()
 
 
-def balance_value(response: httpx.Response) -> float:
+def balance_value(value: object) -> float:
+    if not isinstance(value, str):
+        raise TypeError("Invalid balance response")
     try:
-        value = float(response.text.strip())
+        parsed = float(value.strip())
     except ValueError as error:
         raise TypeError("Invalid balance response") from error
-    if not math.isfinite(value):
+    if not math.isfinite(parsed):
         raise TypeError("Invalid balance response")
+    return parsed
+
+
+def text_value(value: object) -> str:
+    if not isinstance(value, str):
+        raise TypeError("Expected a text response")
     return value
-
-
-def request_data(body: Mapping[str, object], **credentials: str) -> dict[str, object]:
-    return {**body, **credentials}

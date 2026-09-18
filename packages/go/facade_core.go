@@ -35,7 +35,6 @@ type facadeOperation struct {
 	Path               string
 	Parameters         []facadeParameter
 	HasBody            bool
-	BodyRequired       bool
 	BodyRequiredFields []string
 	ContentType        string
 	ResponseKind       string

@@ -84,7 +84,7 @@ def test_async_switch_http_auth_and_lifecycle():
         async def scenario():
             async with AsyncSwitchClient("key+&", base_url=url) as client:
                 raw = client.raw.get_async_httpx_client()
-                await client.originate({"caller": "100", "destination": "101"})
+                await client.originate({"extension": "100", "destination": "101"})
             assert raw.is_closed
 
         asyncio.run(scenario())

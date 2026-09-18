@@ -1,6 +1,6 @@
 import createClient, { type Client } from "openapi-fetch";
 
-import { createFacadeTransport, request, withTimeout, type ClientOptions } from "./core.js";
+import { createFacadeTransport, withTimeout, type ClientOptions } from "./core.js";
 import { createSwitchFacade, type SwitchFacade } from "./facade/switch.gen.js";
 import type { paths } from "./generated/switch.js";
 
@@ -37,14 +37,6 @@ export function createSwitchClient(options: SwitchClientOptions): SwitchClient {
   return {
     ...facade,
     raw,
-    async originate(body) {
-      const query = new URLSearchParams({ key: options.apiKey });
-      const result = await request("switch", fetcher, `${baseUrl}/originate?${query}`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      return result.text.trim();
-    },
+    originate: (body) => facade.originate({ ...body }),
   };
 }

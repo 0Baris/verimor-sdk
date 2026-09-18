@@ -1,6 +1,6 @@
 import createClient, { type Client } from "openapi-fetch";
 
-import { createFacadeTransport, request, withTimeout, type ClientOptions } from "./core.js";
+import { createFacadeTransport, withTimeout, type ClientOptions } from "./core.js";
 import { createWhatsAppFacade, type WhatsAppFacade } from "./facade/whatsapp.gen.js";
 import type { components, paths } from "./generated/whatsapp.js";
 
@@ -30,22 +30,20 @@ export function createWhatsAppClient(options: WhatsAppClientOptions): WhatsAppCl
     "whatsapp", fetcher, baseUrl, { "x-api-key": options.apiKey },
   ));
 
-  async function send(path: "/v1/messages/otp" | "/v1/messages/utility", body: WhatsAppMessageInput) {
-    const result = await request("whatsapp", fetcher, `${baseUrl}${path}`, {
-      method: "POST",
-      headers: { "content-type": "application/json", "x-api-key": options.apiKey },
-      body: JSON.stringify(body),
-    });
-    if (typeof result.body !== "object" || result.body === null || Array.isArray(result.body)) {
+  async function send(kind: "otp" | "utility", body: WhatsAppMessageInput) {
+    const result = await (kind === "otp"
+      ? facade.sendOtp({ ...body })
+      : facade.sendUtility({ ...body }));
+    if (typeof result !== "object" || result === null || Array.isArray(result)) {
       throw new TypeError("Expected a JSON object response");
     }
-    return result.body as WhatsAppMessageResponse;
+    return result as WhatsAppMessageResponse;
   }
 
   return {
     ...facade,
     raw,
-    sendOtp: (body) => send("/v1/messages/otp", body),
-    sendUtility: (body) => send("/v1/messages/utility", body),
+    sendOtp: (body) => send("otp", body),
+    sendUtility: (body) => send("utility", body),
   };
 }

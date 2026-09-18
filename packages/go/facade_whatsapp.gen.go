@@ -5,13 +5,13 @@ package verimor
 import "context"
 
 func (c *WhatsAppClient) Health(ctx context.Context) (any, error) {
-	return c.request(ctx, facadeOperation{OperationID: "health_health_get", Method: "GET", Path: "/health", Parameters: []facadeParameter{}, HasBody: false, BodyRequired: false, BodyRequiredFields: []string{}, ContentType: "", ResponseKind: "json", ClientDefaults: map[string]string{}, Credentials: map[string]string{}}, nil)
+	return c.request(ctx, facadeOperation{OperationID: "health_health_get", Method: "GET", Path: "/health", Parameters: []facadeParameter{}, HasBody: false, BodyRequiredFields: []string{}, ContentType: "", ResponseKind: "json", ClientDefaults: map[string]string{}, Credentials: map[string]string{}}, nil)
 }
 
 func (c *WhatsAppClient) SendOtp(ctx context.Context, input map[string]any) (any, error) {
-	return c.request(ctx, facadeOperation{OperationID: "send_otp_v1_messages_otp_post", Method: "POST", Path: "/v1/messages/otp", Parameters: []facadeParameter{}, HasBody: true, BodyRequired: true, BodyRequiredFields: []string{"to", "template_name"}, ContentType: "application/json", ResponseKind: "json", ClientDefaults: map[string]string{}, Credentials: map[string]string{"x-api-key": "header"}}, input)
+	return c.request(ctx, facadeOperation{OperationID: "send_otp_v1_messages_otp_post", Method: "POST", Path: "/v1/messages/otp", Parameters: []facadeParameter{}, HasBody: true, BodyRequiredFields: []string{"to", "template_name"}, ContentType: "application/json", ResponseKind: "json", ClientDefaults: map[string]string{}, Credentials: map[string]string{"x-api-key": "header"}}, input)
 }
 
 func (c *WhatsAppClient) SendUtility(ctx context.Context, input map[string]any) (any, error) {
-	return c.request(ctx, facadeOperation{OperationID: "send_utility_v1_messages_utility_post", Method: "POST", Path: "/v1/messages/utility", Parameters: []facadeParameter{}, HasBody: true, BodyRequired: true, BodyRequiredFields: []string{"to", "template_name"}, ContentType: "application/json", ResponseKind: "json", ClientDefaults: map[string]string{}, Credentials: map[string]string{"x-api-key": "header"}}, input)
+	return c.request(ctx, facadeOperation{OperationID: "send_utility_v1_messages_utility_post", Method: "POST", Path: "/v1/messages/utility", Parameters: []facadeParameter{}, HasBody: true, BodyRequiredFields: []string{"to", "template_name"}, ContentType: "application/json", ResponseKind: "json", ClientDefaults: map[string]string{}, Credentials: map[string]string{"x-api-key": "header"}}, input)
 }

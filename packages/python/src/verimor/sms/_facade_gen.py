@@ -8,7 +8,6 @@ from verimor._core import AsyncClientBase, SyncClientBase
 
 _OPERATIONS: dict[str, dict[str, object]] = {
     "post_v2_blacklists": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -23,7 +22,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "get_v2_balance": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -36,7 +34,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "post_v2_cancel_id": {
-        "bodyRequired": False,
         "bodyRequiredFields": ["username", "password"],
         "clientDefaults": {},
         "contentType": "application/json",
@@ -51,7 +48,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "delete_v2_blacklists_id": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -66,7 +62,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "get_v2_blacklists": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -82,7 +77,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "get_v2_inbound_messages": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -109,7 +103,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "get_v2_iys_campaigns_id_consents": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -126,7 +119,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "get_v2_iys_campaigns": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -143,7 +135,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "get_v2_headers": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -156,7 +147,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "sendSmsJson": {
-        "bodyRequired": False,
         "bodyRequiredFields": ["username", "password", "messages"],
         "clientDefaults": {"source_addr": "sourceAddr"},
         "contentType": "application/json",
@@ -169,7 +159,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "get_v2_send": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {"source_addr": "sourceAddr"},
         "contentType": None,
@@ -216,7 +205,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "text",
     },
     "getSmsStatus": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -244,7 +232,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "post_v2_iys_consents_json": {
-        "bodyRequired": False,
         "bodyRequiredFields": ["username", "password", "source_addr", "consents"],
         "clientDefaults": {"source_addr": "sourceAddr"},
         "contentType": "application/json",

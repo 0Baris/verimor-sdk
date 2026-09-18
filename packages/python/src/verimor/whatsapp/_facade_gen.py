@@ -8,7 +8,6 @@ from verimor._core import AsyncClientBase, SyncClientBase
 
 _OPERATIONS: dict[str, dict[str, object]] = {
     "health_health_get": {
-        "bodyRequired": False,
         "bodyRequiredFields": [],
         "clientDefaults": {},
         "contentType": None,
@@ -21,7 +20,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "send_otp_v1_messages_otp_post": {
-        "bodyRequired": True,
         "bodyRequiredFields": ["to", "template_name"],
         "clientDefaults": {},
         "contentType": "application/json",
@@ -34,7 +32,6 @@ _OPERATIONS: dict[str, dict[str, object]] = {
         "responseKind": "json",
     },
     "send_utility_v1_messages_utility_post": {
-        "bodyRequired": True,
         "bodyRequiredFields": ["to", "template_name"],
         "clientDefaults": {},
         "contentType": "application/json",

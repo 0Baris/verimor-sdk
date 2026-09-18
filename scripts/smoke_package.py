@@ -1,76 +1,99 @@
-"""Exercise built packages from clean consumer directories without a live API."""
+"""Install an already-built artifact in an isolated directory and import its public API."""
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import subprocess
 import sys
-import tarfile
 import tempfile
-import zipfile
+import threading
+from collections.abc import Iterator
+from contextlib import contextmanager
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import ClassVar
+from urllib.parse import parse_qs, urlsplit
 
 
-def assert_publishable_contents(artifact: Path) -> None:
-    """Reject generator/private paths and local dependencies in distributable artifacts."""
-    if artifact.suffix == ".whl":
-        with zipfile.ZipFile(artifact) as archive:
-            names = archive.namelist()
-            metadata = "\n".join(
-                archive.read(name).decode(errors="ignore")
-                for name in names
-                if name.endswith("METADATA")
+class _Handler(BaseHTTPRequestHandler):
+    requests: ClassVar[list[dict[str, object]]] = []
+
+    def _respond(self) -> None:
+        length = int(self.headers.get("content-length", "0"))
+        body = self.rfile.read(length) if length else b""
+        self.requests.append(
+            {
+                "method": self.command,
+                "path": urlsplit(self.path).path,
+                "query": parse_qs(urlsplit(self.path).query),
+                "headers": dict(self.headers),
+                "body": body,
+            }
+        )
+        if urlsplit(self.path).path == "/v2/balance":
+            status, content_type, response = 200, "text/plain", b"42"
+        elif urlsplit(self.path).path == "/v1/messages/otp":
+            status, content_type, response = (
+                202,
+                "application/json",
+                b'{"status":"queued"}',
             )
-    else:
-        with tarfile.open(artifact) as archive:
-            names = archive.getnames()
-            metadata = "\n".join(
-                member_file.read().decode(errors="ignore")
-                for member in archive.getmembers()
-                if member.isfile() and member.name.endswith(("package.json", "PKG-INFO"))
-                if (member_file := archive.extractfile(member)) is not None
-            )
-    forbidden = ("generator", "spec/", "sources.json", ".env")
-    leaked = [name for name in names if any(part in name.lower() for part in forbidden)]
-    if leaked:
-        raise RuntimeError(f"non-consumer files in {artifact.name}: {leaked}")
-    if "file:" in metadata:
-        raise RuntimeError(f"local dependency in {artifact.name}")
+        else:
+            status, content_type, response = 200, "application/json", b"[]"
+        self.send_response(status)
+        self.send_header("content-type", content_type)
+        self.end_headers()
+        self.wfile.write(response)
+
+    do_GET = _respond
+    do_POST = _respond
+
+    def log_message(self, *_: object) -> None:
+        return
+
+
+@contextmanager
+def local_server() -> Iterator[tuple[str, list[dict[str, object]]]]:
+    _Handler.requests = []
+    server = ThreadingHTTPServer(("127.0.0.1", 0), _Handler)
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_port}", _Handler.requests
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join()
+
+
+def assert_requests(requests: list[dict[str, object]]) -> None:
+    by_path = {str(request["path"]): request for request in requests}
+    assert set(by_path) == {"/v2/balance", "/announcements", "/v1/messages/otp"}
+    assert by_path["/v2/balance"]["query"] == {
+        "username": ["u"],
+        "password": ["p"],
+    }
+    assert by_path["/announcements"]["query"] == {"key": ["switch-key"]}
+    headers = by_path["/v1/messages/otp"]["headers"]
+    assert isinstance(headers, dict)
+    assert headers["x-api-key"] == "wa-key"
+    assert json.loads(bytes(by_path["/v1/messages/otp"]["body"]))["to"] == "90500"
 
 
 def smoke(kind: str, artifact: Path) -> None:
     artifact = artifact.resolve(strict=True)
-    assert_publishable_contents(artifact)
-    with tempfile.TemporaryDirectory(prefix="verimor-install-") as directory:
+    with (
+        tempfile.TemporaryDirectory(prefix="verimor-install-") as directory,
+        local_server() as (
+            base_url,
+            requests,
+        ),
+    ):
         root = Path(directory)
+        environment = {**os.environ, "VERIMOR_SMOKE_BASE_URL": base_url}
         if kind == "npm":
-            npm_environment = {
-                **os.environ,
-                "npm_config_cache": str(root / "npm-cache"),
-                "npm_config_offline": "true",
-            }
-            source_root = Path(__file__).resolve().parents[1]
-            local_dependencies = []
-            for dependency in ("openapi-fetch", "openapi-typescript-helpers"):
-                before = set(root.glob("*.tgz"))
-                subprocess.run(
-                    [
-                        "npm",
-                        "pack",
-                        str(source_root / "node_modules" / dependency),
-                        "--pack-destination",
-                        str(root),
-                        "--silent",
-                    ],
-                    cwd=root,
-                    env=npm_environment,
-                    check=True,
-                )
-                created = set(root.glob("*.tgz")) - before
-                if len(created) != 1:
-                    raise RuntimeError(f"could not package local dependency {dependency}")
-                local_dependencies.append(next(iter(created)))
             subprocess.run(
                 [
                     "npm",
@@ -79,67 +102,58 @@ def smoke(kind: str, artifact: Path) -> None:
                     "--no-audit",
                     "--no-fund",
                     str(artifact),
-                    *(str(dependency) for dependency in local_dependencies),
                 ],
                 cwd=root,
-                env=npm_environment,
                 check=True,
             )
-            consumer = root / "consumer.mts"
-            consumer.write_text(
-                """
-import type { paths } from '@bariscemant/verimor/sms';
-import { createSmsClient } from '@bariscemant/verimor';
-
-const typedPath: keyof paths = '/v2/balance';
-createSmsClient({ username: 'u', password: 'p' }).status({ id: 1 });
-void typedPath;
+            code = """
+import * as sdk from '@bariscemant/verimor';
+for (const entry of ['sms', 'switch', 'whatsapp']) await import('@bariscemant/verimor/' + entry);
+const baseUrl = process.env.VERIMOR_SMOKE_BASE_URL;
+const sms = sdk.createSmsClient({username: 'u', password: 'p', baseUrl});
+if (await sms.balance() !== 42) throw Error('balance');
+const sw = sdk.createSwitchClient({apiKey: 'switch-key', baseUrl});
+if (!Array.isArray(await sw.listAnnouncements())) throw Error('switch');
+const wa = sdk.createWhatsAppClient({apiKey: 'wa-key', baseUrl});
+const otp = await wa.sendOtp({to: '90500', template_name: 'otp'});
+if (otp.status !== 'queued') throw Error('whatsapp');
+if (!sms.raw || !sw.raw || !wa.raw || !sdk.VerimorApiError) throw Error('exports');
 """
-            )
-            typescript = Path(__file__).resolve().parents[1] / "node_modules/.bin/tsc"
-            typecheck = [
-                str(typescript),
-                "--target",
-                "es2022",
-                "--module",
-                "nodenext",
-                "--moduleResolution",
-                "nodenext",
-                "--strict",
-                "--noEmit",
-                str(consumer),
-            ]
-            subprocess.run(typecheck, cwd=root, check=True)
-            consumer.write_text(
-                """
-import { createSmsClient } from '@bariscemant/verimor';
-createSmsClient({ username: 'u', password: 'p' }).status({});
-"""
-            )
-            rejected = subprocess.run(
-                typecheck,
+            subprocess.run(
+                ["node", "--input-type=module", "-e", code],
                 cwd=root,
-                check=False,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
+                env=environment,
+                check=True,
             )
-            if rejected.returncode == 0:
-                raise RuntimeError("invalid TypeScript client usage compiled")
-            runtime_smoke = root / "consumer.mjs"
-            runtime_smoke.write_text((source_root / "scripts/smoke_typescript.mjs").read_text())
-            subprocess.run(["node", runtime_smoke], cwd=root, check=True)
         else:
             venv = root / "venv"
             subprocess.run(["uv", "venv", str(venv), "--python", sys.executable], check=True)
             python = venv / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-            install = ["uv", "pip", "install", "--offline", "--python", str(python)]
-            if wheelhouse := os.environ.get("VERIMOR_WHEELHOUSE"):
-                install.extend(["--find-links", wheelhouse])
-            subprocess.run([*install, str(artifact)], check=True)
-            runtime_smoke = root / "consumer.py"
-            source_root = Path(__file__).resolve().parents[1]
-            runtime_smoke.write_text((source_root / "scripts/smoke_python.py").read_text())
-            subprocess.run([str(python), "-I", runtime_smoke], cwd=root, check=True)
+            subprocess.run(
+                ["uv", "pip", "install", "--python", str(python), str(artifact)],
+                check=True,
+            )
+            code = """
+import importlib, os, pkgutil, verimor
+from verimor import SmsClient, AsyncSmsClient, SwitchClient, AsyncSwitchClient
+from verimor import WhatsAppClient, AsyncWhatsAppClient, VerimorApiError
+for module in pkgutil.walk_packages(verimor.__path__, verimor.__name__ + '.'):
+    importlib.import_module(module.name)
+base_url = os.environ['VERIMOR_SMOKE_BASE_URL']
+with SmsClient('u', 'p', base_url=base_url) as sms:
+    assert sms.balance() == 42
+with SwitchClient('switch-key', base_url=base_url) as switch:
+    assert switch.list_announcements() == []
+with WhatsAppClient('wa-key', base_url=base_url) as whatsapp:
+    assert whatsapp.send_otp({'to': '90500', 'template_name': 'otp'})['status'] == 'queued'
+"""
+            subprocess.run(
+                [str(python), "-I", "-c", code],
+                cwd=root,
+                env=environment,
+                check=True,
+            )
+        assert_requests(requests)
     print(f"Clean install/import passed: {artifact.name}")
 
 

@@ -1060,10 +1060,10 @@ type OlayBildirmeFormdataBody struct {
 	// FailurePhrase Çağrı başarısız ise hata mesajı.
 	FailurePhrase *string `form:"failure_phrase,omitempty" json:"failure_phrase,omitempty"`
 
-	// FailureStatus Çağrı başarısız ise hata kodu.
+	// FailureStatus Çağrı başarısız ise hata kodu. Bkz. <a href="/developer/errors/cagri-sonuc-kodlari">Çağrı Sonuç Kodları</a>.
 	FailureStatus *string `form:"failure_status,omitempty" json:"failure_status,omitempty"`
 
-	// HangupCause Çağrının kapanma sebebi.
+	// HangupCause Çağrının kapanma sebebi. Alabileceği değerler için <a href="/developer/errors/cagri-sonuc-kodlari">Çağrı Sonuç Kodları</a> sayfasına bakın.
 	HangupCause *string `form:"hangup_cause,omitempty" json:"hangup_cause,omitempty"`
 
 	// OutboundCallerIdNumber Arayanın dış numarası.

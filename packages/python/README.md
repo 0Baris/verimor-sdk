@@ -1,11 +1,30 @@
 # verimor-sdk
 
 Verimor SMS, Switch ve WhatsApp API'leri için Python 3.11+ community SDK'sı.
-Paket sync/async convenience istemcileri, `attrs` tabanlı generated modeller ve
-68 OpenAPI operasyonuna raw erişim sunar. Verimor'un resmî SDK'sı değildir.
+Paket sync/async client'lar, `attrs` tabanlı generated modeller ve 68 OpenAPI
+operasyonunun tamamı için doğrudan metot + raw erişim sunar. Verimor'un resmî
+SDK'sı değildir.
 
 > Paket offline ve localhost testleriyle doğrulanmıştır; canlı Verimor hesabıyla
 > henüz doğrulanmamıştır.
+
+## 0.2.0 public façade
+
+Credentials client'a bir kez verilir. SMS 13, Switch 52 ve WhatsApp 3 operasyonun
+tamamı sync/async client üzerinde snake_case metotlardır. Tam liste:
+[`docs/operations.md`](../../docs/operations.md).
+
+```python
+with SmsClient("SMS_USER", "SMS_PASSWORD", source_addr="VERIMOR") as sms:
+    sms.send({"messages": [{"dest": "905001112233", "msg": "Merhaba"}]})
+    sender_ids = sms.list_sender_ids()
+
+with SwitchClient("SWITCH_KEY") as switch:
+    extensions = switch.list_extensions()
+
+with WhatsAppClient("WHATSAPP_KEY") as whatsapp:
+    health = whatsapp.health()
+```
 
 ## Kurulum
 
@@ -260,7 +279,7 @@ except httpx.HTTPError:
     raise
 ```
 
-`VerimorApiError` convenience metotlarının 2xx dışındaki HTTP yanıtlarında
+`VerimorApiError` façade metotlarının 2xx dışındaki HTTP yanıtlarında
 oluşur. Ağ hataları değiştirilmeden `httpx` exception'ı olarak bırakılır.
 Beklenmeyen başarılı response içeriği `TypeError` veya JSON decode hatası
 oluşturabilir.
@@ -274,16 +293,15 @@ yanıtları ve güvenli retry/backoff politikasını uygulamanız yönetmelidir.
 
 - Sync: `SmsClient`, `SwitchClient`, `WhatsAppClient`
 - Async: `AsyncSmsClient`, `AsyncSwitchClient`, `AsyncWhatsAppClient`
-- SMS convenience: `send`, `balance`, `status`
-- Switch convenience: `originate`
-- WhatsApp convenience: `send_otp`, `send_utility`
+- SMS 13, Switch 52 ve WhatsApp 3 operasyon için sync/async client metotları
 - Tüm OpenAPI endpointleri için `client.raw`
 
 ## English summary
 
 Install `verimor-sdk` on Python 3.11+ and import clients from `verimor`. Sync and
-async clients support SMS, Switch and WhatsApp convenience methods, a 30-second
+async clients support first-class methods for all 68 SMS, Switch and WhatsApp
+operations, a 30-second
 default timeout, context-managed resource cleanup and `VerimorApiError` for
-non-2xx convenience responses. Use `client.raw` with generated endpoint modules
+non-2xx façade responses. Use `client.raw` with generated endpoint modules
 for the complete OpenAPI surface. Network errors remain native `httpx` errors;
 there are no automatic retries. Live Verimor services have not yet been tested.

@@ -6,6 +6,19 @@ Community paketidir; Verimor'un resmî SDK'sı değildir.
 > Bu paket henüz pub.dev'de yayımlanmadı. Offline ve localhost testleriyle
 > doğrulandı; canlı Verimor hesabıyla henüz test edilmedi.
 
+## Public façade
+
+```dart
+final client = SwitchClient(apiKey: 'SWITCH_KEY');
+await client.originate({'extension': '1001', 'destination': '905001112233'});
+final extensions = await client.listExtensions();
+client.close();
+```
+
+52 operasyonun tamamı `SwitchClient` üzerinde; `key` otomatik eklenir, 30 saniye
+timeout uygulanır ve generated istemci `client.raw` alanında kalır. Otomatik retry
+yoktur.
+
 ## Git üzerinden kurulum
 
 ```yaml
@@ -27,8 +40,8 @@ dosyaları hazırdır; model generation çalıştırmanız gerekmez.
 
 ## Kimlik doğrulama
 
-Switch API anahtarı bütün isteklerde `key` query parametresi olarak gönderilir.
-Default client'ın generated API-key interceptor'ını bir kez yapılandırın:
+Alttaki bölüm generated/raw istemci örneğidir. Switch API anahtarı bütün isteklerde
+`key` query parametresi olarak gönderilir; raw client interceptor'ını yapılandırın:
 
 ```dart
 import 'dart:io';

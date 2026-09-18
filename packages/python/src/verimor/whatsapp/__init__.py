@@ -4,13 +4,14 @@ from collections.abc import Mapping
 
 import httpx
 
-from verimor._core import AsyncClientBase, JsonObject, SyncClientBase, httpx_args, json_object
+from verimor._core import JsonObject, httpx_args, json_object
+from verimor.whatsapp._facade_gen import AsyncWhatsAppFacadeMixin, WhatsAppFacadeMixin
 from verimor.whatsapp.generated.client import Client as GeneratedClient
 
 DEFAULT_BASE_URL = "https://wapi.verimor.com.tr"
 
 
-class WhatsAppClient(SyncClientBase):
+class WhatsAppClient(WhatsAppFacadeMixin):
     product = "whatsapp"
 
     def __init__(
@@ -22,6 +23,8 @@ class WhatsAppClient(SyncClientBase):
         transport: httpx.BaseTransport | None = None,
     ) -> None:
         self.api_key = api_key
+        self._facade_credentials = {"x-api-key": api_key}
+        self._facade_defaults = {}
         self.raw = GeneratedClient(
             headers={"x-api-key": api_key},
             base_url=base_url.rstrip("/"),
@@ -40,7 +43,7 @@ class WhatsAppClient(SyncClientBase):
         return self._send("/v1/messages/utility", body)
 
 
-class AsyncWhatsAppClient(AsyncClientBase):
+class AsyncWhatsAppClient(AsyncWhatsAppFacadeMixin):
     product = "whatsapp"
 
     def __init__(
@@ -52,6 +55,8 @@ class AsyncWhatsAppClient(AsyncClientBase):
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self.api_key = api_key
+        self._facade_credentials = {"x-api-key": api_key}
+        self._facade_defaults = {}
         self.raw = GeneratedClient(
             headers={"x-api-key": api_key},
             base_url=base_url.rstrip("/"),

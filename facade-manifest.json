@@ -1,0 +1,954 @@
+[
+  {
+    "method": "POST",
+    "names": {
+      "dart": "addBlacklistEntry",
+      "go": "AddBlacklistEntry",
+      "python": "add_blacklist_entry",
+      "typescript": "addBlacklistEntry"
+    },
+    "operationId": "post_v2_blacklists",
+    "path": "/v2/blacklists",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "answer",
+      "go": "Answer",
+      "python": "answer",
+      "typescript": "answer"
+    },
+    "operationId": "answerCallPost",
+    "path": "/answer",
+    "product": "switch",
+    "requestContentType": "application/json",
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "answerLegacy",
+      "go": "AnswerLegacy",
+      "python": "answer_legacy",
+      "typescript": "answerLegacy"
+    },
+    "operationId": "answerCall",
+    "path": "/answer/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "balance",
+      "go": "Balance",
+      "python": "balance",
+      "typescript": "balance"
+    },
+    "operationId": "get_v2_balance",
+    "path": "/v2/balance",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "bridge",
+      "go": "Bridge",
+      "python": "bridge",
+      "typescript": "bridge"
+    },
+    "operationId": "createBridge",
+    "path": "/bridge",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "cancel",
+      "go": "Cancel",
+      "python": "cancel",
+      "typescript": "cancel"
+    },
+    "operationId": "post_v2_cancel_id",
+    "path": "/v2/cancel/{id}",
+    "product": "sms",
+    "requestContentType": "application/json",
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createAnnouncement",
+      "go": "CreateAnnouncement",
+      "python": "create_announcement",
+      "typescript": "createAnnouncement"
+    },
+    "operationId": "createAnnouncement",
+    "path": "/announcements",
+    "product": "switch",
+    "requestContentType": "application/x-www-form-urlencoded",
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createBlockedNumber",
+      "go": "CreateBlockedNumber",
+      "python": "create_blocked_number",
+      "typescript": "createBlockedNumber"
+    },
+    "operationId": "createBlockedNumber",
+    "path": "/blocked_numbers",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createContact",
+      "go": "CreateContact",
+      "python": "create_contact",
+      "typescript": "createContact"
+    },
+    "operationId": "createContact",
+    "path": "/contacts",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createContactGroup",
+      "go": "CreateContactGroup",
+      "python": "create_contact_group",
+      "typescript": "createContactGroup"
+    },
+    "operationId": "createContactGroup",
+    "path": "/contact_groups",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createFaxDocumentUrl",
+      "go": "CreateFaxDocumentUrl",
+      "python": "create_fax_document_url",
+      "typescript": "createFaxDocumentUrl"
+    },
+    "operationId": "createFaxDocumentUrl",
+    "path": "/fax_document_url",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createFaxOrder",
+      "go": "CreateFaxOrder",
+      "python": "create_fax_order",
+      "typescript": "createFaxOrder"
+    },
+    "operationId": "createFaxOrder",
+    "path": "/fax_orders",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createIvrCampaign",
+      "go": "CreateIvrCampaign",
+      "python": "create_ivr_campaign",
+      "typescript": "createIvrCampaign"
+    },
+    "operationId": "createIvrCampaign",
+    "path": "/ivr_campaigns.json",
+    "product": "switch",
+    "requestContentType": "application/json",
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createRecordingUrl",
+      "go": "CreateRecordingUrl",
+      "python": "create_recording_url",
+      "typescript": "createRecordingUrl"
+    },
+    "operationId": "createRecordingUrl",
+    "path": "/recording_url",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createVoicemailRecordingUrl",
+      "go": "CreateVoicemailRecordingUrl",
+      "python": "create_voicemail_recording_url",
+      "typescript": "createVoicemailRecordingUrl"
+    },
+    "operationId": "createVoicemailRecordingUrl",
+    "path": "/voicemail_recording_url",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "createWebphoneToken",
+      "go": "CreateWebphoneToken",
+      "python": "create_webphone_token",
+      "typescript": "createWebphoneToken"
+    },
+    "operationId": "createWebphoneToken",
+    "path": "/webphone_tokens",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "DELETE",
+    "names": {
+      "dart": "deleteAnnouncement",
+      "go": "DeleteAnnouncement",
+      "python": "delete_announcement",
+      "typescript": "deleteAnnouncement"
+    },
+    "operationId": "deleteAnnouncement",
+    "path": "/announcements/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "DELETE",
+    "names": {
+      "dart": "deleteBlacklistEntry",
+      "go": "DeleteBlacklistEntry",
+      "python": "delete_blacklist_entry",
+      "typescript": "deleteBlacklistEntry"
+    },
+    "operationId": "delete_v2_blacklists_id",
+    "path": "/v2/blacklists/{id}",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "DELETE",
+    "names": {
+      "dart": "deleteBlockedNumber",
+      "go": "DeleteBlockedNumber",
+      "python": "delete_blocked_number",
+      "typescript": "deleteBlockedNumber"
+    },
+    "operationId": "deleteBlockedNumber",
+    "path": "/blocked_numbers/delete",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "DELETE",
+    "names": {
+      "dart": "deleteContact",
+      "go": "DeleteContact",
+      "python": "delete_contact",
+      "typescript": "deleteContact"
+    },
+    "operationId": "deleteContact",
+    "path": "/contacts/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "DELETE",
+    "names": {
+      "dart": "deleteContactGroup",
+      "go": "DeleteContactGroup",
+      "python": "delete_contact_group",
+      "typescript": "deleteContactGroup"
+    },
+    "operationId": "deleteContactGroup",
+    "path": "/contact_groups/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "DELETE",
+    "names": {
+      "dart": "deleteIvrCampaign",
+      "go": "DeleteIvrCampaign",
+      "python": "delete_ivr_campaign",
+      "typescript": "deleteIvrCampaign"
+    },
+    "operationId": "deleteIvrCampaign",
+    "path": "/ivr_campaigns/{id}.json",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "downloadFaxDocument",
+      "go": "DownloadFaxDocument",
+      "python": "download_fax_document",
+      "typescript": "downloadFaxDocument"
+    },
+    "operationId": "downloadFaxDocument",
+    "path": "/fax_document/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "binary"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "getCdr",
+      "go": "GetCdr",
+      "python": "get_cdr",
+      "typescript": "getCdr"
+    },
+    "operationId": "getCdr",
+    "path": "/cdrs/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "getCrmIntegrations",
+      "go": "GetCrmIntegrations",
+      "python": "get_crm_integrations",
+      "typescript": "getCrmIntegrations"
+    },
+    "operationId": "getCrmIntegrations",
+    "path": "/crm_integrations",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "getExtension",
+      "go": "GetExtension",
+      "python": "get_extension",
+      "typescript": "getExtension"
+    },
+    "operationId": "getExtension",
+    "path": "/extensions/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "getWebhookPayloadExamples",
+      "go": "GetWebhookPayloadExamples",
+      "python": "get_webhook_payload_examples",
+      "typescript": "getWebhookPayloadExamples"
+    },
+    "operationId": "webhookPayloadExamples",
+    "path": "/webhook-payload-examples",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "hangup",
+      "go": "Hangup",
+      "python": "hangup",
+      "typescript": "hangup"
+    },
+    "operationId": "hangupCall",
+    "path": "/hangup/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "health",
+      "go": "Health",
+      "python": "health",
+      "typescript": "health"
+    },
+    "operationId": "health_health_get",
+    "path": "/health",
+    "product": "whatsapp",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listAgentStatuses",
+      "go": "ListAgentStatuses",
+      "python": "list_agent_statuses",
+      "typescript": "listAgentStatuses"
+    },
+    "operationId": "listAgentStatuses",
+    "path": "/agent_statuses",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listAnnouncements",
+      "go": "ListAnnouncements",
+      "python": "list_announcements",
+      "typescript": "listAnnouncements"
+    },
+    "operationId": "getAnnouncements",
+    "path": "/announcements",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listBlacklistEntries",
+      "go": "ListBlacklistEntries",
+      "python": "list_blacklist_entries",
+      "typescript": "listBlacklistEntries"
+    },
+    "operationId": "get_v2_blacklists",
+    "path": "/v2/blacklists",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listBlockedNumbers",
+      "go": "ListBlockedNumbers",
+      "python": "list_blocked_numbers",
+      "typescript": "listBlockedNumbers"
+    },
+    "operationId": "listBlockedNumbers",
+    "path": "/blocked_numbers",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listCallerIds",
+      "go": "ListCallerIds",
+      "python": "list_caller_ids",
+      "typescript": "listCallerIds"
+    },
+    "operationId": "getCallerIds",
+    "path": "/caller_ids",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listCdrs",
+      "go": "ListCdrs",
+      "python": "list_cdrs",
+      "typescript": "listCdrs"
+    },
+    "operationId": "getCdrs",
+    "path": "/cdrs",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listContactGroups",
+      "go": "ListContactGroups",
+      "python": "list_contact_groups",
+      "typescript": "listContactGroups"
+    },
+    "operationId": "listContactGroups",
+    "path": "/contact_groups",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listContacts",
+      "go": "ListContacts",
+      "python": "list_contacts",
+      "typescript": "listContacts"
+    },
+    "operationId": "listContacts",
+    "path": "/contacts",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listExtensions",
+      "go": "ListExtensions",
+      "python": "list_extensions",
+      "typescript": "listExtensions"
+    },
+    "operationId": "listExtensions",
+    "path": "/extensions",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listFaxOrders",
+      "go": "ListFaxOrders",
+      "python": "list_fax_orders",
+      "typescript": "listFaxOrders"
+    },
+    "operationId": "listFaxOrders",
+    "path": "/fax_orders",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listFaxRecords",
+      "go": "ListFaxRecords",
+      "python": "list_fax_records",
+      "typescript": "listFaxRecords"
+    },
+    "operationId": "listFdrs",
+    "path": "/fdrs",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listInboundMessages",
+      "go": "ListInboundMessages",
+      "python": "list_inbound_messages",
+      "typescript": "listInboundMessages"
+    },
+    "operationId": "get_v2_inbound_messages",
+    "path": "/v2/inbound_messages",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listIysCampaignConsents",
+      "go": "ListIysCampaignConsents",
+      "python": "list_iys_campaign_consents",
+      "typescript": "listIysCampaignConsents"
+    },
+    "operationId": "get_v2_iys_campaigns_id_consents",
+    "path": "/v2/iys/campaigns/{id}/consents",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listIysCampaigns",
+      "go": "ListIysCampaigns",
+      "python": "list_iys_campaigns",
+      "typescript": "listIysCampaigns"
+    },
+    "operationId": "get_v2_iys_campaigns",
+    "path": "/v2/iys/campaigns",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listQueuePendingCalls",
+      "go": "ListQueuePendingCalls",
+      "python": "list_queue_pending_calls",
+      "typescript": "listQueuePendingCalls"
+    },
+    "operationId": "getQueuesPending",
+    "path": "/queues/pending",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listQueueUsers",
+      "go": "ListQueueUsers",
+      "python": "list_queue_users",
+      "typescript": "listQueueUsers"
+    },
+    "operationId": "getQueueUserList",
+    "path": "/queue/user_list",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listQueues",
+      "go": "ListQueues",
+      "python": "list_queues",
+      "typescript": "listQueues"
+    },
+    "operationId": "getQueues",
+    "path": "/queues",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listSenderIds",
+      "go": "ListSenderIds",
+      "python": "list_sender_ids",
+      "typescript": "listSenderIds"
+    },
+    "operationId": "get_v2_headers",
+    "path": "/v2/headers",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listUserStatuses",
+      "go": "ListUserStatuses",
+      "python": "list_user_statuses",
+      "typescript": "listUserStatuses"
+    },
+    "operationId": "listUserStatuses",
+    "path": "/user_statuses",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "listVoicemailMessages",
+      "go": "ListVoicemailMessages",
+      "python": "list_voicemail_messages",
+      "typescript": "listVoicemailMessages"
+    },
+    "operationId": "getVoicemailMessages",
+    "path": "/voicemail_messages",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "manageQueueUsers",
+      "go": "ManageQueueUsers",
+      "python": "manage_queue_users",
+      "typescript": "manageQueueUsers"
+    },
+    "operationId": "manageQueueUsers",
+    "path": "/queue/manage_users",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "originate",
+      "go": "Originate",
+      "python": "originate",
+      "typescript": "originate"
+    },
+    "operationId": "originateCallPost",
+    "path": "/originate",
+    "product": "switch",
+    "requestContentType": "application/json",
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "originateLegacy",
+      "go": "OriginateLegacy",
+      "python": "originate_legacy",
+      "typescript": "originateLegacy"
+    },
+    "operationId": "originateCall",
+    "path": "/originate",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "send",
+      "go": "Send",
+      "python": "send",
+      "typescript": "send"
+    },
+    "operationId": "sendSmsJson",
+    "path": "/v2/send.json",
+    "product": "sms",
+    "requestContentType": "application/json",
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "sendLegacy",
+      "go": "SendLegacy",
+      "python": "send_legacy",
+      "typescript": "sendLegacy"
+    },
+    "operationId": "get_v2_send",
+    "path": "/v2/send",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "sendOtp",
+      "go": "SendOtp",
+      "python": "send_otp",
+      "typescript": "sendOtp"
+    },
+    "operationId": "send_otp_v1_messages_otp_post",
+    "path": "/v1/messages/otp",
+    "product": "whatsapp",
+    "requestContentType": "application/json",
+    "responseKind": "json"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "sendUtility",
+      "go": "SendUtility",
+      "python": "send_utility",
+      "typescript": "sendUtility"
+    },
+    "operationId": "send_utility_v1_messages_utility_post",
+    "path": "/v1/messages/utility",
+    "product": "whatsapp",
+    "requestContentType": "application/json",
+    "responseKind": "json"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "setCallMute",
+      "go": "SetCallMute",
+      "python": "set_call_mute",
+      "typescript": "setCallMute"
+    },
+    "operationId": "muteCall",
+    "path": "/mute/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "setDnd",
+      "go": "SetDnd",
+      "python": "set_dnd",
+      "typescript": "setDnd"
+    },
+    "operationId": "createDnd",
+    "path": "/dnd/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "status",
+      "go": "Status",
+      "python": "status",
+      "typescript": "status"
+    },
+    "operationId": "getSmsStatus",
+    "path": "/v2/status",
+    "product": "sms",
+    "requestContentType": null,
+    "responseKind": "json"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "submitIysConsents",
+      "go": "SubmitIysConsents",
+      "python": "submit_iys_consents",
+      "typescript": "submitIysConsents"
+    },
+    "operationId": "post_v2_iys_consents_json",
+    "path": "/v2/iys_consents.json",
+    "product": "sms",
+    "requestContentType": "application/json",
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "transfer",
+      "go": "Transfer",
+      "python": "transfer",
+      "typescript": "transfer"
+    },
+    "operationId": "transferCallPost",
+    "path": "/transfer",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "transferLegacy",
+      "go": "TransferLegacy",
+      "python": "transfer_legacy",
+      "typescript": "transferLegacy"
+    },
+    "operationId": "transferCall",
+    "path": "/transfer/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "PATCH",
+    "names": {
+      "dart": "updateAnnouncement",
+      "go": "UpdateAnnouncement",
+      "python": "update_announcement",
+      "typescript": "updateAnnouncement"
+    },
+    "operationId": "updateAnnouncement",
+    "path": "/announcements/{id}",
+    "product": "switch",
+    "requestContentType": "application/x-www-form-urlencoded",
+    "responseKind": "text"
+  },
+  {
+    "method": "PATCH",
+    "names": {
+      "dart": "updateContact",
+      "go": "UpdateContact",
+      "python": "update_contact",
+      "typescript": "updateContact"
+    },
+    "operationId": "updateContact",
+    "path": "/contacts/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "PATCH",
+    "names": {
+      "dart": "updateContactGroup",
+      "go": "UpdateContactGroup",
+      "python": "update_contact_group",
+      "typescript": "updateContactGroup"
+    },
+    "operationId": "updateContactGroup",
+    "path": "/contact_groups/{id}",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "POST",
+    "names": {
+      "dart": "updateCrmIntegrations",
+      "go": "UpdateCrmIntegrations",
+      "python": "update_crm_integrations",
+      "typescript": "updateCrmIntegrations"
+    },
+    "operationId": "updateCrmIntegrations",
+    "path": "/crm_integrations",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "PATCH",
+    "names": {
+      "dart": "updateIvrCampaign",
+      "go": "UpdateIvrCampaign",
+      "python": "update_ivr_campaign",
+      "typescript": "updateIvrCampaign"
+    },
+    "operationId": "updateIvrCampaign",
+    "path": "/ivr_campaigns/{id}.json",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  },
+  {
+    "method": "GET",
+    "names": {
+      "dart": "updateOutboundCallerId",
+      "go": "UpdateOutboundCallerId",
+      "python": "update_outbound_caller_id",
+      "typescript": "updateOutboundCallerId"
+    },
+    "operationId": "updateOutboundCallerId",
+    "path": "/update_outbound_caller_id",
+    "product": "switch",
+    "requestContentType": null,
+    "responseKind": "text"
+  }
+]

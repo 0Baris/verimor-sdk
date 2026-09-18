@@ -4,7 +4,8 @@ from collections.abc import Generator, Mapping
 
 import httpx
 
-from verimor._core import AsyncClientBase, SyncClientBase, httpx_args
+from verimor._core import httpx_args
+from verimor.switch._facade_gen import AsyncSwitchFacadeMixin, SwitchFacadeMixin
 from verimor.switch.generated.client import AuthenticatedClient as GeneratedClient
 
 DEFAULT_BASE_URL = "https://api.bulutsantralim.com"
@@ -21,7 +22,7 @@ class _QueryKeyAuth(httpx.Auth):
         yield request
 
 
-class SwitchClient(SyncClientBase):
+class SwitchClient(SwitchFacadeMixin):
     product = "switch"
 
     def __init__(
@@ -33,6 +34,8 @@ class SwitchClient(SyncClientBase):
         transport: httpx.BaseTransport | None = None,
     ) -> None:
         self.api_key = api_key
+        self._facade_credentials = {"key": api_key}
+        self._facade_defaults = {}
         self.raw = GeneratedClient(
             token="",
             base_url=base_url.rstrip("/"),
@@ -47,7 +50,7 @@ class SwitchClient(SyncClientBase):
         return response.text.strip()
 
 
-class AsyncSwitchClient(AsyncClientBase):
+class AsyncSwitchClient(AsyncSwitchFacadeMixin):
     product = "switch"
 
     def __init__(
@@ -59,6 +62,8 @@ class AsyncSwitchClient(AsyncClientBase):
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         self.api_key = api_key
+        self._facade_credentials = {"key": api_key}
+        self._facade_defaults = {}
         self.raw = GeneratedClient(
             token="",
             base_url=base_url.rstrip("/"),

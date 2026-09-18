@@ -29,8 +29,8 @@ part 'olay_bildirme_post_request.g.dart';
 /// * [queue] - Kuyruğun veya Çağrı grubunun numarası.
 /// * [queueWaitDuration] - Kuyrukta bekleme süresi.
 /// * [sipHangupDisposition] - Çağrının kimin tarafından kapatıldığı. caller ya da callee olarak döner.
-/// * [hangupCause] - Çağrının kapanma sebebi.
-/// * [failureStatus] - Çağrı başarısız ise hata kodu.
+/// * [hangupCause] - Çağrının kapanma sebebi. Alabileceği değerler için <a href=\"/developer/errors/cagri-sonuc-kodlari\">Çağrı Sonuç Kodları</a> sayfasına bakın.
+/// * [failureStatus] - Çağrı başarısız ise hata kodu. Bkz. <a href=\"/developer/errors/cagri-sonuc-kodlari\">Çağrı Sonuç Kodları</a>.
 /// * [failurePhrase] - Çağrı başarısız ise hata mesajı.
 @BuiltValue()
 abstract class OlayBildirmePostRequest implements Built<OlayBildirmePostRequest, OlayBildirmePostRequestBuilder> {
@@ -106,11 +106,11 @@ abstract class OlayBildirmePostRequest implements Built<OlayBildirmePostRequest,
   @BuiltValueField(wireName: r'sip_hangup_disposition')
   String? get sipHangupDisposition;
 
-  /// Çağrının kapanma sebebi.
+  /// Çağrının kapanma sebebi. Alabileceği değerler için <a href=\"/developer/errors/cagri-sonuc-kodlari\">Çağrı Sonuç Kodları</a> sayfasına bakın.
   @BuiltValueField(wireName: r'hangup_cause')
   String? get hangupCause;
 
-  /// Çağrı başarısız ise hata kodu.
+  /// Çağrı başarısız ise hata kodu. Bkz. <a href=\"/developer/errors/cagri-sonuc-kodlari\">Çağrı Sonuç Kodları</a>.
   @BuiltValueField(wireName: r'failure_status')
   String? get failureStatus;
 

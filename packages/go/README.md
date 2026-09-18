@@ -9,12 +9,10 @@ değildir.
 
 ## Durum ve kurulum
 
-Go 1.24 veya daha yeni bir sürüm gerekir. Go modülü için henüz ayrı bir
-`packages/go/vX.Y.Z` tag'i yayımlanmadığından, kaynak kodu denemek için `main`
-veya sabit bir commit kullanın:
+Go 1.24 veya daha yeni bir sürüm gerekir:
 
 ```sh
-go get github.com/0Baris/verimor-sdk/packages/go@main
+go get github.com/0Baris/verimor-sdk/packages/go@v0.2.0
 ```
 
 Production bağımlılığında yeniden üretilebilirlik için `go.mod` dosyanıza yazılan
@@ -28,9 +26,30 @@ import (
 )
 ```
 
-Go v0.1.0 yüzeyi generated/raw istemcidir. TypeScript ve Python'daki convenience
-metotları, varsayılan timeout veya `VerimorApiError` sözleşmesi Go paketine
-uygulanmaz.
+## 0.2.0 public façade
+
+`NewSMSClient`, `NewSwitchClient` ve `NewWhatsAppClient` credentials'ı otomatik
+ekler, 30 saniye varsayılan timeout ve `VerimorAPIError` sağlar. SMS 13, Switch 52
+ve WhatsApp 3 operasyonun tamamı doğrudan metottur; generated istemci `Raw`
+alanında kalır. Tam liste: [`docs/operations.md`](../../docs/operations.md).
+
+```go
+import (
+    "context"
+
+    verimor "github.com/0Baris/verimor-sdk/packages/go"
+)
+
+ctx := context.Background()
+sms, _ := verimor.NewSMSClient("SMS_USER", "SMS_PASSWORD", verimor.WithSourceAddr("VERIMOR"))
+_, _ = sms.Send(ctx, map[string]any{"messages": []any{map[string]any{"dest": "905001112233", "msg": "Merhaba"}}})
+_, _ = sms.ListSenderIds(ctx)
+
+sw, _ := verimor.NewSwitchClient("SWITCH_KEY")
+_, _ = sw.ListExtensions(ctx)
+```
+
+Devamındaki generated/raw örnekler düşük seviye kullanım içindir.
 
 ## SMS
 

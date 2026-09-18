@@ -48,7 +48,6 @@ const _originateOperation = <String, dynamic>{
   'path': '/originate',
   'parameters': <Map<String, dynamic>>[],
   'hasBody': true,
-  'bodyRequired': true,
   'bodyRequiredFields': <String>[],
   'contentType': 'application/json',
   'responseKind': 'text',

@@ -1,6 +1,6 @@
 import createClient, { type Client } from "openapi-fetch";
 
-import { createFacadeTransport, request, withTimeout, type ClientOptions } from "./core.js";
+import { createFacadeTransport, withTimeout, type ClientOptions } from "./core.js";
 import { createSmsFacade, type SmsFacade } from "./facade/sms.gen.js";
 import type { paths } from "./generated/sms.js";
 
@@ -48,25 +48,12 @@ export function createSmsClient(options: SmsClientOptions): SmsClient {
     ...facade,
     raw,
     async send(body) {
-      const sourceAddr = body.source_addr ?? options.sourceAddr;
-      if (sourceAddr === undefined) throw new TypeError("send requires source_addr");
-      const result = await request("sms", fetcher, `${baseUrl}/v2/send.json`, {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({
-          ...body,
-          source_addr: sourceAddr,
-          username: options.username,
-          password: options.password,
-        }),
-      });
-      return result.text.trim();
+      return facade.send({ ...body });
     },
     async balance() {
-      const query = new URLSearchParams({ username: options.username, password: options.password });
-      const result = await request("sms", fetcher, `${baseUrl}/v2/balance?${query}`);
-      const balance = Number(result.text.trim());
-      if (!result.text.trim() || !Number.isFinite(balance)) {
+      const text = (await facade.balance()).trim();
+      const balance = Number(text);
+      if (!text || !Number.isFinite(balance)) {
         throw new TypeError("Invalid balance response");
       }
       return balance;
@@ -77,19 +64,7 @@ export function createSmsClient(options: SmsClientOptions): SmsClient {
       if (hasId === hasCustomId) {
         throw new TypeError("status requires exactly one of id or customId");
       }
-      const parameters = new URLSearchParams({
-        username: options.username,
-        password: options.password,
-        format: "json",
-      });
-      if (query.id !== undefined) parameters.set("id", String(query.id));
-      if (query.customId !== undefined) parameters.set("custom_id", query.customId);
-      if (query.dest !== undefined) parameters.set("dest", query.dest);
-      const result = await request("sms", fetcher, `${baseUrl}/v2/status?${parameters}`);
-      if (typeof result.body === "string") {
-        return JSON.parse(result.body) as SmsStatusResponse;
-      }
-      return result.body as SmsStatusResponse;
+      return facade.status({ ...query }) as Promise<SmsStatusResponse>;
     },
   };
 }

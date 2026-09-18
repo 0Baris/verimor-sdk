@@ -4,7 +4,8 @@ from collections.abc import Mapping
 
 import httpx
 
-from verimor._core import balance_value, httpx_args, request_data
+from verimor._core import balance_value, httpx_args, text_value
+from verimor.sms._facade_gen import _OPERATIONS as _SMS_OPERATIONS
 from verimor.sms._facade_gen import AsyncSmsFacadeMixin, SmsFacadeMixin
 from verimor.sms.generated.client import Client as GeneratedClient
 
@@ -36,25 +37,10 @@ class SmsClient(SmsFacadeMixin):
         )
 
     def send(self, body: Mapping[str, object]) -> str:
-        source_addr = body.get("source_addr", self.source_addr)
-        if source_addr is None:
-            raise TypeError("send requires source_addr")
-        response = self._request(
-            "POST",
-            "/v2/send.json",
-            json=request_data(
-                {**body, "source_addr": source_addr},
-                username=self.username,
-                password=self.password,
-            ),
-        )
-        return response.text.strip()
+        return text_value(self._facade_request(_SMS_OPERATIONS["sendSmsJson"], body, {}))
 
     def balance(self) -> float:
-        response = self._request(
-            "GET", "/v2/balance", params={"username": self.username, "password": self.password}
-        )
-        return balance_value(response)
+        return balance_value(self._facade_request(_SMS_OPERATIONS["get_v2_balance"], None, {}))
 
     def status(
         self,
@@ -65,18 +51,8 @@ class SmsClient(SmsFacadeMixin):
     ) -> object:
         if (id is None) == (custom_id is None):
             raise TypeError("status requires exactly one of id or custom_id")
-        params: dict[str, str | int] = {
-            "username": self.username,
-            "password": self.password,
-            "format": "json",
-        }
-        if id is not None:
-            params["id"] = id
-        if custom_id is not None:
-            params["custom_id"] = custom_id
-        if dest is not None:
-            params["dest"] = dest
-        return self._request("GET", "/v2/status", params=params).json()
+        values = {"id": id, "custom_id": custom_id, "dest": dest}
+        return self._facade_request(_SMS_OPERATIONS["getSmsStatus"], None, values)
 
 
 class AsyncSmsClient(AsyncSmsFacadeMixin):
@@ -104,25 +80,12 @@ class AsyncSmsClient(AsyncSmsFacadeMixin):
         )
 
     async def send(self, body: Mapping[str, object]) -> str:
-        source_addr = body.get("source_addr", self.source_addr)
-        if source_addr is None:
-            raise TypeError("send requires source_addr")
-        response = await self._request(
-            "POST",
-            "/v2/send.json",
-            json=request_data(
-                {**body, "source_addr": source_addr},
-                username=self.username,
-                password=self.password,
-            ),
-        )
-        return response.text.strip()
+        value = await self._facade_request_async(_SMS_OPERATIONS["sendSmsJson"], body, {})
+        return text_value(value)
 
     async def balance(self) -> float:
-        response = await self._request(
-            "GET", "/v2/balance", params={"username": self.username, "password": self.password}
-        )
-        return balance_value(response)
+        value = await self._facade_request_async(_SMS_OPERATIONS["get_v2_balance"], None, {})
+        return balance_value(value)
 
     async def status(
         self,
@@ -133,18 +96,8 @@ class AsyncSmsClient(AsyncSmsFacadeMixin):
     ) -> object:
         if (id is None) == (custom_id is None):
             raise TypeError("status requires exactly one of id or custom_id")
-        params: dict[str, str | int] = {
-            "username": self.username,
-            "password": self.password,
-            "format": "json",
-        }
-        if id is not None:
-            params["id"] = id
-        if custom_id is not None:
-            params["custom_id"] = custom_id
-        if dest is not None:
-            params["dest"] = dest
-        return (await self._request("GET", "/v2/status", params=params)).json()
+        values = {"id": id, "custom_id": custom_id, "dest": dest}
+        return await self._facade_request_async(_SMS_OPERATIONS["getSmsStatus"], None, values)
 
 
 __all__ = ["AsyncSmsClient", "SmsClient"]

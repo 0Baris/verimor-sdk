@@ -4,7 +4,8 @@ from collections.abc import Generator, Mapping
 
 import httpx
 
-from verimor._core import httpx_args
+from verimor._core import httpx_args, text_value
+from verimor.switch._facade_gen import _OPERATIONS as _SWITCH_OPERATIONS
 from verimor.switch._facade_gen import AsyncSwitchFacadeMixin, SwitchFacadeMixin
 from verimor.switch.generated.client import AuthenticatedClient as GeneratedClient
 
@@ -44,10 +45,7 @@ class SwitchClient(SwitchFacadeMixin):
         )
 
     def originate(self, body: Mapping[str, object]) -> str:
-        response = self._request(
-            "POST", "/originate", params={"key": self.api_key}, json=dict(body)
-        )
-        return response.text.strip()
+        return text_value(self._facade_request(_SWITCH_OPERATIONS["originateCallPost"], body, {}))
 
 
 class AsyncSwitchClient(AsyncSwitchFacadeMixin):
@@ -72,10 +70,8 @@ class AsyncSwitchClient(AsyncSwitchFacadeMixin):
         )
 
     async def originate(self, body: Mapping[str, object]) -> str:
-        response = await self._request(
-            "POST", "/originate", params={"key": self.api_key}, json=dict(body)
-        )
-        return response.text.strip()
+        value = await self._facade_request_async(_SWITCH_OPERATIONS["originateCallPost"], body, {})
+        return text_value(value)
 
 
 __all__ = ["AsyncSwitchClient", "SwitchClient"]

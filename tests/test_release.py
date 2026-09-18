@@ -61,7 +61,7 @@ def test_python_jobs_prepare_dependencies_before_offline_smoke() -> None:
 def test_ci_runs_feature_branches_only_through_pull_requests() -> None:
     ci = yaml.load((ROOT / ".github/workflows/ci.yml").read_text(), Loader=yaml.BaseLoader)
 
-    assert ci["on"]["push"] == {"branches": ["main"]}
+    assert "push" not in ci["on"]
     assert "pull_request" in ci["on"]
     assert ci["concurrency"]["cancel-in-progress"] == "true"
 

@@ -55,9 +55,12 @@ describe("SMS client", () => {
     });
 
     await expect(client.balance()).resolves.toBe(42);
-    expect(captured[0]?.url).toBe(
-      "https://sms.verimor.com.tr/v2/balance?username=u%40example.com&password=p%261",
-    );
+    const url = new URL(String(captured[0]?.url));
+    expect(`${url.origin}${url.pathname}`).toBe("https://sms.verimor.com.tr/v2/balance");
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      username: "u@example.com",
+      password: "p&1",
+    });
   });
 
   it("requires exactly one status identifier", async () => {

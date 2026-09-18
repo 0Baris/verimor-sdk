@@ -21,7 +21,6 @@ export interface FacadeOperationDescriptor {
   path: string;
   parameters: readonly FacadeParameterDescriptor[];
   hasBody: boolean;
-  bodyRequired: boolean;
   bodyRequiredFields: readonly string[];
   contentType: string | null;
   responseKind: "json" | "text" | "binary" | "empty";
@@ -132,9 +131,6 @@ export function createFacadeTransport(
           if (body === undefined) throw new TypeError(`${operation.operationId} has no body`);
           body[name] = credentials[name];
         }
-      }
-      if (operation.bodyRequired && body === undefined) {
-        throw new TypeError(`${operation.operationId} requires a body`);
       }
       for (const field of operation.bodyRequiredFields) {
         if (body?.[field] === undefined) {

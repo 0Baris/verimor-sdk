@@ -5,6 +5,7 @@ from collections.abc import Mapping
 import httpx
 
 from verimor._core import JsonObject, httpx_args, json_object
+from verimor.whatsapp._facade_gen import _OPERATIONS as _WHATSAPP_OPERATIONS
 from verimor.whatsapp._facade_gen import AsyncWhatsAppFacadeMixin, WhatsAppFacadeMixin
 from verimor.whatsapp.generated.client import Client as GeneratedClient
 
@@ -32,15 +33,17 @@ class WhatsAppClient(WhatsAppFacadeMixin):
             httpx_args=httpx_args(transport),
         )
 
-    def _send(self, path: str, body: Mapping[str, object]) -> JsonObject:
-        response = self._request("POST", path, headers={"x-api-key": self.api_key}, json=dict(body))
-        return json_object(response)
-
     def send_otp(self, body: Mapping[str, object]) -> JsonObject:
-        return self._send("/v1/messages/otp", body)
+        value = self._facade_request(
+            _WHATSAPP_OPERATIONS["send_otp_v1_messages_otp_post"], body, {}
+        )
+        return json_object(value)
 
     def send_utility(self, body: Mapping[str, object]) -> JsonObject:
-        return self._send("/v1/messages/utility", body)
+        value = self._facade_request(
+            _WHATSAPP_OPERATIONS["send_utility_v1_messages_utility_post"], body, {}
+        )
+        return json_object(value)
 
 
 class AsyncWhatsAppClient(AsyncWhatsAppFacadeMixin):
@@ -64,17 +67,17 @@ class AsyncWhatsAppClient(AsyncWhatsAppFacadeMixin):
             httpx_args=httpx_args(transport),
         )
 
-    async def _send(self, path: str, body: Mapping[str, object]) -> JsonObject:
-        response = await self._request(
-            "POST", path, headers={"x-api-key": self.api_key}, json=dict(body)
-        )
-        return json_object(response)
-
     async def send_otp(self, body: Mapping[str, object]) -> JsonObject:
-        return await self._send("/v1/messages/otp", body)
+        value = await self._facade_request_async(
+            _WHATSAPP_OPERATIONS["send_otp_v1_messages_otp_post"], body, {}
+        )
+        return json_object(value)
 
     async def send_utility(self, body: Mapping[str, object]) -> JsonObject:
-        return await self._send("/v1/messages/utility", body)
+        value = await self._facade_request_async(
+            _WHATSAPP_OPERATIONS["send_utility_v1_messages_utility_post"], body, {}
+        )
+        return json_object(value)
 
 
 __all__ = ["AsyncWhatsAppClient", "WhatsAppClient"]

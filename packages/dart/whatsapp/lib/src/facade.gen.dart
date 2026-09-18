@@ -9,7 +9,7 @@ class WhatsAppFacade {
 
   Future<dynamic> health([Map<String, dynamic> input = const {}]) {
     return _transport.requestEncoded(
-      r'''{"operationId":"health_health_get","method":"GET","path":"/health","parameters":[],"hasBody":false,"bodyRequired":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{}}''',
+      r'''{"operationId":"health_health_get","method":"GET","path":"/health","parameters":[],"hasBody":false,"bodyRequiredFields":[],"contentType":null,"responseKind":"json","clientDefaults":{},"credentials":{}}''',
       input,
     );
   }

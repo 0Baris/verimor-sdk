@@ -111,9 +111,8 @@ def test_sms_balance_encodes_credentials_and_parses_number() -> None:
     client = SmsClient("u@example.com", "p&1", transport=httpx.MockTransport(handler))
 
     assert client.balance() == 42
-    assert captured[0].url == (
-        "https://sms.verimor.com.tr/v2/balance?username=u%40example.com&password=p%261"
-    )
+    assert captured[0].url.copy_with(query=None) == "https://sms.verimor.com.tr/v2/balance"
+    assert dict(captured[0].url.params) == {"username": "u@example.com", "password": "p&1"}
 
 
 def test_sms_status_requires_exactly_one_identifier() -> None:
@@ -140,7 +139,6 @@ def test_sms_status_sends_normalized_query() -> None:
     assert dict(captured[0].url.params) == {
         "username": "user",
         "password": "secret",
-        "format": "json",
         "custom_id": "order-1",
         "dest": "905001112233",
     }

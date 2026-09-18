@@ -62,7 +62,6 @@ const _otpOperation = <String, dynamic>{
   'path': '/v1/messages/otp',
   'parameters': <Map<String, dynamic>>[],
   'hasBody': true,
-  'bodyRequired': true,
   'bodyRequiredFields': ['to', 'template_name'],
   'contentType': 'application/json',
   'responseKind': 'json',

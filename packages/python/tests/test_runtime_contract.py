@@ -43,7 +43,7 @@ def sync_client(product: str, transport: httpx.BaseTransport) -> tuple[Any, Call
     if product == "switch":
         return (
             SwitchClient("key", transport=transport),
-            lambda client: client.originate({"caller": "100", "destination": "101"}),
+            lambda client: client.originate({"extension": "100", "destination": "101"}),
         )
     return (
         WhatsAppClient("key", transport=transport),
@@ -61,7 +61,7 @@ def async_client(
     if product == "switch":
         return (
             AsyncSwitchClient("key", transport=transport),
-            lambda client: client.originate({"caller": "100", "destination": "101"}),
+            lambda client: client.originate({"extension": "100", "destination": "101"}),
         )
     return (
         AsyncWhatsAppClient("key", transport=transport),

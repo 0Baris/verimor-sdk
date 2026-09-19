@@ -1,6 +1,15 @@
 # Changelog
 
-## 0.2.0 — Unreleased
+## 0.2.1 — 2026-09-19
+
+- npm ve PyPI paket sayfalarında görüntülenen README'ler kurulumdan hata
+  yönetimine kadar Türkçe ve İngilizce tam kullanım rehberleriyle yenilendi.
+- Repository, TypeScript, Python, Go ve Dart rehberlerinin ayrı İngilizce
+  sürümleri eklendi; public API örnekleri ve canlı API uyarısı netleştirildi.
+- Generator/public export belgeleri ve katkı-yayın talimatları güncellendi.
+- Dart/Flutter pub.dev yayını hâlâ ertelenmiştir.
+
+## 0.2.0 — 2026-09-19
 
 - TypeScript, Python sync/async, Go ve Dart client'larına SMS 13, Switch 52 ve
   WhatsApp 3 operasyonun tamamı için doğrudan façade metotları eklendi.

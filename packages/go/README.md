@@ -12,11 +12,12 @@ değildir.
 Go 1.24 veya daha yeni bir sürüm gerekir:
 
 ```sh
-go get github.com/0Baris/verimor-sdk/packages/go@v0.2.0
+go get github.com/0Baris/verimor-sdk/packages/go@v0.2.1
 ```
 
-Production bağımlılığında yeniden üretilebilirlik için `go.mod` dosyanıza yazılan
-pseudo-version'ı commit edin. Ürün paketleri ayrı import edilir:
+Production bağımlılığında yeniden üretilebilirlik için `go.mod` ve `go.sum`
+dosyalarınızı commit edin. Üretilmiş modellere ihtiyaç duyarsanız ürün paketleri
+ayrı import edilir:
 
 ```go
 import (
@@ -26,7 +27,7 @@ import (
 )
 ```
 
-## 0.2.0 public façade
+## Façade istemcileri
 
 `NewSMSClient`, `NewSwitchClient` ve `NewWhatsAppClient` credentials'ı otomatik
 ekler, 30 saniye varsayılan timeout ve `VerimorAPIError` sağlar. SMS 13, Switch 52
@@ -49,9 +50,11 @@ sw, _ := verimor.NewSwitchClient("SWITCH_KEY")
 _, _ = sw.ListExtensions(ctx)
 ```
 
-Devamındaki generated/raw örnekler düşük seviye kullanım içindir.
+Devamındaki generated/raw örnekler düşük seviye kullanım içindir. Façade
+istemcilerinde credentials ve HTTP hatası yönetimi otomatikken `Raw` tarafında
+generated response/status sözleşmesini siz yönetirsiniz.
 
-## SMS
+## SMS `Raw` örneği
 
 SMS credentials'ı her endpoint'in parametre ya da body modeline açıkça verilir.
 Aşağıdaki örnek bakiye endpoint'ini çağırır:
@@ -100,7 +103,7 @@ SMS gönderiminde `SendSmsJsonJSONRequestBody` modelini ve generated
 body'sinde yer alır; endpoint modelindeki `Username` ve `Password` alanlarını
 doldurmayı unutmayın.
 
-## Switch
+## Switch `Raw` örneği
 
 Switch bütün isteklerde `key` query parametresi bekler. Bunu bir request editor
 ile istemciye bir kez ekleyebilirsiniz:
@@ -146,7 +149,7 @@ func main() {
 Editor mevcut query parametrelerini korur ve URL encoding'i standart kütüphaneye
 bırakır. API key'i loglamayın veya URL içeren hata/trace kayıtlarında sızdırmayın.
 
-## WhatsApp
+## WhatsApp `Raw` örneği
 
 WhatsApp endpointleri `x-api-key` header'ını operation params içinden alır:
 
@@ -199,8 +202,10 @@ Utility mesajı için aynı modelle
 
 ## Context, timeout ve iptal
 
-Generated istemci kendiliğinden timeout koymaz. Timeout'u `http.Client` üzerinde,
-tek operasyonluk deadline'ı ise `context.Context` ile belirleyin:
+Façade istemcilerinde varsayılan timeout 30 saniyedir ve `WithTimeout` veya
+`WithHTTPClient` ile değiştirilebilir. Ürün paketinden doğrudan oluşturduğunuz
+generated istemcide varsayılan timeout yoktur. Tek operasyonluk deadline'ı
+`context.Context` ile belirleyin:
 
 ```go
 ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -221,8 +226,9 @@ göndermeden önce ilk isteğin gerçekleşip gerçekleşmediğini kontrol edin.
 - `Body`: response body'nin byte hali,
 - `JSON200`, `JSON202` gibi alanlar: şemada tanımlanan typed başarılı/hata body'leri.
 
-HTTP 4xx/5xx yanıtı tek başına Go `error` değildir. Önce transport hatasını,
-sonra status kodunu kontrol edin:
+Bu bölümdeki `Raw` çağrılarında HTTP 4xx/5xx yanıtı tek başına Go `error`
+değildir. Önce transport hatasını, sonra status kodunu kontrol edin. Façade
+çağrılarında 2xx dışı yanıt `VerimorAPIError` olur:
 
 ```go
 response, err := client.GetQueuesWithResponse(ctx)
@@ -261,11 +267,107 @@ go test ./...
 go test -race ./...
 ```
 
-## English summary
+## English documentation
 
-This Go module contains generated clients for all Verimor SMS, Switch and
-WhatsApp operations. Use Go 1.24+, configure your own `http.Client` timeout and
-pass authentication as shown above. The generated surface does not normalize
-non-2xx responses into errors and does not retry automatically. Always inspect
-the HTTP status and close response bodies. The module has only been tested
-offline and against localhost, not against live Verimor services.
+This unofficial, community-maintained Go module provides first-class clients
+and generated low-level access for all 13 SMS, 52 Switch, and 3 WhatsApp
+operations. It requires Go 1.24 or newer. It has been tested offline and against
+localhost servers, not live Verimor accounts.
+
+### Installation
+
+```bash
+go get github.com/0Baris/verimor-sdk/packages/go@v0.2.1
+```
+
+Import the root package for the recommended façade clients. Product subpackages
+contain generated request and response types for low-level access.
+
+### SMS
+
+```go
+package main
+
+import (
+	"context"
+	"log"
+	"os"
+
+	verimor "github.com/0Baris/verimor-sdk/packages/go"
+)
+
+func main() {
+	client, err := verimor.NewSMSClient(
+		os.Getenv("VERIMOR_SMS_USERNAME"),
+		os.Getenv("VERIMOR_SMS_PASSWORD"),
+		verimor.WithSourceAddr("VERIMOR"),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	response, err := client.Send(context.Background(), map[string]any{
+		"messages": []any{
+			map[string]any{"dest": "905001112233", "msg": "Your order is ready."},
+		},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Print(response)
+}
+```
+
+SMS credentials are injected into the location required by each operation. A
+per-call `source_addr` overrides the default supplied with `WithSourceAddr`.
+
+### Switch and WhatsApp
+
+```go
+switchClient, err := verimor.NewSwitchClient(os.Getenv("VERIMOR_SWITCH_API_KEY"))
+if err != nil {
+	log.Fatal(err)
+}
+
+whatsappClient, err := verimor.NewWhatsAppClient(
+	os.Getenv("VERIMOR_WHATSAPP_API_KEY"),
+)
+if err != nil {
+	log.Fatal(err)
+}
+```
+
+Switch authentication is sent as the `key` query parameter. WhatsApp
+authentication is sent as the `x-api-key` header. Generated request types and
+method names remain available through each client's `Raw` field.
+
+### Timeout, cancellation, and errors
+
+The generated Go client deliberately does not impose a default timeout. Supply
+an `http.Client` with a timeout and use `context.Context` for per-call deadlines:
+
+```go
+httpClient := &http.Client{Timeout: 30 * time.Second}
+client, err := verimor.NewSwitchClient("switch-key", verimor.WithHTTPClient(httpClient))
+
+ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+defer cancel()
+
+response, err := client.GetQueuesWithResponse(ctx)
+```
+
+Façade methods normalize non-2xx responses as `VerimorAPIError`. Transport and
+context failures remain native Go errors. Generated calls through `Raw` return
+response objects; inspect their status code and parsed body, and close response
+bodies when applicable. The module performs no automatic retries and includes
+no rate limiter.
+
+### Testing
+
+```bash
+cd packages/go
+go test ./...
+go test -race ./...
+```
+
+Licensed under MIT. This is not an official Verimor SDK.

@@ -1,21 +1,36 @@
-Verimor SMS, Switch ve WhatsApp API'leri için topluluk tarafından geliştirilen SDK paketi.
+## Verimor SDK 0.2.1 — Dokümantasyon / Documentation
 
-Community-maintained SDKs for the Verimor SMS, Switch, and WhatsApp APIs.
+### Türkçe
 
-## 0.2.0
+Bu sürüm, npm ve PyPI paket sayfalarında doğrudan görünen kullanım rehberlerini
+yeniler. TypeScript ve Python README'lerinde SMS, Switch ve WhatsApp için
+kurulum, kimlik doğrulama, gönderim/çağrı örnekleri, `source_addr`, doğrudan
+façade metotları, generated `raw` erişimi, timeout, hata ve retry davranışı
+Türkçe ve İngilizce olarak ayrıntılı anlatılır.
 
-- SMS 13, Switch 52 ve WhatsApp 3 operasyonun tamamı TypeScript, Python, Go ve
-  Dart client'larında doğrudan metot olarak kullanılabilir.
-- Credentials doğru body/query/header konumuna otomatik eklenir.
-- SMS client'ında varsayılan `source_addr` tanımlanabilir; çağrıdaki değer önceliklidir.
-- Generated `raw` istemciler geriye dönük uyumluluk ve düşük seviye kullanım için kalır.
-- 30 saniye varsayılan timeout, normalize API hatası ve otomatik retry olmaması korunur.
-- Dart/Flutter kaynakları bu release'e dahildir ancak pub.dev yayını yapılmaz.
+Repository, Go ve Dart rehberleri ile katkı-yayın belgeleri de güncellendi.
+Kod davranışı ve 68 operasyonluk kapsam değişmedi: SMS 13, Switch 52,
+WhatsApp 3. Dart kaynakları repoda kalır; pub.dev yayını yapılmaz.
 
-## Paketler
+### English
 
-- npm: `@bariscemant/verimor`
-- PyPI: `verimor-sdk`
-- Go: `github.com/0Baris/verimor-sdk/packages/go`
+This release refreshes the guides rendered directly on npm and PyPI. The
+TypeScript and Python package READMEs now provide complete Turkish and English
+instructions for installation, authentication, SMS/Switch/WhatsApp examples,
+`source_addr`, first-class façade methods, generated `raw` access, timeouts,
+errors, and retries.
 
-> Bu bağımsız bir topluluk projesidir. Verimor tarafından resmî olarak desteklenmez ve canlı API uyumluluğu henüz doğrulanmamıştır.
+Repository, Go, Dart, and contribution/release guides were updated as well.
+Runtime behavior and the 68-operation surface are unchanged: 13 SMS, 52
+Switch, and 3 WhatsApp. Dart sources remain available but are not published to
+pub.dev.
+
+### Kurulum / Installation
+
+- TypeScript: `npm install @bariscemant/verimor@0.2.1`
+- Python: `python -m pip install verimor-sdk==0.2.1`
+- Go: `go get github.com/0Baris/verimor-sdk/packages/go@v0.2.1`
+
+> Bağımsız topluluk projesidir; Verimor'un resmî ürünü değildir. Canlı Verimor
+> API uyumluluğu henüz doğrulanmamıştır. / This is an unofficial community
+> project and has not yet been verified against live Verimor services.

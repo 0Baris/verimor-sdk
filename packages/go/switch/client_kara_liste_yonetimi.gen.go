@@ -15,6 +15,7 @@ import (
 	"strings"
 )
 
+// Valid indicates whether the value is a known member of the CreateBlockedNumberParamsDirection enum.
 func (e CreateBlockedNumberParamsDirection) Valid() bool {
 	switch e {
 	case CreateBlockedNumberParamsDirectionInbound:
@@ -26,6 +27,7 @@ func (e CreateBlockedNumberParamsDirection) Valid() bool {
 	}
 }
 
+// Valid indicates whether the value is a known member of the DeleteBlockedNumberParamsDirection enum.
 func (e DeleteBlockedNumberParamsDirection) Valid() bool {
 	switch e {
 	case DeleteBlockedNumberParamsDirectionInbound:
@@ -37,6 +39,11 @@ func (e DeleteBlockedNumberParamsDirection) Valid() bool {
 	}
 }
 
+// ListBlockedNumbers Kara Listeye Erişim
+//
+// Santralinizdeki kara listedeki numaraların listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/blocked_numbers adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde kara liste döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with GET /blocked_numbers (the `ListBlockedNumbers` operationId).
 func (c *Client) ListBlockedNumbers(ctx context.Context, params *ListBlockedNumbersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListBlockedNumbersRequest(c.Server, params)
 	if err != nil {
@@ -49,6 +56,11 @@ func (c *Client) ListBlockedNumbers(ctx context.Context, params *ListBlockedNumb
 	return c.Client.Do(req)
 }
 
+// CreateBlockedNumber Kara Listeye Ekleme
+//
+// Telefon numarasını kara listeye ekler. Numara kayıt edilmeden önce normalize edilir. POST metodu ile api.bulutsantralim.com/blocked_numbers adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde oluşturulan kaydın ID'si döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with POST /blocked_numbers (the `CreateBlockedNumber` operationId).
 func (c *Client) CreateBlockedNumber(ctx context.Context, params *CreateBlockedNumberParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateBlockedNumberRequest(c.Server, params)
 	if err != nil {
@@ -61,6 +73,11 @@ func (c *Client) CreateBlockedNumber(ctx context.Context, params *CreateBlockedN
 	return c.Client.Do(req)
 }
 
+// DeleteBlockedNumber Kara Listeden Silme
+//
+// Telefon numarasını kara listeden çıkarır. Numara kaldırılmadan önce normalize edilir. DELETE metodu ile api.bulutsantralim.com/blocked_numbers/delete adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde başarı mesajı döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with DELETE /blocked_numbers/delete (the `DeleteBlockedNumber` operationId).
 func (c *Client) DeleteBlockedNumber(ctx context.Context, params *DeleteBlockedNumberParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteBlockedNumberRequest(c.Server, params)
 	if err != nil {
@@ -73,28 +90,36 @@ func (c *Client) DeleteBlockedNumber(ctx context.Context, params *DeleteBlockedN
 	return c.Client.Do(req)
 }
 
+// NewListBlockedNumbersRequest constructs an http.Request for the ListBlockedNumbers method
 func NewListBlockedNumbersRequest(server string, params *ListBlockedNumbersParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/blocked_numbers")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// Valid indicates whether the value is a known member of the CreateBlockedNumberParamsDirection enum.
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.Page != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -102,8 +127,11 @@ func NewListBlockedNumbersRequest(server string, params *ListBlockedNumbersParam
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -111,39 +139,50 @@ func NewListBlockedNumbersRequest(server string, params *ListBlockedNumbersParam
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateBlockedNumberRequest constructs an http.Request for the CreateBlockedNumber method
 func NewCreateBlockedNumberRequest(server string, params *CreateBlockedNumberParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/blocked_numbers")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewCreateBlockedNumberRequest constructs an http.Request for the CreateBlockedNumber method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "number", params.Number, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -152,7 +191,9 @@ func NewCreateBlockedNumberRequest(server string, params *CreateBlockedNumberPar
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.Direction != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "direction", *params.Direction, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -160,39 +201,50 @@ func NewCreateBlockedNumberRequest(server string, params *CreateBlockedNumberPar
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewDeleteBlockedNumberRequest constructs an http.Request for the DeleteBlockedNumber method
 func NewDeleteBlockedNumberRequest(server string, params *DeleteBlockedNumberParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/blocked_numbers/delete")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewDeleteBlockedNumberRequest constructs an http.Request for the DeleteBlockedNumber method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "number", params.Number, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -201,7 +253,9 @@ func NewDeleteBlockedNumberRequest(server string, params *DeleteBlockedNumberPar
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.Direction != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "direction", *params.Direction, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -209,42 +263,58 @@ func NewDeleteBlockedNumberRequest(server string, params *DeleteBlockedNumberPar
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r ListBlockedNumbersResponse) GetJSON200() *struct {
-	BlockedNumbers []struct// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
+	BlockedNumbers []struct {
+		// Direction Engelleme yönü (inbound veya outbound)
 		Direction *string `json:"direction,omitempty"`
-		Id        int     `json:"id"`
-		Number    string  `json:"number"`
+
+		// Id Engelli numara kaydının benzersiz kimlik numarası
+		Id int `json:"id"`
+
+		// Number Normalize edilmiş engelli telefon numarası
+		Number string `json:"number"`
 	} `json:"blocked_numbers"`
 	Pagination struct {
-		Limit      int `json:"limit"`
-		Page       int `json:"page"`
+		// Limit Sayfa başına kayıt sayısı
+		Limit int `json:"limit"`
+
+		// Page Mevcut sayfa numarası
+		Page int `json:"page"`
+
+		// TotalCount Toplam engelli numara sayısı
 		TotalCount int `json:"total_count"`
+
+		// TotalPages Toplam sayfa sayısı
 		TotalPages int `json:"total_pages"`
 	} `json:"pagination"`
 } {
 	return r.JSON200
 }
 
-func (r ListBlockedNumbersResponse) GetBody() []byte {// Direction Engelleme yönü (inbound veya outbound)
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListBlockedNumbersResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListBlockedNumbersResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -252,6 +322,7 @@ func (r ListBlockedNumbersResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListBlockedNumbersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -259,6 +330,7 @@ func (r ListBlockedNumbersResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListBlockedNumbersResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -266,12 +338,12 @@ func (r ListBlockedNumbersResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateBlockedNumberResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateBlockedNumberResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateBlockedNumberResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -279,6 +351,7 @@ func (r CreateBlockedNumberResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateBlockedNumberResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -286,6 +359,7 @@ func (r CreateBlockedNumberResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateBlockedNumberResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -293,12 +367,12 @@ func (r CreateBlockedNumberResponse) ContentType() string {
 	return ""
 }
 
-func (r DeleteBlockedNumberResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r DeleteBlockedNumberResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r DeleteBlockedNumberResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -306,6 +380,7 @@ func (r DeleteBlockedNumberResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r DeleteBlockedNumberResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -313,6 +388,7 @@ func (r DeleteBlockedNumberResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteBlockedNumberResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -320,6 +396,13 @@ func (r DeleteBlockedNumberResponse) ContentType() string {
 	return ""
 }
 
+// ListBlockedNumbersWithResponse Kara Listeye Erişim
+//
+// Santralinizdeki kara listedeki numaraların listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/blocked_numbers adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde kara liste döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /blocked_numbers (the `ListBlockedNumbers` operationId).
 func (c *ClientWithResponses) ListBlockedNumbersWithResponse(ctx context.Context, params *ListBlockedNumbersParams, reqEditors ...RequestEditorFn) (*ListBlockedNumbersResponse, error) {
 	rsp, err := c.ListBlockedNumbers(ctx, params, reqEditors...)
 	if err != nil {
@@ -328,6 +411,13 @@ func (c *ClientWithResponses) ListBlockedNumbersWithResponse(ctx context.Context
 	return ParseListBlockedNumbersResponse(rsp)
 }
 
+// CreateBlockedNumberWithResponse Kara Listeye Ekleme
+//
+// Telefon numarasını kara listeye ekler. Numara kayıt edilmeden önce normalize edilir. POST metodu ile api.bulutsantralim.com/blocked_numbers adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde oluşturulan kaydın ID'si döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /blocked_numbers (the `CreateBlockedNumber` operationId).
 func (c *ClientWithResponses) CreateBlockedNumberWithResponse(ctx context.Context, params *CreateBlockedNumberParams, reqEditors ...RequestEditorFn) (*CreateBlockedNumberResponse, error) {
 	rsp, err := c.CreateBlockedNumber(ctx, params, reqEditors...)
 	if err != nil {
@@ -336,6 +426,13 @@ func (c *ClientWithResponses) CreateBlockedNumberWithResponse(ctx context.Contex
 	return ParseCreateBlockedNumberResponse(rsp)
 }
 
+// DeleteBlockedNumberWithResponse Kara Listeden Silme
+//
+// Telefon numarasını kara listeden çıkarır. Numara kaldırılmadan önce normalize edilir. DELETE metodu ile api.bulutsantralim.com/blocked_numbers/delete adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde başarı mesajı döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /blocked_numbers/delete (the `DeleteBlockedNumber` operationId).
 func (c *ClientWithResponses) DeleteBlockedNumberWithResponse(ctx context.Context, params *DeleteBlockedNumberParams, reqEditors ...RequestEditorFn) (*DeleteBlockedNumberResponse, error) {
 	rsp, err := c.DeleteBlockedNumber(ctx, params, reqEditors...)
 	if err != nil {
@@ -344,29 +441,43 @@ func (c *ClientWithResponses) DeleteBlockedNumberWithResponse(ctx context.Contex
 	return ParseDeleteBlockedNumberResponse(rsp)
 }
 
+// ParseListBlockedNumbersResponse parses an HTTP response from a ListBlockedNumbersWithResponse call
 func ParseListBlockedNumbersResponse(rsp *http.Response) (*ListBlockedNumbersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &ListBlockedNumbersResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &ListBlockedNumbersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			BlockedNumbers []struct// Status returns HTTPResponse.Status
-			// ParseListBlockedNumbersResponse parses an HTTP response from a ListBlockedNumbersWithResponse call
-			{
+			BlockedNumbers []struct {
+				// Direction Engelleme yönü (inbound veya outbound)
 				Direction *string `json:"direction,omitempty"`
-				Id        int     `json:"id"`
-				Number    string  `json:"number"`
+
+				// Id Engelli numara kaydının benzersiz kimlik numarası
+				Id int `json:"id"`
+
+				// Number Normalize edilmiş engelli telefon numarası
+				Number string `json:"number"`
 			} `json:"blocked_numbers"`
 			Pagination struct {
-				Limit      int `json:"limit"`
-				Page       int `json:"page"`
+				// Limit Sayfa başına kayıt sayısı
+				Limit int `json:"limit"`
+
+				// Page Mevcut sayfa numarası
+				Page int `json:"page"`
+
+				// TotalCount Toplam engelli numara sayısı
 				TotalCount int `json:"total_count"`
+
+				// TotalPages Toplam sayfa sayısı
 				TotalPages int `json:"total_pages"`
 			} `json:"pagination"`
 		}
@@ -374,33 +485,40 @@ func ParseListBlockedNumbersResponse(rsp *http.Response) (*ListBlockedNumbersRes
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseCreateBlockedNumberResponse parses an HTTP response from a CreateBlockedNumberWithResponse call
 func ParseCreateBlockedNumberResponse(rsp *http.Response) (*CreateBlockedNumberResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &CreateBlockedNumberResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &CreateBlockedNumberResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseDeleteBlockedNumberResponse parses an HTTP response from a DeleteBlockedNumberWithResponse call
 func ParseDeleteBlockedNumberResponse(rsp *http.Response) (*DeleteBlockedNumberResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &DeleteBlockedNumberResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &DeleteBlockedNumberResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
-
-// Direction Engelleme yönü (inbound veya outbound)
-// ParseDeleteBlockedNumberResponse parses an HTTP response from a DeleteBlockedNumberWithResponse call

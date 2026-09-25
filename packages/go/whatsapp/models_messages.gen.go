@@ -10,11 +10,12 @@ import (
 	"net/http"
 )
 
+// HTTPValidationError defines model for HTTPValidationError.
 type HTTPValidationError struct {
-	Detail *[]ValidationError `json:"detail,omitempty"`// HTTPValidationError defines model for HTTPValidationError.
-
+	Detail *[]ValidationError `json:"detail,omitempty"`
 }
 
+// MessageResponse defines model for MessageResponse.
 type MessageResponse struct {
 	Id          openapi_types.UUID `json:"id"`
 	Message     *string            `json:"message,omitempty"`
@@ -23,61 +24,80 @@ type MessageResponse struct {
 	WaMessageId *string            `json:"wa_message_id,omitempty"`
 }
 
+// TemplateMessageRequest defines model for TemplateMessageRequest.
 type TemplateMessageRequest struct {
-	Language   *string   `json:"language,omitempty"`
-	Parameters *[]string `json:"parameters,omitempty"`// MessageResponse defines model for MessageResponse.
+	// Language Şablon dili
+	//
+	// Examples: tr
+	Language *string `json:"language,omitempty"`
+
 	// Parameters Şablon parametreleri (body bileşeni için)
 	//
 	// Examples: ["123456"]
+	Parameters *[]string `json:"parameters,omitempty"`
 
-	TemplateName   string `json:"template_name"`
-	To             string `json:"to"`
-	UseTenantQueue *bool  `json:"use_tenant_queue,omitempty"`
-}
-
-type ValidationError struct {
-	Loc []ValidationError_Loc_Item `json:"loc"`// TemplateName Onaylı şablon adı
+	// TemplateName Onaylı şablon adı
 	//
 	// Examples: otp_dogrulama
-	// ValidationError defines model for ValidationError.
+	TemplateName string `json:"template_name"`
 
-	Msg  string `json:"msg"`
-	Type string `json:"type"`
+	// To Alıcı telefon numarası
+	//
+	// Examples: 905301234567
+	To string `json:"to"`
+
+	// UseTenantQueue True ise tenant-spesifik kuyruğa yönlendir (büyük müşteriler için)
+	UseTenantQueue *bool `json:"use_tenant_queue,omitempty"`
 }
 
+// ValidationError defines model for ValidationError.
+type ValidationError struct {
+	Loc  []ValidationError_Loc_Item `json:"loc"`
+	Msg  string                     `json:"msg"`
+	Type string                     `json:"type"`
+}
+
+// ValidationErrorLoc0 defines model for ValidationError.Loc.0.
 type ValidationErrorLoc0 = string
 
+// ValidationErrorLoc1 defines model for ValidationError.Loc.1.
 type ValidationErrorLoc1 = int
 
-type ValidationError_Loc_Item struct{ union json.RawMessage }
+// ValidationError_Loc_Item defines model for ValidationError.loc.Item.
+type ValidationError_Loc_Item struct {
+	union json.RawMessage
+}
 
+// SendOtpV1MessagesOtpPostParams defines parameters for SendOtpV1MessagesOtpPost.
 type SendOtpV1MessagesOtpPostParams struct {
 	XApiKey *string `json:"x-api-key,omitempty"`
 }
 
+// SendUtilityV1MessagesUtilityPostParams defines parameters for SendUtilityV1MessagesUtilityPost.
 type SendUtilityV1MessagesUtilityPostParams struct {
 	XApiKey *string `json:"x-api-key,omitempty"`
 }
 
+// SendOtpV1MessagesOtpPostJSONRequestBody defines body for SendOtpV1MessagesOtpPost for application/json ContentType.
 type SendOtpV1MessagesOtpPostJSONRequestBody = TemplateMessageRequest
 
+// SendUtilityV1MessagesUtilityPostJSONRequestBody defines body for SendUtilityV1MessagesUtilityPost for application/json ContentType.
 type SendUtilityV1MessagesUtilityPostJSONRequestBody = TemplateMessageRequest
+
 type SendOtpV1MessagesOtpPostResponse struct {
-	Body []byte// ValidationErrorLoc0 defines model for ValidationError.Loc.0.
-	// SendUtilityV1MessagesUtilityPostJSONRequestBody defines body for SendUtilityV1MessagesUtilityPost for application/json ContentType.
-
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON202      *MessageResponse
-	JSON422      *HTTPValidationError
-}
-type SendUtilityV1MessagesUtilityPostResponse struct {
-	Body []byte// JSON202 the response for an HTTP 202 `application/json` response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *MessageResponse
 	// JSON422 the response for an HTTP 422 `application/json` response
-
-	HTTPResponse *http.Response
-	JSON202      *MessageResponse
-	JSON422      *HTTPValidationError
+	JSON422 *HTTPValidationError
 }
 
-// JSON202 the response for an HTTP 202 `application/json` response
-// JSON422 the response for an HTTP 422 `application/json` response
+type SendUtilityV1MessagesUtilityPostResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON202 the response for an HTTP 202 `application/json` response
+	JSON202 *MessageResponse
+	// JSON422 the response for an HTTP 422 `application/json` response
+	JSON422 *HTTPValidationError
+}

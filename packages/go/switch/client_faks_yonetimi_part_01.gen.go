@@ -6,16 +6,23 @@ package verimorswitch
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/oapi-codegen/runtime"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 )
 
+// DownloadFaxDocument Faks Belgesi İndirme/Görüntüleme
+//
+// Bu servis, daha önce 'Faks Belgesi URL'si İsteme' ile elde edilen geçici URL üzerinden faks belgesini indirmenizi veya görüntülemenizi sağlar.
+//
+// URL, 1 saat geçerlidir. Herhangi bir kimlik doğrulama gerekmez; güvenlik, URL'nin kendisinde bulunan tek kullanımlık ticket kodu ile sağlanır.
+//
+// Başarılı isteklerde HTTP 200 ile belge dosyası (PDF/TIFF) döner. Hatalı veya süresi dolmuş ticket ile yapılan isteklerde uygun hata mesajı ve HTTP 400 döner.
+//
+// Corresponds with GET /fax_document/{id} (the `DownloadFaxDocument` operationId).
 func (c *Client) DownloadFaxDocument(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDownloadFaxDocumentRequest(c.Server, id)
 	if err != nil {
@@ -28,6 +35,11 @@ func (c *Client) DownloadFaxDocument(ctx context.Context, id string, reqEditors 
 	return c.Client.Do(req)
 }
 
+// CreateFaxDocumentUrl Faks Belgesi URL'si İsteme
+//
+// Başarıyla iletilen faks belgesi için geçici indirme URL'si oluşturur. HTTP POST metodu ile api.bulutsantralim.com/fax_document_url/ adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde belgeye ait URL döner. URL yaşam süresi 1 saattir ve PDF versiyonuna erişim sağlar. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with POST /fax_document_url (the `CreateFaxDocumentUrl` operationId).
 func (c *Client) CreateFaxDocumentUrl(ctx context.Context, params *CreateFaxDocumentUrlParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateFaxDocumentUrlRequest(c.Server, params)
 	if err != nil {
@@ -40,6 +52,11 @@ func (c *Client) CreateFaxDocumentUrl(ctx context.Context, params *CreateFaxDocu
 	return c.Client.Do(req)
 }
 
+// ListFaxOrders Tamamlanmamış Faks Gönderimlerinin Listesi
+//
+// Santraldaki tamamlanmamış faks gönderimlerinin listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/fax_orders adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde faks gönderim kayıtları döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with GET /fax_orders (the `ListFaxOrders` operationId).
 func (c *Client) ListFaxOrders(ctx context.Context, params *ListFaxOrdersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListFaxOrdersRequest(c.Server, params)
 	if err != nil {
@@ -52,6 +69,11 @@ func (c *Client) ListFaxOrders(ctx context.Context, params *ListFaxOrdersParams,
 	return c.Client.Do(req)
 }
 
+// CreateFaxOrder Faks Gönderimi
+//
+// Faks göndermek için dosyasının içeriğinin base64 ile kodlanmış halini ve diğer bilgileri POST etmeniz yeterlidir. Uygulamalarınız üzerinden faks göndermek için api.bulutsantralim.com/fax_orders adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 status kodu ile mesajın Body'sinde faks ID döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with POST /fax_orders (the `CreateFaxOrder` operationId).
 func (c *Client) CreateFaxOrder(ctx context.Context, params *CreateFaxOrderParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateFaxOrderRequest(c.Server, params)
 	if err != nil {
@@ -64,6 +86,11 @@ func (c *Client) CreateFaxOrder(ctx context.Context, params *CreateFaxOrderParam
 	return c.Client.Do(req)
 }
 
+// ListFdrs Faks Listesine Erişim
+//
+// Santralinizdeki faks detay kayıtlarının listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/fdrs adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde faks kayıtları döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Tarih aralığı 31 günden uzun olamaz.
+//
+// Corresponds with GET /fdrs (the `ListFdrs` operationId).
 func (c *Client) ListFdrs(ctx context.Context, params *ListFdrsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListFdrsRequest(c.Server, params)
 	if err != nil {
@@ -76,60 +103,67 @@ func (c *Client) ListFdrs(ctx context.Context, params *ListFdrsParams, reqEditor
 	return c.Client.Do(req)
 }
 
+// NewDownloadFaxDocumentRequest constructs an http.Request for the DownloadFaxDocument method
 func NewDownloadFaxDocumentRequest(server string, id string) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/fax_document/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateFaxDocumentUrlRequest constructs an http.Request for the CreateFaxDocumentUrl method
 func NewCreateFaxDocumentUrlRequest(server string, params *CreateFaxDocumentUrlParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/fax_document_url")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// DownloadFaxDocument Faks Belgesi İndirme/Görüntüleme
-		//
-		// Bu servis, daha önce 'Faks Belgesi URL'si İsteme' ile elde edilen geçici URL üzerinden faks belgesini indirmenizi veya görüntülemenizi sağlar.
-		//
-		// URL, 1 saat geçerlidir. Herhangi bir kimlik doğrulama gerekmez; güvenlik, URL'nin kendisinde bulunan tek kullanımlık ticket kodu ile sağlanır.
-		//
-		// Başarılı isteklerde HTTP 200 ile belge dosyası (PDF/TIFF) döner. Hatalı veya süresi dolmuş ticket ile yapılan isteklerde uygun hata mesajı ve HTTP 400 döner.
-		//
-		// Corresponds with GET /fax_document/{id} (the `DownloadFaxDocument` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "call_uuid", params.CallUuid, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -138,40 +172,51 @@ func NewCreateFaxDocumentUrlRequest(server string, params *CreateFaxDocumentUrlP
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewListFaxOrdersRequest constructs an http.Request for the ListFaxOrders method
 func NewListFaxOrdersRequest(server string, params *ListFaxOrdersParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/fax_orders")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewListFaxOrdersRequest constructs an http.Request for the ListFaxOrders method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.Page != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -179,8 +224,11 @@ func NewListFaxOrdersRequest(server string, params *ListFaxOrdersParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -188,41 +236,53 @@ func NewListFaxOrdersRequest(server string, params *ListFaxOrdersParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateFaxOrderRequest constructs an http.Request for the CreateFaxOrder method
 func NewCreateFaxOrderRequest(server string, params *CreateFaxOrderParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/fax_orders")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewCreateFaxOrderRequest constructs an http.Request for the CreateFaxOrder method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.LocalStationId != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "local_station_id", *params.LocalStationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -230,8 +290,11 @@ func NewCreateFaxOrderRequest(server string, params *CreateFaxOrderParams) (*htt
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.LocalStationHeader != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "local_station_header", *params.LocalStationHeader, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -239,7 +302,9 @@ func NewCreateFaxOrderRequest(server string, params *CreateFaxOrderParams) (*htt
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "remote_station_id", params.RemoteStationId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -247,6 +312,7 @@ func NewCreateFaxOrderRequest(server string, params *CreateFaxOrderParams) (*htt
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "filedata", params.Filedata, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -254,40 +320,51 @@ func NewCreateFaxOrderRequest(server string, params *CreateFaxOrderParams) (*htt
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewListFdrsRequest constructs an http.Request for the ListFdrs method
 func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/fdrs")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewListFdrsRequest constructs an http.Request for the ListFdrs method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.StartStampFrom != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_stamp_from", *params.StartStampFrom, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -295,8 +372,11 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.StartStampTo != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_stamp_to", *params.StartStampTo, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -304,8 +384,11 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Direction != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "direction", *params.Direction, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -313,8 +396,11 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.CallerIdNumber != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "caller_id_number", *params.CallerIdNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -322,8 +408,11 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.OriginalDestination != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "original_destination", *params.OriginalDestination, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -331,8 +420,11 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Success != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "success", *params.Success, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -340,8 +432,11 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Page != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -349,8 +444,11 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -358,24 +456,29 @@ func NewListFdrsRequest(server string, params *ListFdrsParams) (*http.Request, e
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r DownloadFaxDocumentResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r DownloadFaxDocumentResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r DownloadFaxDocumentResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -383,6 +486,7 @@ func (r DownloadFaxDocumentResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r DownloadFaxDocumentResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -390,6 +494,7 @@ func (r DownloadFaxDocumentResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DownloadFaxDocumentResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -397,12 +502,12 @@ func (r DownloadFaxDocumentResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateFaxDocumentUrlResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateFaxDocumentUrlResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateFaxDocumentUrlResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -410,6 +515,7 @@ func (r CreateFaxDocumentUrlResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateFaxDocumentUrlResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -417,6 +523,7 @@ func (r CreateFaxDocumentUrlResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateFaxDocumentUrlResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -424,32 +531,47 @@ func (r CreateFaxDocumentUrlResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r ListFaxOrdersResponse) GetJSON200() *struct {
-	FaxOrders []struct// Status returns HTTPResponse.Status
-	// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
-		CreatedAt       time.Time `json:"created_at"`
-		Id              int       `json:"id"`
-		LocalStationId  string    `json:"local_station_id"`
-		RemoteStationId string    `json:"remote_station_id"`
-		Status          string    `json:"status"`
+	FaxOrders []struct {
+		// CreatedAt Kayıt zamanı
+		CreatedAt time.Time `json:"created_at"`
+
+		// Id Kayıt NO
+		Id int `json:"id"`
+
+		// LocalStationId Arayan numara
+		LocalStationId string `json:"local_station_id"`
+
+		// RemoteStationId Aranan numara
+		RemoteStationId string `json:"remote_station_id"`
+
+		// Status Sonuç
+		Status string `json:"status"`
 	} `json:"fax_orders"`
 	Pagination struct {
-		Limit      int `json:"limit"`
-		Page       int `json:"page"`
+		// Limit Sayfa başına kayıt sayısı
+		Limit int `json:"limit"`
+
+		// Page Mevcut sayfa numarası
+		Page int `json:"page"`
+
+		// TotalCount Toplam faks gönderim kayıt sayısı
 		TotalCount int `json:"total_count"`
+
+		// TotalPages Toplam sayfa sayısı
 		TotalPages int `json:"total_pages"`
 	} `json:"pagination"`
 } {
 	return r.JSON200
 }
 
-func (r ListFaxOrdersResponse) GetBody() []byte {// CreatedAt Kayıt zamanı
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListFaxOrdersResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListFaxOrdersResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -457,6 +579,7 @@ func (r ListFaxOrdersResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListFaxOrdersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -464,6 +587,7 @@ func (r ListFaxOrdersResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListFaxOrdersResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -471,12 +595,12 @@ func (r ListFaxOrdersResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateFaxOrderResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateFaxOrderResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateFaxOrderResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -484,6 +608,7 @@ func (r CreateFaxOrderResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateFaxOrderResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -491,6 +616,7 @@ func (r CreateFaxOrderResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateFaxOrderResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -498,40 +624,71 @@ func (r CreateFaxOrderResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r ListFdrsResponse) GetJSON200() *struct {
-	Fdrs []struct// Status returns HTTPResponse.Status
-	// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
-		AnswerStamp         *time.Time `json:"answer_stamp,omitempty"`
-		CallUuid            string     `json:"call_uuid"`
-		CallerIdNumber      string     `json:"caller_id_number"`
-		Direction           string     `json:"direction"`
-		Duration            *int       `json:"duration,omitempty"`
-		EndStamp            *time.Time `json:"end_stamp,omitempty"`
-		LocalStationHeader  *string    `json:"local_station_header,omitempty"`
-		OriginalDestination string     `json:"original_destination"`
-		PagesCount          string     `json:"pages_count"`
-		Result              string     `json:"result"`
-		StartStamp          time.Time  `json:"start_stamp"`
-		Success             bool       `json:"success"`
-		TransferRate        *int       `json:"transfer_rate,omitempty"`
+	Fdrs []struct {
+		// AnswerStamp Cevaplama Zamanı
+		AnswerStamp *time.Time `json:"answer_stamp,omitempty"`
+
+		// CallUuid Faksın uuid'si
+		CallUuid string `json:"call_uuid"`
+
+		// CallerIdNumber Faks gönderen numara
+		CallerIdNumber string `json:"caller_id_number"`
+
+		// Direction Çağrının yönü. "Gelen", "Giden" ve "Santral içi" olarak değişebilir
+		Direction string `json:"direction"`
+
+		// Duration Süre
+		Duration *int `json:"duration,omitempty"`
+
+		// EndStamp Kapatma Zamanı
+		EndStamp *time.Time `json:"end_stamp,omitempty"`
+
+		// LocalStationHeader Gönderen başlığı
+		LocalStationHeader *string `json:"local_station_header,omitempty"`
+
+		// OriginalDestination Faks alan numara
+		OriginalDestination string `json:"original_destination"`
+
+		// PagesCount Sayfa adedi
+		PagesCount string `json:"pages_count"`
+
+		// Result Sonuç
+		Result string `json:"result"`
+
+		// StartStamp Arama Zamanı
+		StartStamp time.Time `json:"start_stamp"`
+
+		// Success Durum
+		Success bool `json:"success"`
+
+		// TransferRate Gönderim hızı
+		TransferRate *int `json:"transfer_rate,omitempty"`
 	} `json:"fdrs"`
 	Pagination struct {
-		Limit      int `json:"limit"`
-		Page       int `json:"page"`
+		// Limit Sayfa başına kayıt sayısı
+		Limit int `json:"limit"`
+
+		// Page Mevcut sayfa numarası
+		Page int `json:"page"`
+
+		// TotalCount Toplam faks kayıt sayısı
 		TotalCount int `json:"total_count"`
+
+		// TotalPages Toplam sayfa sayısı
 		TotalPages int `json:"total_pages"`
 	} `json:"pagination"`
 } {
 	return r.JSON200
 }
 
-func (r ListFdrsResponse) GetBody() []byte {// AnswerStamp Cevaplama Zamanı
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListFdrsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListFdrsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -539,6 +696,7 @@ func (r ListFdrsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListFdrsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -546,6 +704,7 @@ func (r ListFdrsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListFdrsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -553,6 +712,17 @@ func (r ListFdrsResponse) ContentType() string {
 	return ""
 }
 
+// DownloadFaxDocumentWithResponse Faks Belgesi İndirme/Görüntüleme
+//
+// Bu servis, daha önce 'Faks Belgesi URL'si İsteme' ile elde edilen geçici URL üzerinden faks belgesini indirmenizi veya görüntülemenizi sağlar.
+//
+// URL, 1 saat geçerlidir. Herhangi bir kimlik doğrulama gerekmez; güvenlik, URL'nin kendisinde bulunan tek kullanımlık ticket kodu ile sağlanır.
+//
+// Başarılı isteklerde HTTP 200 ile belge dosyası (PDF/TIFF) döner. Hatalı veya süresi dolmuş ticket ile yapılan isteklerde uygun hata mesajı ve HTTP 400 döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /fax_document/{id} (the `DownloadFaxDocument` operationId).
 func (c *ClientWithResponses) DownloadFaxDocumentWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DownloadFaxDocumentResponse, error) {
 	rsp, err := c.DownloadFaxDocument(ctx, id, reqEditors...)
 	if err != nil {
@@ -561,6 +731,13 @@ func (c *ClientWithResponses) DownloadFaxDocumentWithResponse(ctx context.Contex
 	return ParseDownloadFaxDocumentResponse(rsp)
 }
 
+// CreateFaxDocumentUrlWithResponse Faks Belgesi URL'si İsteme
+//
+// Başarıyla iletilen faks belgesi için geçici indirme URL'si oluşturur. HTTP POST metodu ile api.bulutsantralim.com/fax_document_url/ adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde belgeye ait URL döner. URL yaşam süresi 1 saattir ve PDF versiyonuna erişim sağlar. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /fax_document_url (the `CreateFaxDocumentUrl` operationId).
 func (c *ClientWithResponses) CreateFaxDocumentUrlWithResponse(ctx context.Context, params *CreateFaxDocumentUrlParams, reqEditors ...RequestEditorFn) (*CreateFaxDocumentUrlResponse, error) {
 	rsp, err := c.CreateFaxDocumentUrl(ctx, params, reqEditors...)
 	if err != nil {
@@ -569,6 +746,13 @@ func (c *ClientWithResponses) CreateFaxDocumentUrlWithResponse(ctx context.Conte
 	return ParseCreateFaxDocumentUrlResponse(rsp)
 }
 
+// ListFaxOrdersWithResponse Tamamlanmamış Faks Gönderimlerinin Listesi
+//
+// Santraldaki tamamlanmamış faks gönderimlerinin listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/fax_orders adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde faks gönderim kayıtları döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /fax_orders (the `ListFaxOrders` operationId).
 func (c *ClientWithResponses) ListFaxOrdersWithResponse(ctx context.Context, params *ListFaxOrdersParams, reqEditors ...RequestEditorFn) (*ListFaxOrdersResponse, error) {
 	rsp, err := c.ListFaxOrders(ctx, params, reqEditors...)
 	if err != nil {
@@ -577,6 +761,13 @@ func (c *ClientWithResponses) ListFaxOrdersWithResponse(ctx context.Context, par
 	return ParseListFaxOrdersResponse(rsp)
 }
 
+// CreateFaxOrderWithResponse Faks Gönderimi
+//
+// Faks göndermek için dosyasının içeriğinin base64 ile kodlanmış halini ve diğer bilgileri POST etmeniz yeterlidir. Uygulamalarınız üzerinden faks göndermek için api.bulutsantralim.com/fax_orders adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 status kodu ile mesajın Body'sinde faks ID döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /fax_orders (the `CreateFaxOrder` operationId).
 func (c *ClientWithResponses) CreateFaxOrderWithResponse(ctx context.Context, params *CreateFaxOrderParams, reqEditors ...RequestEditorFn) (*CreateFaxOrderResponse, error) {
 	rsp, err := c.CreateFaxOrder(ctx, params, reqEditors...)
 	if err != nil {
@@ -585,6 +776,13 @@ func (c *ClientWithResponses) CreateFaxOrderWithResponse(ctx context.Context, pa
 	return ParseCreateFaxOrderResponse(rsp)
 }
 
+// ListFdrsWithResponse Faks Listesine Erişim
+//
+// Santralinizdeki faks detay kayıtlarının listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/fdrs adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde faks kayıtları döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Tarih aralığı 31 günden uzun olamaz.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /fdrs (the `ListFdrs` operationId).
 func (c *ClientWithResponses) ListFdrsWithResponse(ctx context.Context, params *ListFdrsParams, reqEditors ...RequestEditorFn) (*ListFdrsResponse, error) {
 	rsp, err := c.ListFdrs(ctx, params, reqEditors...)
 	if err != nil {
@@ -592,122 +790,3 @@ func (c *ClientWithResponses) ListFdrsWithResponse(ctx context.Context, params *
 	}
 	return ParseListFdrsResponse(rsp)
 }
-
-func ParseDownloadFaxDocumentResponse(rsp *http.Response) (*DownloadFaxDocumentResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &DownloadFaxDocumentResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseCreateFaxDocumentUrlResponse(rsp *http.Response) (*CreateFaxDocumentUrlResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &CreateFaxDocumentUrlResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseListFaxOrdersResponse(rsp *http.Response) (*ListFaxOrdersResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &ListFaxOrdersResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			FaxOrders []struct// Status returns HTTPResponse.Status
-			// ParseListFaxOrdersResponse parses an HTTP response from a ListFaxOrdersWithResponse call
-			{
-				CreatedAt       time.Time `json:"created_at"`
-				Id              int       `json:"id"`
-				LocalStationId  string    `json:"local_station_id"`
-				RemoteStationId string    `json:"remote_station_id"`
-				Status          string    `json:"status"`
-			} `json:"fax_orders"`
-			Pagination struct {
-				Limit      int `json:"limit"`
-				Page       int `json:"page"`
-				TotalCount int `json:"total_count"`
-				TotalPages int `json:"total_pages"`
-			} `json:"pagination"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-func ParseCreateFaxOrderResponse(rsp *http.Response) (*CreateFaxOrderResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &CreateFaxOrderResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseListFdrsResponse(rsp *http.Response) (*ListFdrsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &ListFdrsResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			Fdrs []struct// CreatedAt Kayıt zamanı
-			// ParseListFdrsResponse parses an HTTP response from a ListFdrsWithResponse call
-			{
-				AnswerStamp         *time.Time `json:"answer_stamp,omitempty"`
-				CallUuid            string     `json:"call_uuid"`
-				CallerIdNumber      string     `json:"caller_id_number"`
-				Direction           string     `json:"direction"`
-				Duration            *int       `json:"duration,omitempty"`
-				EndStamp            *time.Time `json:"end_stamp,omitempty"`
-				LocalStationHeader  *string    `json:"local_station_header,omitempty"`
-				OriginalDestination string     `json:"original_destination"`
-				PagesCount          string     `json:"pages_count"`
-				Result              string     `json:"result"`
-				StartStamp          time.Time  `json:"start_stamp"`
-				Success             bool       `json:"success"`
-				TransferRate        *int       `json:"transfer_rate,omitempty"`
-			} `json:"fdrs"`
-			Pagination struct {
-				Limit      int `json:"limit"`
-				Page       int `json:"page"`
-				TotalCount int `json:"total_count"`
-				TotalPages int `json:"total_pages"`
-			} `json:"pagination"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-// AnswerStamp Cevaplama Zamanı
-// TotalPages Toplam sayfa sayısı

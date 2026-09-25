@@ -16,6 +16,11 @@ import (
 	"time"
 )
 
+// GetV2Blacklists Kara Liste Görüntüleme
+//
+// <p>Kara listedeki numaraları listelemek için kullanılır.</p><p>Bu endpoint, kullanıcı adı ve şifre ile kimlik doğrulaması gerektirir.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Corresponds with GET /v2/blacklists (the `GetV2Blacklists` operationId).
 func (c *Client) GetV2Blacklists(ctx context.Context, params *GetV2BlacklistsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV2BlacklistsRequest(c.Server, params)
 	if err != nil {
@@ -28,6 +33,11 @@ func (c *Client) GetV2Blacklists(ctx context.Context, params *GetV2BlacklistsPar
 	return c.Client.Do(req)
 }
 
+// PostV2Blacklists Kara Liste Ekleme
+//
+// <p>Kara listeye numara eklemek için kullanılır.</p><p>Bu endpoint, kullanıcı adı ve şifre ile kimlik doğrulaması gerektirir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Corresponds with POST /v2/blacklists (the `PostV2Blacklists` operationId).
 func (c *Client) PostV2Blacklists(ctx context.Context, params *PostV2BlacklistsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV2BlacklistsRequest(c.Server, params)
 	if err != nil {
@@ -40,6 +50,11 @@ func (c *Client) PostV2Blacklists(ctx context.Context, params *PostV2BlacklistsP
 	return c.Client.Do(req)
 }
 
+// DeleteV2BlacklistsId Kara Listeden Silme
+//
+// <p>Kara listeden numara(lar)ı silmek için kullanılır.</p><p>Bu endpoint, kullanıcı adı ve şifre ile kimlik doğrulaması gerektirir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Corresponds with DELETE /v2/blacklists/{id} (the `DeleteV2BlacklistsId` operationId).
 func (c *Client) DeleteV2BlacklistsId(ctx context.Context, id string, params *DeleteV2BlacklistsIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteV2BlacklistsIdRequest(c.Server, id, params)
 	if err != nil {
@@ -52,30 +67,33 @@ func (c *Client) DeleteV2BlacklistsId(ctx context.Context, id string, params *De
 	return c.Client.Do(req)
 }
 
+// NewGetV2BlacklistsRequest constructs an http.Request for the GetV2Blacklists method
 func NewGetV2BlacklistsRequest(server string, params *GetV2BlacklistsParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/blacklists")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// GetV2Blacklists Kara Liste Görüntüleme
-		//
-		// <p>Kara listedeki numaraları listelemek için kullanılır.</p><p>Bu endpoint, kullanıcı adı ve şifre ile kimlik doğrulaması gerektirir.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
-		//
-		// Corresponds with GET /v2/blacklists (the `GetV2Blacklists` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -84,6 +102,7 @@ func NewGetV2BlacklistsRequest(server string, params *GetV2BlacklistsParams) (*h
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -91,7 +110,9 @@ func NewGetV2BlacklistsRequest(server string, params *GetV2BlacklistsParams) (*h
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.Offset != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -99,8 +120,11 @@ func NewGetV2BlacklistsRequest(server string, params *GetV2BlacklistsParams) (*h
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -108,39 +132,50 @@ func NewGetV2BlacklistsRequest(server string, params *GetV2BlacklistsParams) (*h
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewPostV2BlacklistsRequest constructs an http.Request for the PostV2Blacklists method
 func NewPostV2BlacklistsRequest(server string, params *PostV2BlacklistsParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/blacklists")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewPostV2BlacklistsRequest constructs an http.Request for the PostV2Blacklists method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -149,6 +184,7 @@ func NewPostV2BlacklistsRequest(server string, params *PostV2BlacklistsParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -156,6 +192,7 @@ func NewPostV2BlacklistsRequest(server string, params *PostV2BlacklistsParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "phones", params.Phones, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -163,43 +200,55 @@ func NewPostV2BlacklistsRequest(server string, params *PostV2BlacklistsParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewDeleteV2BlacklistsIdRequest constructs an http.Request for the DeleteV2BlacklistsId method
 func NewDeleteV2BlacklistsIdRequest(server string, id string, params *DeleteV2BlacklistsIdParams) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/blacklists/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewDeleteV2BlacklistsIdRequest constructs an http.Request for the DeleteV2BlacklistsId method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -208,6 +257,7 @@ func NewDeleteV2BlacklistsIdRequest(server string, id string, params *DeleteV2Bl
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -215,36 +265,46 @@ func NewDeleteV2BlacklistsIdRequest(server string, id string, params *DeleteV2Bl
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetV2BlacklistsResponse) GetJSON200() *struct {
-	Records *[]struct// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
+	Records *[]struct {
+		// CreatedAt Kara listeye eklenme tarih saati
 		CreatedAt *time.Time `json:"created_at,omitempty"`
-		Phone     *string    `json:"phone,omitempty"`
-		Source    *string    `json:"source,omitempty"`
+
+		// Phone Kara listeye alınmış numara
+		Phone *string `json:"phone,omitempty"`
+
+		// Source Kaynak
+		Source *string `json:"source,omitempty"`
 	} `json:"records,omitempty"`
+
+	// Total Kara listedeki toplam numara sayısı
 	Total *int `json:"total,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetV2BlacklistsResponse) GetBody() []byte {// CreatedAt Kara listeye eklenme tarih saati
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetV2BlacklistsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetV2BlacklistsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -252,6 +312,7 @@ func (r GetV2BlacklistsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetV2BlacklistsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -259,6 +320,7 @@ func (r GetV2BlacklistsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV2BlacklistsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -266,12 +328,12 @@ func (r GetV2BlacklistsResponse) ContentType() string {
 	return ""
 }
 
-func (r PostV2BlacklistsResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r PostV2BlacklistsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r PostV2BlacklistsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -279,6 +341,7 @@ func (r PostV2BlacklistsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r PostV2BlacklistsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -286,6 +349,7 @@ func (r PostV2BlacklistsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PostV2BlacklistsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -293,12 +357,12 @@ func (r PostV2BlacklistsResponse) ContentType() string {
 	return ""
 }
 
-func (r DeleteV2BlacklistsIdResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r DeleteV2BlacklistsIdResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r DeleteV2BlacklistsIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -306,6 +370,7 @@ func (r DeleteV2BlacklistsIdResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r DeleteV2BlacklistsIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -313,6 +378,7 @@ func (r DeleteV2BlacklistsIdResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteV2BlacklistsIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -320,6 +386,13 @@ func (r DeleteV2BlacklistsIdResponse) ContentType() string {
 	return ""
 }
 
+// GetV2BlacklistsWithResponse Kara Liste Görüntüleme
+//
+// <p>Kara listedeki numaraları listelemek için kullanılır.</p><p>Bu endpoint, kullanıcı adı ve şifre ile kimlik doğrulaması gerektirir.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/blacklists (the `GetV2Blacklists` operationId).
 func (c *ClientWithResponses) GetV2BlacklistsWithResponse(ctx context.Context, params *GetV2BlacklistsParams, reqEditors ...RequestEditorFn) (*GetV2BlacklistsResponse, error) {
 	rsp, err := c.GetV2Blacklists(ctx, params, reqEditors...)
 	if err != nil {
@@ -328,6 +401,13 @@ func (c *ClientWithResponses) GetV2BlacklistsWithResponse(ctx context.Context, p
 	return ParseGetV2BlacklistsResponse(rsp)
 }
 
+// PostV2BlacklistsWithResponse Kara Liste Ekleme
+//
+// <p>Kara listeye numara eklemek için kullanılır.</p><p>Bu endpoint, kullanıcı adı ve şifre ile kimlik doğrulaması gerektirir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/blacklists (the `PostV2Blacklists` operationId).
 func (c *ClientWithResponses) PostV2BlacklistsWithResponse(ctx context.Context, params *PostV2BlacklistsParams, reqEditors ...RequestEditorFn) (*PostV2BlacklistsResponse, error) {
 	rsp, err := c.PostV2Blacklists(ctx, params, reqEditors...)
 	if err != nil {
@@ -336,6 +416,13 @@ func (c *ClientWithResponses) PostV2BlacklistsWithResponse(ctx context.Context, 
 	return ParsePostV2BlacklistsResponse(rsp)
 }
 
+// DeleteV2BlacklistsIdWithResponse Kara Listeden Silme
+//
+// <p>Kara listeden numara(lar)ı silmek için kullanılır.</p><p>Bu endpoint, kullanıcı adı ve şifre ile kimlik doğrulaması gerektirir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /v2/blacklists/{id} (the `DeleteV2BlacklistsId` operationId).
 func (c *ClientWithResponses) DeleteV2BlacklistsIdWithResponse(ctx context.Context, id string, params *DeleteV2BlacklistsIdParams, reqEditors ...RequestEditorFn) (*DeleteV2BlacklistsIdResponse, error) {
 	rsp, err := c.DeleteV2BlacklistsId(ctx, id, params, reqEditors...)
 	if err != nil {
@@ -344,58 +431,74 @@ func (c *ClientWithResponses) DeleteV2BlacklistsIdWithResponse(ctx context.Conte
 	return ParseDeleteV2BlacklistsIdResponse(rsp)
 }
 
+// ParseGetV2BlacklistsResponse parses an HTTP response from a GetV2BlacklistsWithResponse call
 func ParseGetV2BlacklistsResponse(rsp *http.Response) (*GetV2BlacklistsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetV2BlacklistsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetV2BlacklistsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Records *[]struct// Status returns HTTPResponse.Status
-			// ParseGetV2BlacklistsResponse parses an HTTP response from a GetV2BlacklistsWithResponse call
-			{
+			Records *[]struct {
+				// CreatedAt Kara listeye eklenme tarih saati
 				CreatedAt *time.Time `json:"created_at,omitempty"`
-				Phone     *string    `json:"phone,omitempty"`
-				Source    *string    `json:"source,omitempty"`
+
+				// Phone Kara listeye alınmış numara
+				Phone *string `json:"phone,omitempty"`
+
+				// Source Kaynak
+				Source *string `json:"source,omitempty"`
 			} `json:"records,omitempty"`
+
+			// Total Kara listedeki toplam numara sayısı
 			Total *int `json:"total,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParsePostV2BlacklistsResponse parses an HTTP response from a PostV2BlacklistsWithResponse call
 func ParsePostV2BlacklistsResponse(rsp *http.Response) (*PostV2BlacklistsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &PostV2BlacklistsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &PostV2BlacklistsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseDeleteV2BlacklistsIdResponse parses an HTTP response from a DeleteV2BlacklistsIdWithResponse call
 func ParseDeleteV2BlacklistsIdResponse(rsp *http.Response) (*DeleteV2BlacklistsIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &DeleteV2BlacklistsIdResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &DeleteV2BlacklistsIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
-
-// CreatedAt Kara listeye eklenme tarih saati
-// ParseDeleteV2BlacklistsIdResponse parses an HTTP response from a DeleteV2BlacklistsIdWithResponse call

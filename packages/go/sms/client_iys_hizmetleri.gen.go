@@ -17,6 +17,11 @@ import (
 	"time"
 )
 
+// GetV2IysCampaigns İYS Kampanyaları Listeleme
+//
+// <p>Gönderilen İYS izinleri ve İYS günlük vatandaş izin değişiklikleri için kampanyalar oluşturulur. Bu kampanyalar bu servisi kullanarak görülebilir.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpointlerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Corresponds with GET /v2/iys/campaigns (the `GetV2IysCampaigns` operationId).
 func (c *Client) GetV2IysCampaigns(ctx context.Context, params *GetV2IysCampaignsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV2IysCampaignsRequest(c.Server, params)
 	if err != nil {
@@ -29,6 +34,11 @@ func (c *Client) GetV2IysCampaigns(ctx context.Context, params *GetV2IysCampaign
 	return c.Client.Do(req)
 }
 
+// GetV2IysCampaignsIdConsents İYS İzinleri Sorgulama
+//
+// <p>Gönderilen İYS izinleri ve İYS günlük vatandaş izin değişikliklerini kampanya idsi ile sorgulayabilirsiniz.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpointlerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Corresponds with GET /v2/iys/campaigns/{id}/consents (the `GetV2IysCampaignsIdConsents` operationId).
 func (c *Client) GetV2IysCampaignsIdConsents(ctx context.Context, id int, params *GetV2IysCampaignsIdConsentsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV2IysCampaignsIdConsentsRequest(c.Server, id, params)
 	if err != nil {
@@ -41,6 +51,13 @@ func (c *Client) GetV2IysCampaignsIdConsents(ctx context.Context, id int, params
 	return c.Client.Do(req)
 }
 
+// PostV2IysConsentsJsonWithBody İzin Yönetimi
+//
+// <p>Ticari ileti göndermek için markalarınızı İYSye (İleti Yönetim Sistemi) kaydettirmiş olmalı ve&nbsp;<a href="https://oim.verimor.com.tr/headers" rel="nofollow">OİM Başlık Yönetiminden</a>&nbsp;ilgili başlığa İYS kodlarını girmiş olmanız gerekir. Bu işlemleri yaptıktan sonra müşterilerinizden aldığınız izinleri bu yöntemle İYSye bildirebilirsiniz.</p><p>Aşağıdaki örnekte olduğu gibi bir JSON string POST edilir.</p><p>Daha sonra istenirse, "İYS İZİNLERİ RAPORU" başlığı altındaki dökümandan faydalanılarak, gönderilen izinlerin durumları alınabilir.</p><p>Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).</p>
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/iys_consents.json (the `PostV2IysConsentsJson` operationId).
 func (c *Client) PostV2IysConsentsJsonWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV2IysConsentsJsonRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -53,6 +70,13 @@ func (c *Client) PostV2IysConsentsJsonWithBody(ctx context.Context, contentType 
 	return c.Client.Do(req)
 }
 
+// PostV2IysConsentsJson İzin Yönetimi
+//
+// <p>Ticari ileti göndermek için markalarınızı İYSye (İleti Yönetim Sistemi) kaydettirmiş olmalı ve&nbsp;<a href="https://oim.verimor.com.tr/headers" rel="nofollow">OİM Başlık Yönetiminden</a>&nbsp;ilgili başlığa İYS kodlarını girmiş olmanız gerekir. Bu işlemleri yaptıktan sonra müşterilerinizden aldığınız izinleri bu yöntemle İYSye bildirebilirsiniz.</p><p>Aşağıdaki örnekte olduğu gibi bir JSON string POST edilir.</p><p>Daha sonra istenirse, "İYS İZİNLERİ RAPORU" başlığı altındaki dökümandan faydalanılarak, gönderilen izinlerin durumları alınabilir.</p><p>Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).</p>
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/iys_consents.json (the `PostV2IysConsentsJson` operationId).
 func (c *Client) PostV2IysConsentsJson(ctx context.Context, body PostV2IysConsentsJsonJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV2IysConsentsJsonRequest(c.Server, body)
 	if err != nil {
@@ -65,30 +89,33 @@ func (c *Client) PostV2IysConsentsJson(ctx context.Context, body PostV2IysConsen
 	return c.Client.Do(req)
 }
 
+// NewGetV2IysCampaignsRequest constructs an http.Request for the GetV2IysCampaigns method
 func NewGetV2IysCampaignsRequest(server string, params *GetV2IysCampaignsParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/iys/campaigns")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// GetV2IysCampaigns İYS Kampanyaları Listeleme
-		//
-		// <p>Gönderilen İYS izinleri ve İYS günlük vatandaş izin değişiklikleri için kampanyalar oluşturulur. Bu kampanyalar bu servisi kullanarak görülebilir.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpointlerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
-		//
-		// Corresponds with GET /v2/iys/campaigns (the `GetV2IysCampaigns` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -97,6 +124,7 @@ func NewGetV2IysCampaignsRequest(server string, params *GetV2IysCampaignsParams)
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -104,7 +132,9 @@ func NewGetV2IysCampaignsRequest(server string, params *GetV2IysCampaignsParams)
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.Offset != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -112,8 +142,11 @@ func NewGetV2IysCampaignsRequest(server string, params *GetV2IysCampaignsParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -121,8 +154,11 @@ func NewGetV2IysCampaignsRequest(server string, params *GetV2IysCampaignsParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Source != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "source", *params.Source, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -130,44 +166,57 @@ func NewGetV2IysCampaignsRequest(server string, params *GetV2IysCampaignsParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetV2IysCampaignsIdConsentsRequest constructs an http.Request for the GetV2IysCampaignsIdConsents method
 func NewGetV2IysCampaignsIdConsentsRequest(server string, id int, params *GetV2IysCampaignsIdConsentsParams) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/iys/campaigns/%s/consents", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewGetV2IysCampaignsIdConsentsRequest constructs an http.Request for the GetV2IysCampaignsIdConsents method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -176,6 +225,7 @@ func NewGetV2IysCampaignsIdConsentsRequest(server string, id int, params *GetV2I
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -183,7 +233,9 @@ func NewGetV2IysCampaignsIdConsentsRequest(server string, id int, params *GetV2I
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.Offset != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "offset", *params.Offset, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -191,8 +243,11 @@ func NewGetV2IysCampaignsIdConsentsRequest(server string, id int, params *GetV2I
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -200,19 +255,24 @@ func NewGetV2IysCampaignsIdConsentsRequest(server string, id int, params *GetV2I
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewPostV2IysConsentsJsonRequest calls the generic PostV2IysConsentsJson builder with application/json body
 func NewPostV2IysConsentsJsonRequest(server string, body PostV2IysConsentsJsonJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -223,32 +283,38 @@ func NewPostV2IysConsentsJsonRequest(server string, body PostV2IysConsentsJsonJS
 	return NewPostV2IysConsentsJsonRequestWithBody(server, "application/json", bodyReader)
 }
 
+// NewPostV2IysConsentsJsonRequestWithBody constructs an http.Request for the PostV2IysConsentsJson method, with any body, and a specified content type
 func NewPostV2IysConsentsJsonRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/iys_consents.json")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetV2IysCampaignsResponse) GetJSON200() *struct {
-	Records []struct// NewPostV2IysConsentsJsonRequest calls the generic PostV2IysConsentsJson builder with application/json body
-	// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
+	Records []struct {
 		CreatedAt    *time.Time `json:"created_at,omitempty"`
 		HeaderName   *string    `json:"header_name,omitempty"`
 		Id           *int       `json:"id,omitempty"`
@@ -261,11 +327,12 @@ func (r GetV2IysCampaignsResponse) GetJSON200() *struct {
 	return r.JSON200
 }
 
-func (r GetV2IysCampaignsResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetV2IysCampaignsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetV2IysCampaignsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -273,6 +340,7 @@ func (r GetV2IysCampaignsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetV2IysCampaignsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -280,6 +348,7 @@ func (r GetV2IysCampaignsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV2IysCampaignsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -287,10 +356,9 @@ func (r GetV2IysCampaignsResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetV2IysCampaignsIdConsentsResponse) GetJSON200() *struct {
-	Records []struct// Status returns HTTPResponse.Status
-	// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
+	Records []struct {
 		ConsentDate   *time.Time `json:"consent_date,omitempty"`
 		Recipient     *string    `json:"recipient,omitempty"`
 		RecipientType *string    `json:"recipient_type,omitempty"`
@@ -307,11 +375,12 @@ func (r GetV2IysCampaignsIdConsentsResponse) GetJSON200() *struct {
 	return r.JSON200
 }
 
-func (r GetV2IysCampaignsIdConsentsResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetV2IysCampaignsIdConsentsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetV2IysCampaignsIdConsentsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -319,6 +388,7 @@ func (r GetV2IysCampaignsIdConsentsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetV2IysCampaignsIdConsentsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -326,6 +396,7 @@ func (r GetV2IysCampaignsIdConsentsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV2IysCampaignsIdConsentsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -333,12 +404,12 @@ func (r GetV2IysCampaignsIdConsentsResponse) ContentType() string {
 	return ""
 }
 
-func (r PostV2IysConsentsJsonResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r PostV2IysConsentsJsonResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r PostV2IysConsentsJsonResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -346,6 +417,7 @@ func (r PostV2IysConsentsJsonResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r PostV2IysConsentsJsonResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -353,6 +425,7 @@ func (r PostV2IysConsentsJsonResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PostV2IysConsentsJsonResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -360,6 +433,13 @@ func (r PostV2IysConsentsJsonResponse) ContentType() string {
 	return ""
 }
 
+// GetV2IysCampaignsWithResponse İYS Kampanyaları Listeleme
+//
+// <p>Gönderilen İYS izinleri ve İYS günlük vatandaş izin değişiklikleri için kampanyalar oluşturulur. Bu kampanyalar bu servisi kullanarak görülebilir.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpointlerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/iys/campaigns (the `GetV2IysCampaigns` operationId).
 func (c *ClientWithResponses) GetV2IysCampaignsWithResponse(ctx context.Context, params *GetV2IysCampaignsParams, reqEditors ...RequestEditorFn) (*GetV2IysCampaignsResponse, error) {
 	rsp, err := c.GetV2IysCampaigns(ctx, params, reqEditors...)
 	if err != nil {
@@ -368,6 +448,13 @@ func (c *ClientWithResponses) GetV2IysCampaignsWithResponse(ctx context.Context,
 	return ParseGetV2IysCampaignsResponse(rsp)
 }
 
+// GetV2IysCampaignsIdConsentsWithResponse İYS İzinleri Sorgulama
+//
+// <p>Gönderilen İYS izinleri ve İYS günlük vatandaş izin değişikliklerini kampanya idsi ile sorgulayabilirsiniz.</p><p><strong>Total</strong>&nbsp;değeri toplam kayıt sayısını verir, bir sorguda en fazla 100 adet kayıt dönülür. Devamını almak için offset değerini yükseltip tekrar sorgulamalısınız.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpointlerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/iys/campaigns/{id}/consents (the `GetV2IysCampaignsIdConsents` operationId).
 func (c *ClientWithResponses) GetV2IysCampaignsIdConsentsWithResponse(ctx context.Context, id int, params *GetV2IysCampaignsIdConsentsParams, reqEditors ...RequestEditorFn) (*GetV2IysCampaignsIdConsentsResponse, error) {
 	rsp, err := c.GetV2IysCampaignsIdConsents(ctx, id, params, reqEditors...)
 	if err != nil {
@@ -376,6 +463,13 @@ func (c *ClientWithResponses) GetV2IysCampaignsIdConsentsWithResponse(ctx contex
 	return ParseGetV2IysCampaignsIdConsentsResponse(rsp)
 }
 
+// PostV2IysConsentsJsonWithBodyWithResponse İzin Yönetimi
+//
+// <p>Ticari ileti göndermek için markalarınızı İYSye (İleti Yönetim Sistemi) kaydettirmiş olmalı ve&nbsp;<a href="https://oim.verimor.com.tr/headers" rel="nofollow">OİM Başlık Yönetiminden</a>&nbsp;ilgili başlığa İYS kodlarını girmiş olmanız gerekir. Bu işlemleri yaptıktan sonra müşterilerinizden aldığınız izinleri bu yöntemle İYSye bildirebilirsiniz.</p><p>Aşağıdaki örnekte olduğu gibi bir JSON string POST edilir.</p><p>Daha sonra istenirse, "İYS İZİNLERİ RAPORU" başlığı altındaki dökümandan faydalanılarak, gönderilen izinlerin durumları alınabilir.</p><p>Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).</p>
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/iys_consents.json (the `PostV2IysConsentsJson` operationId).
 func (c *ClientWithResponses) PostV2IysConsentsJsonWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV2IysConsentsJsonResponse, error) {
 	rsp, err := c.PostV2IysConsentsJsonWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -384,6 +478,13 @@ func (c *ClientWithResponses) PostV2IysConsentsJsonWithBodyWithResponse(ctx cont
 	return ParsePostV2IysConsentsJsonResponse(rsp)
 }
 
+// PostV2IysConsentsJsonWithResponse İzin Yönetimi
+//
+// <p>Ticari ileti göndermek için markalarınızı İYSye (İleti Yönetim Sistemi) kaydettirmiş olmalı ve&nbsp;<a href="https://oim.verimor.com.tr/headers" rel="nofollow">OİM Başlık Yönetiminden</a>&nbsp;ilgili başlığa İYS kodlarını girmiş olmanız gerekir. Bu işlemleri yaptıktan sonra müşterilerinizden aldığınız izinleri bu yöntemle İYSye bildirebilirsiniz.</p><p>Aşağıdaki örnekte olduğu gibi bir JSON string POST edilir.</p><p>Daha sonra istenirse, "İYS İZİNLERİ RAPORU" başlığı altındaki dökümandan faydalanılarak, gönderilen izinlerin durumları alınabilir.</p><p>Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).</p>
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/iys_consents.json (the `PostV2IysConsentsJson` operationId).
 func (c *ClientWithResponses) PostV2IysConsentsJsonWithResponse(ctx context.Context, body PostV2IysConsentsJsonJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV2IysConsentsJsonResponse, error) {
 	rsp, err := c.PostV2IysConsentsJson(ctx, body, reqEditors...)
 	if err != nil {
@@ -392,21 +493,23 @@ func (c *ClientWithResponses) PostV2IysConsentsJsonWithResponse(ctx context.Cont
 	return ParsePostV2IysConsentsJsonResponse(rsp)
 }
 
+// ParseGetV2IysCampaignsResponse parses an HTTP response from a GetV2IysCampaignsWithResponse call
 func ParseGetV2IysCampaignsResponse(rsp *http.Response) (*GetV2IysCampaignsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetV2IysCampaignsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetV2IysCampaignsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Records []struct// Status returns HTTPResponse.Status
-			// ParseGetV2IysCampaignsResponse parses an HTTP response from a GetV2IysCampaignsWithResponse call
-			{
+			Records []struct {
 				CreatedAt    *time.Time `json:"created_at,omitempty"`
 				HeaderName   *string    `json:"header_name,omitempty"`
 				Id           *int       `json:"id,omitempty"`
@@ -420,24 +523,29 @@ func ParseGetV2IysCampaignsResponse(rsp *http.Response) (*GetV2IysCampaignsRespo
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseGetV2IysCampaignsIdConsentsResponse parses an HTTP response from a GetV2IysCampaignsIdConsentsWithResponse call
 func ParseGetV2IysCampaignsIdConsentsResponse(rsp *http.Response) (*GetV2IysCampaignsIdConsentsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetV2IysCampaignsIdConsentsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetV2IysCampaignsIdConsentsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Records []struct// ParseGetV2IysCampaignsIdConsentsResponse parses an HTTP response from a GetV2IysCampaignsIdConsentsWithResponse call
-			{
+			Records []struct {
 				ConsentDate   *time.Time `json:"consent_date,omitempty"`
 				Recipient     *string    `json:"recipient,omitempty"`
 				RecipientType *string    `json:"recipient_type,omitempty"`
@@ -455,20 +563,24 @@ func ParseGetV2IysCampaignsIdConsentsResponse(rsp *http.Response) (*GetV2IysCamp
 			return nil, err
 		}
 		response.JSON200 = &dest
-	}
-	return response, nil
-}
 
-func ParsePostV2IysConsentsJsonResponse(rsp *http.Response) (*PostV2IysConsentsJsonResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
 	}
-	response := &PostV2IysConsentsJsonResponse{Body: bodyBytes, HTTPResponse: rsp}
+
 	return response, nil
 }
 
 // ParsePostV2IysConsentsJsonResponse parses an HTTP response from a PostV2IysConsentsJsonWithResponse call
+func ParsePostV2IysConsentsJsonResponse(rsp *http.Response) (*PostV2IysConsentsJsonResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &PostV2IysConsentsJsonResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}

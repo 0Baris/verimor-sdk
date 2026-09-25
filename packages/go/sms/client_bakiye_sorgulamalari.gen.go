@@ -14,6 +14,11 @@ import (
 	"strings"
 )
 
+// GetV2Balance Bakiye Sorgulama
+//
+// SMS kalan kredi sorgulama için bu servis kullanılır. İşlem için kullanıcı adı ve şifre gereklidir. Bu endpoint /v2/status, /v2/headers gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).
+//
+// Corresponds with GET /v2/balance (the `GetV2Balance` operationId).
 func (c *Client) GetV2Balance(ctx context.Context, params *GetV2BalanceParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV2BalanceRequest(c.Server, params)
 	if err != nil {
@@ -26,30 +31,33 @@ func (c *Client) GetV2Balance(ctx context.Context, params *GetV2BalanceParams, r
 	return c.Client.Do(req)
 }
 
+// NewGetV2BalanceRequest constructs an http.Request for the GetV2Balance method
 func NewGetV2BalanceRequest(server string, params *GetV2BalanceParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/balance")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// GetV2Balance Bakiye Sorgulama
-		//
-		// SMS kalan kredi sorgulama için bu servis kullanılır. İşlem için kullanıcı adı ve şifre gereklidir. Bu endpoint /v2/status, /v2/headers gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).
-		//
-		// Corresponds with GET /v2/balance (the `GetV2Balance` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -58,6 +66,7 @@ func NewGetV2BalanceRequest(server string, params *GetV2BalanceParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -65,23 +74,27 @@ func NewGetV2BalanceRequest(server string, params *GetV2BalanceParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r GetV2BalanceResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetV2BalanceResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetV2BalanceResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -89,6 +102,7 @@ func (r GetV2BalanceResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetV2BalanceResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -96,6 +110,7 @@ func (r GetV2BalanceResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV2BalanceResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -103,6 +118,13 @@ func (r GetV2BalanceResponse) ContentType() string {
 	return ""
 }
 
+// GetV2BalanceWithResponse Bakiye Sorgulama
+//
+// SMS kalan kredi sorgulama için bu servis kullanılır. İşlem için kullanıcı adı ve şifre gereklidir. Bu endpoint /v2/status, /v2/headers gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/balance (the `GetV2Balance` operationId).
 func (c *ClientWithResponses) GetV2BalanceWithResponse(ctx context.Context, params *GetV2BalanceParams, reqEditors ...RequestEditorFn) (*GetV2BalanceResponse, error) {
 	rsp, err := c.GetV2Balance(ctx, params, reqEditors...)
 	if err != nil {
@@ -111,17 +133,18 @@ func (c *ClientWithResponses) GetV2BalanceWithResponse(ctx context.Context, para
 	return ParseGetV2BalanceResponse(rsp)
 }
 
+// ParseGetV2BalanceResponse parses an HTTP response from a GetV2BalanceWithResponse call
 func ParseGetV2BalanceResponse(rsp *http.Response) (*GetV2BalanceResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetV2BalanceResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetV2BalanceResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
-
-// Status returns HTTPResponse.Status
-// ParseGetV2BalanceResponse parses an HTTP response from a GetV2BalanceWithResponse call

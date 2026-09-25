@@ -9,96 +9,176 @@ import (
 	"time"
 )
 
+// CreateFaxDocumentUrlParams defines parameters for CreateFaxDocumentUrl.
 type CreateFaxDocumentUrlParams struct {
+	// CallUuid URL'ini istediğiniz faks belgesine ait uuid
 	CallUuid string `form:"call_uuid" json:"call_uuid"`
 }
 
+// ListFaxOrdersParams defines parameters for ListFaxOrders.
 type ListFaxOrdersParams struct {
-	Page  *int `form:"page,omitempty" json:"page,omitempty"`
+	// Page Liste limite göre sayfalanıyor. "total_pages" değerinden maksimum kaç sayfa olduğunu belirleyerek görmek istediğiniz sayfanın numarasını girebilirsiniz
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit Listeyi sınırlayabilirsiniz. Varsayılan değer 10, minimum değer 10, maksimum değer 100
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// CreateFaxOrderParams defines parameters for CreateFaxOrder.
 type CreateFaxOrderParams struct {
-	LocalStationId     *string `form:"local_station_id,omitempty" json:"local_station_id,omitempty"`
+	// LocalStationId Gönderici numara (zorunlu değil)
+	LocalStationId *string `form:"local_station_id,omitempty" json:"local_station_id,omitempty"`
+
+	// LocalStationHeader Gönderici başlığı
 	LocalStationHeader *string `form:"local_station_header,omitempty" json:"local_station_header,omitempty"`
-	RemoteStationId    string  `form:"remote_station_id" json:"remote_station_id"`
-	Filedata           string  `form:"filedata" json:"filedata"`
+
+	// RemoteStationId Alıcı numara
+	RemoteStationId string `form:"remote_station_id" json:"remote_station_id"`
+
+	// Filedata Gönderilecek dosyanın içeriğinin base64 ile kodlanmış hali (data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA... formatında)
+	Filedata string `form:"filedata" json:"filedata"`
 }
 
+// ListFdrsParams defines parameters for ListFdrs.
 type ListFdrsParams struct {
-	StartStampFrom      *string `form:"start_stamp_from,omitempty" json:"start_stamp_from,omitempty"`
-	StartStampTo        *string `form:"start_stamp_to,omitempty" json:"start_stamp_to,omitempty"`
-	Direction           *string `form:"direction,omitempty" json:"direction,omitempty"`
-	CallerIdNumber      *string `form:"caller_id_number,omitempty" json:"caller_id_number,omitempty"`
-	OriginalDestination *string `form:"original_destination,omitempty" json:"original_destination,omitempty"`
-	Success             *string `form:"success,omitempty" json:"success,omitempty"`
-	Page                *int    `form:"page,omitempty" json:"page,omitempty"`
-	Limit               *int    `form:"limit,omitempty" json:"limit,omitempty"`
-}
-type DownloadFaxDocumentResponse struct {
-	Body []byte// CreateFaxDocumentUrlParams defines parameters for CreateFaxDocumentUrl.
-	// Limit Listeyi sınırlayabilirsiniz. Varsayılan değer 10, minimum değer 10, maksimum değer 100
+	// StartStampFrom Başlama tarihi yazdığınız tarihten sonra olan çağrıları listeler. "2017-08-03 12:30:32 UTC" formatında olmalı
+	StartStampFrom *string `form:"start_stamp_from,omitempty" json:"start_stamp_from,omitempty"`
 
+	// StartStampTo Başlama tarihi yazdığınız tarihe kadar olan çağrıları listeler. "2017-08-03 12:30:32 UTC" formatında olmalı. Tarih aralığı 31 günden uzun olamaz
+	StartStampTo *string `form:"start_stamp_to,omitempty" json:"start_stamp_to,omitempty"`
+
+	// Direction Değeri "inbound" olarak gönderilirse gelen, değeri "outbound" olarak gönderilirse giden, değeri "internal" olarak gönderilirse santral içi faksları listeler:
+	//  * `outbound`
+	//  * `inbound`
+	//  * `internal`
+	//
+	Direction *string `form:"direction,omitempty" json:"direction,omitempty"`
+
+	// CallerIdNumber Faks gönderen numara
+	CallerIdNumber *string `form:"caller_id_number,omitempty" json:"caller_id_number,omitempty"`
+
+	// OriginalDestination Faks alan numara
+	OriginalDestination *string `form:"original_destination,omitempty" json:"original_destination,omitempty"`
+
+	// Success Değeri "true" olarak gönderilirse başarılı, değeri "false" olarak gönderilirse başarısız faksları listeler
+	Success *string `form:"success,omitempty" json:"success,omitempty"`
+
+	// Page Liste limite göre sayfalanıyor. "total_pages" değerinden maksimum kaç sayfa olduğunu belirleyerek görmek istediğiniz sayfanın numarasını girebilirsiniz
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit Listeyi sınırlayabilirsiniz. Varsayılan değer 10, minimum değer 10, maksimum değer 100
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+type DownloadFaxDocumentResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type CreateFaxDocumentUrlResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type ListFaxOrdersResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		FaxOrders []struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
-			CreatedAt       time.Time `json:"created_at"`
-			Id              int       `json:"id"`
-			LocalStationId  string    `json:"local_station_id"`
-			RemoteStationId string    `json:"remote_station_id"`
-			Status          string    `json:"status"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		FaxOrders []struct {
+			// CreatedAt Kayıt zamanı
+			CreatedAt time.Time `json:"created_at"`
+
+			// Id Kayıt NO
+			Id int `json:"id"`
+
+			// LocalStationId Arayan numara
+			LocalStationId string `json:"local_station_id"`
+
+			// RemoteStationId Aranan numara
+			RemoteStationId string `json:"remote_station_id"`
+
+			// Status Sonuç
+			Status string `json:"status"`
 		} `json:"fax_orders"`
 		Pagination struct {
-			Limit      int `json:"limit"`
-			Page       int `json:"page"`
+			// Limit Sayfa başına kayıt sayısı
+			Limit int `json:"limit"`
+
+			// Page Mevcut sayfa numarası
+			Page int `json:"page"`
+
+			// TotalCount Toplam faks gönderim kayıt sayısı
 			TotalCount int `json:"total_count"`
+
+			// TotalPages Toplam sayfa sayısı
 			TotalPages int `json:"total_pages"`
 		} `json:"pagination"`
 	}
 }
-type CreateFaxOrderResponse struct {
-	Body []byte// CreatedAt Kayıt zamanı
-	// TotalPages Toplam sayfa sayısı
 
+type CreateFaxOrderResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type ListFdrsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Fdrs []struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
-			AnswerStamp         *time.Time `json:"answer_stamp,omitempty"`
-			CallUuid            string     `json:"call_uuid"`
-			CallerIdNumber      string     `json:"caller_id_number"`
-			Direction           string     `json:"direction"`
-			Duration            *int       `json:"duration,omitempty"`
-			EndStamp            *time.Time `json:"end_stamp,omitempty"`
-			LocalStationHeader  *string    `json:"local_station_header,omitempty"`
-			OriginalDestination string     `json:"original_destination"`
-			PagesCount          string     `json:"pages_count"`
-			Result              string     `json:"result"`
-			StartStamp          time.Time  `json:"start_stamp"`
-			Success             bool       `json:"success"`
-			TransferRate        *int       `json:"transfer_rate,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Fdrs []struct {
+			// AnswerStamp Cevaplama Zamanı
+			AnswerStamp *time.Time `json:"answer_stamp,omitempty"`
+
+			// CallUuid Faksın uuid'si
+			CallUuid string `json:"call_uuid"`
+
+			// CallerIdNumber Faks gönderen numara
+			CallerIdNumber string `json:"caller_id_number"`
+
+			// Direction Çağrının yönü. "Gelen", "Giden" ve "Santral içi" olarak değişebilir
+			Direction string `json:"direction"`
+
+			// Duration Süre
+			Duration *int `json:"duration,omitempty"`
+
+			// EndStamp Kapatma Zamanı
+			EndStamp *time.Time `json:"end_stamp,omitempty"`
+
+			// LocalStationHeader Gönderen başlığı
+			LocalStationHeader *string `json:"local_station_header,omitempty"`
+
+			// OriginalDestination Faks alan numara
+			OriginalDestination string `json:"original_destination"`
+
+			// PagesCount Sayfa adedi
+			PagesCount string `json:"pages_count"`
+
+			// Result Sonuç
+			Result string `json:"result"`
+
+			// StartStamp Arama Zamanı
+			StartStamp time.Time `json:"start_stamp"`
+
+			// Success Durum
+			Success bool `json:"success"`
+
+			// TransferRate Gönderim hızı
+			TransferRate *int `json:"transfer_rate,omitempty"`
 		} `json:"fdrs"`
 		Pagination struct {
-			Limit      int `json:"limit"`
-			Page       int `json:"page"`
+			// Limit Sayfa başına kayıt sayısı
+			Limit int `json:"limit"`
+
+			// Page Mevcut sayfa numarası
+			Page int `json:"page"`
+
+			// TotalCount Toplam faks kayıt sayısı
 			TotalCount int `json:"total_count"`
+
+			// TotalPages Toplam sayfa sayısı
 			TotalPages int `json:"total_pages"`
 		} `json:"pagination"`
 	}
 }
-
-// AnswerStamp Cevaplama Zamanı
-// TotalPages Toplam sayfa sayısı

@@ -5,102 +5,480 @@
 package verimorswitch
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
 )
 
-func ParseGetCdrResponse(rsp *http.Response) (*GetCdrResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+// GetBody returns the raw response body bytes
+func (r CreateRecordingUrlResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateRecordingUrlResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateRecordingUrlResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateRecordingUrlResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetVoicemailMessagesResponse) GetJSON200() *struct {
+	Messages []struct {
+		// CallerIdName Mesajı bırakan kişinin ismi
+		CallerIdName string `json:"caller_id_name"`
+
+		// CallerIdNumber Mesajı bırakan numara
+		CallerIdNumber string `json:"caller_id_number"`
+
+		// Duration Ses kaydının süresi
+		Duration string `json:"duration"`
+
+		// ReadStamp Telesekreter mesajı okunduysa, okunma zamanı (OİM'den, IVR'dan veya API'den ses kaydı dinlendiği zaman)
+		ReadStamp string `json:"read_stamp"`
+
+		// StartStamp Telesekreter mesajının bırakıldığı zaman
+		StartStamp string `json:"start_stamp"`
+
+		// UserNumber Mesajın bırakıldığı dahili numarası
+		UserNumber string `json:"user_number"`
+
+		// Uuid Bu mesajın kayıt numarası. Aynı zamanda ilgili çağrının numarasıdır, CDR kayıtlarıyla ilişkilidir
+		Uuid string `json:"uuid"`
+	} `json:"messages"`
+	Pagination struct {
+		// Limit Listeye verilen sınır
+		Limit int `json:"limit"`
+
+		// Page Listenin hangi sayfasında olduğunuz
+		Page int `json:"page"`
+
+		// TotalCount Listede dönen çağrı sayısı
+		TotalCount int `json:"total_count"`
+
+		// TotalPages Listenin kaç sayfadan oluştuğu (total_pages=total_count/limit)
+		TotalPages int `json:"total_pages"`
+	} `json:"pagination"`
+} {
+	return r.JSON200
+}
+
+// GetBody returns the raw response body bytes
+func (r GetVoicemailMessagesResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r GetVoicemailMessagesResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r GetVoicemailMessagesResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r GetVoicemailMessagesResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetBody returns the raw response body bytes
+func (r CreateVoicemailRecordingUrlResponse) GetBody() []byte {
+	return r.Body
+}
+
+// Status returns HTTPResponse.Status
+func (r CreateVoicemailRecordingUrlResponse) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CreateVoicemailRecordingUrlResponse) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
+func (r CreateVoicemailRecordingUrlResponse) ContentType() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Header.Get("Content-Type")
+	}
+	return ""
+}
+
+// GetCdrsWithResponse Çağrı Detay Kayıtları (CDR) Listesi
+//
+// Farklı filtrelerle ve sayfalama ile çağrı detay kayıtlarını (CDR) listeler. Bu endpoint dakikada en fazla 6 istek ile sınırlıdır.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /cdrs (the `GetCdrs` operationId).
+func (c *ClientWithResponses) GetCdrsWithResponse(ctx context.Context, params *GetCdrsParams, reqEditors ...RequestEditorFn) (*GetCdrsResponse, error) {
+	rsp, err := c.GetCdrs(ctx, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
-	response := &GetCdrResponse{Body: bodyBytes, HTTPResponse: rsp}
+	return ParseGetCdrsResponse(rsp)
+}
+
+// GetCdrWithResponse Belirli Bir Çağrının Detaylı CDR Kaydı
+//
+// Belirli bir çağrıya ait tüm detayları ve çağrı akışını getirir. Bu endpoint dakikada en fazla 6 istek ile sınırlıdır.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /cdrs/{id} (the `GetCdr` operationId).
+func (c *ClientWithResponses) GetCdrWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetCdrResponse, error) {
+	rsp, err := c.GetCdr(ctx, id, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetCdrResponse(rsp)
+}
+
+// CreateRecordingUrlWithResponse Ses Kaydı için Geçici URL Oluşturma
+//
+// Santralinizdeki veya Google Drive'a aktarılmış ses kayıtlarınıza erişmek için geçici bir URL oluşturur. URL 1 saat geçerlidir ve dakikada en fazla 5 istek yapılabilir.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /recording_url (the `CreateRecordingUrl` operationId).
+func (c *ClientWithResponses) CreateRecordingUrlWithResponse(ctx context.Context, params *CreateRecordingUrlParams, reqEditors ...RequestEditorFn) (*CreateRecordingUrlResponse, error) {
+	rsp, err := c.CreateRecordingUrl(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateRecordingUrlResponse(rsp)
+}
+
+// GetVoicemailMessagesWithResponse Telesekreter Arama Kayıtlarına Erişim
+//
+// Santralinizdeki telesekreter arama kayıtlarına ve ses kayıtlarına erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde mesajlar döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /voicemail_messages (the `GetVoicemailMessages` operationId).
+func (c *ClientWithResponses) GetVoicemailMessagesWithResponse(ctx context.Context, params *GetVoicemailMessagesParams, reqEditors ...RequestEditorFn) (*GetVoicemailMessagesResponse, error) {
+	rsp, err := c.GetVoicemailMessages(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseGetVoicemailMessagesResponse(rsp)
+}
+
+// CreateVoicemailRecordingUrlWithResponse Telesekreter Ses Kaydı için Geçici URL Oluşturma
+//
+// CDR'ın ses kaydına erişimde olduğu gibi, bu ses kayıtlarına erişim de iki aşamalıdır. Birinci aşamada URL elde edilir. İkinci aşamada ise o URL'den ses dosyası indirilir/dinlenir. HTTP POST metodu ile api.bulutsantralim.com adresine parametreler gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde ses kaydına ait olan bir URL döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. URL yaşam süresi 1 saattir.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /voicemail_recording_url (the `CreateVoicemailRecordingUrl` operationId).
+func (c *ClientWithResponses) CreateVoicemailRecordingUrlWithResponse(ctx context.Context, params *CreateVoicemailRecordingUrlParams, reqEditors ...RequestEditorFn) (*CreateVoicemailRecordingUrlResponse, error) {
+	rsp, err := c.CreateVoicemailRecordingUrl(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCreateVoicemailRecordingUrlResponse(rsp)
+}
+
+// ParseGetCdrsResponse parses an HTTP response from a GetCdrsWithResponse call
+func ParseGetCdrsResponse(rsp *http.Response) (*GetCdrsResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCdrsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			CallFlow *[]struct// ParseGetCdrResponse parses an HTTP response from a GetCdrWithResponse call
-			{
-				AnswerStamp       *string `json:"answer_stamp,omitempty"`
+			Cdrs *[]struct {
+				// AnswerStamp Çağrı cevaplanma zamanı
+				AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+				// CallUuid Çağrı UUID
+				CallUuid *string `json:"call_uuid,omitempty"`
+
+				// CallerIdName Arayan isim
+				CallerIdName *string `json:"caller_id_name,omitempty"`
+
+				// CallerIdNumber Arayan numara
+				CallerIdNumber *string `json:"caller_id_number,omitempty"`
+
+				// DestinationName Hedef isim
+				DestinationName *string `json:"destination_name,omitempty"`
+
+				// DestinationNumber Hedef numara
 				DestinationNumber *string `json:"destination_number,omitempty"`
-				Duration          *string `json:"duration,omitempty"`
-				EndStamp          *string `json:"end_stamp,omitempty"`
-				IpAddress         *string `json:"ip_address,omitempty"`
-				ReadCodec         *string `json:"read_codec,omitempty"`
-				Result            *string `json:"result,omitempty"`
-				SipUserAgent      *string `json:"sip_user_agent,omitempty"`
-				StartStamp        *string `json:"start_stamp,omitempty"`
-				WriteCodec        *string `json:"write_codec,omitempty"`
+
+				// Direction Çağrı yönü (insan okunabilir)
+				Direction *string `json:"direction,omitempty"`
+
+				// Duration Çağrı süresi (SS:dd:ss)
+				Duration *string `json:"duration,omitempty"`
+
+				// EndStamp Çağrı bitiş zamanı
+				EndStamp *string `json:"end_stamp,omitempty"`
+
+				// Missed Cevapsız çağrı mı?
+				Missed *bool `json:"missed,omitempty"`
+
+				// Queue Kuyruk adı
+				Queue *string `json:"queue,omitempty"`
+
+				// QueueWaitSeconds Kuyruk bekleme süresi (SS:dd:ss)
+				QueueWaitSeconds *string `json:"queue_wait_seconds,omitempty"`
+
+				// RecordingPresent Kayıt durumu
+				RecordingPresent *string `json:"recording_present,omitempty"`
+
+				// Result Human-readable call result in Turkish
+				Result *GetCdrs200JSONResponseBodyCdrsResult `json:"result,omitempty"`
+
+				// ReturnUuid Return UUID
+				ReturnUuid *string `json:"return_uuid,omitempty"`
+
+				// SipHangupDisposition SIP sonlandırma nedeni
+				SipHangupDisposition *string `json:"sip_hangup_disposition,omitempty"`
+
+				// StartStamp Çağrı başlangıç zamanı
+				StartStamp *string `json:"start_stamp,omitempty"`
+
+				// TalkDuration Konuşma süresi (SS:dd:ss)
+				TalkDuration *string `json:"talk_duration,omitempty"`
+			} `json:"cdrs,omitempty"`
+			Pagination *struct {
+				// Limit Sayfa başına kayıt sayısı
+				Limit *int `json:"limit,omitempty"`
+
+				// Page Mevcut sayfa numarası
+				Page *int `json:"page,omitempty"`
+
+				// TotalCount Toplam kayıt sayısı
+				TotalCount *int `json:"total_count,omitempty"`
+
+				// TotalPages Toplam sayfa sayısı
+				TotalPages *int `json:"total_pages,omitempty"`
+			} `json:"pagination,omitempty"`
+		}
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseGetCdrResponse parses an HTTP response from a GetCdrWithResponse call
+func ParseGetCdrResponse(rsp *http.Response) (*GetCdrResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &GetCdrResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest struct {
+			CallFlow *[]struct {
+				// AnswerStamp Bu bacak için cevaplanma zamanı
+				AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+				// DestinationNumber Bu bacak için hedef numara
+				DestinationNumber *string `json:"destination_number,omitempty"`
+
+				// Duration Bu bacak için süre (SS:dd:ss)
+				Duration *string `json:"duration,omitempty"`
+
+				// EndStamp Bu bacak için bitiş zamanı
+				EndStamp *string `json:"end_stamp,omitempty"`
+
+				// IpAddress Kullanılan IP adresi
+				IpAddress *string `json:"ip_address,omitempty"`
+
+				// ReadCodec Okuma codec'i
+				ReadCodec *string `json:"read_codec,omitempty"`
+
+				// Result Bu bacak için sonuç
+				Result *string `json:"result,omitempty"`
+
+				// SipUserAgent SIP User Agent
+				SipUserAgent *string `json:"sip_user_agent,omitempty"`
+
+				// StartStamp Bu bacak için başlangıç zamanı
+				StartStamp *string `json:"start_stamp,omitempty"`
+
+				// WriteCodec Yazma codec'i
+				WriteCodec *string `json:"write_codec,omitempty"`
 			} `json:"call_flow,omitempty"`
 			Cdr *struct {
-				AnswerStamp          *string `json:"answer_stamp,omitempty"`
-				CallUuid             *string `json:"call_uuid,omitempty"`
-				CallerIdNumber       *string `json:"caller_id_number,omitempty"`
-				DestinationNumber    *string `json:"destination_number,omitempty"`
-				Direction            *string `json:"direction,omitempty"`
-				Duration             *string `json:"duration,omitempty"`
-				EndStamp             *string `json:"end_stamp,omitempty"`
-				Missed               *bool   `json:"missed,omitempty"`
-				QueueWaitSeconds     *string `json:"queue_wait_seconds,omitempty"`
-				RecordingPresent     *string `json:"recording_present,omitempty"`
-				Result               *string `json:"result,omitempty"`
-				ReturnUuid           *string `json:"return_uuid,omitempty"`
+				// AnswerStamp Çağrı cevaplanma zamanı
+				AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+				// CallUuid Çağrı UUID
+				CallUuid *string `json:"call_uuid,omitempty"`
+
+				// CallerIdNumber Arayan numara
+				CallerIdNumber *string `json:"caller_id_number,omitempty"`
+
+				// DestinationNumber Hedef numara
+				DestinationNumber *string `json:"destination_number,omitempty"`
+
+				// Direction Çağrı yönü
+				Direction *string `json:"direction,omitempty"`
+
+				// Duration Çağrı süresi (SS:dd:ss)
+				Duration *string `json:"duration,omitempty"`
+
+				// EndStamp Çağrı bitiş zamanı
+				EndStamp *string `json:"end_stamp,omitempty"`
+
+				// Missed Cevapsız çağrı mı?
+				Missed *bool `json:"missed,omitempty"`
+
+				// QueueWaitSeconds Kuyruk bekleme süresi (SS:dd:ss)
+				QueueWaitSeconds *string `json:"queue_wait_seconds,omitempty"`
+
+				// RecordingPresent Kayıt durumu
+				RecordingPresent *string `json:"recording_present,omitempty"`
+
+				// Result Çağrı sonucu
+				Result *string `json:"result,omitempty"`
+
+				// ReturnUuid Return UUID
+				ReturnUuid *string `json:"return_uuid,omitempty"`
+
+				// SipHangupDisposition SIP sonlandırma nedeni
 				SipHangupDisposition *string `json:"sip_hangup_disposition,omitempty"`
-				StartStamp           *string `json:"start_stamp,omitempty"`
-				TalkDuration         *string `json:"talk_duration,omitempty"`
+
+				// StartStamp Çağrı başlangıç zamanı
+				StartStamp *string `json:"start_stamp,omitempty"`
+
+				// TalkDuration Konuşma süresi (SS:dd:ss)
+				TalkDuration *string `json:"talk_duration,omitempty"`
 			} `json:"cdr,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseCreateRecordingUrlResponse parses an HTTP response from a CreateRecordingUrlWithResponse call
 func ParseCreateRecordingUrlResponse(rsp *http.Response) (*CreateRecordingUrlResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &CreateRecordingUrlResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &CreateRecordingUrlResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseGetVoicemailMessagesResponse parses an HTTP response from a GetVoicemailMessagesWithResponse call
 func ParseGetVoicemailMessagesResponse(rsp *http.Response) (*GetVoicemailMessagesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetVoicemailMessagesResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetVoicemailMessagesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Messages []struct// AnswerStamp Bu bacak için cevaplanma zamanı
-			// ParseGetVoicemailMessagesResponse parses an HTTP response from a GetVoicemailMessagesWithResponse call
-			{
-				CallerIdName   string `json:"caller_id_name"`
+			Messages []struct {
+				// CallerIdName Mesajı bırakan kişinin ismi
+				CallerIdName string `json:"caller_id_name"`
+
+				// CallerIdNumber Mesajı bırakan numara
 				CallerIdNumber string `json:"caller_id_number"`
-				Duration       string `json:"duration"`
-				ReadStamp      string `json:"read_stamp"`
-				StartStamp     string `json:"start_stamp"`
-				UserNumber     string `json:"user_number"`
-				Uuid           string `json:"uuid"`
+
+				// Duration Ses kaydının süresi
+				Duration string `json:"duration"`
+
+				// ReadStamp Telesekreter mesajı okunduysa, okunma zamanı (OİM'den, IVR'dan veya API'den ses kaydı dinlendiği zaman)
+				ReadStamp string `json:"read_stamp"`
+
+				// StartStamp Telesekreter mesajının bırakıldığı zaman
+				StartStamp string `json:"start_stamp"`
+
+				// UserNumber Mesajın bırakıldığı dahili numarası
+				UserNumber string `json:"user_number"`
+
+				// Uuid Bu mesajın kayıt numarası. Aynı zamanda ilgili çağrının numarasıdır, CDR kayıtlarıyla ilişkilidir
+				Uuid string `json:"uuid"`
 			} `json:"messages"`
 			Pagination struct {
-				Limit      int `json:"limit"`
-				Page       int `json:"page"`
+				// Limit Listeye verilen sınır
+				Limit int `json:"limit"`
+
+				// Page Listenin hangi sayfasında olduğunuz
+				Page int `json:"page"`
+
+				// TotalCount Listede dönen çağrı sayısı
 				TotalCount int `json:"total_count"`
+
+				// TotalPages Listenin kaç sayfadan oluştuğu (total_pages=total_count/limit)
 				TotalPages int `json:"total_pages"`
 			} `json:"pagination"`
 		}
@@ -108,21 +486,24 @@ func ParseGetVoicemailMessagesResponse(rsp *http.Response) (*GetVoicemailMessage
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseCreateVoicemailRecordingUrlResponse parses an HTTP response from a CreateVoicemailRecordingUrlWithResponse call
 func ParseCreateVoicemailRecordingUrlResponse(rsp *http.Response) (*CreateVoicemailRecordingUrlResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &CreateVoicemailRecordingUrlResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &CreateVoicemailRecordingUrlResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
-
-// CallerIdName Mesajı bırakan kişinin ismi
-// ParseCreateVoicemailRecordingUrlResponse parses an HTTP response from a CreateVoicemailRecordingUrlWithResponse call

@@ -16,6 +16,11 @@ import (
 	"time"
 )
 
+// GetV2InboundMessages Gelen SMS Sorgulama
+//
+// <p>Bu API, gelen SMS'lerinizi sorgulamak için kullanılır.</p><p>API, hesabınıza gelen SMS'leri iki farklı yöntemle teslim edebilir. Bunlar PUSH ve GET yöntemleridir.</p><p>Bu servis&nbsp;<strong>HTTP GET ile Gelen SMS Alımı</strong>&nbsp;hizmetini sağlar. PUSH ile Gelen SMS Alımı konusu için Inbound Bölümü altındaki ilgili başlığa bakabilirsiniz.<br></p><p>Sorgulama, belirli bir zaman aralığında veya belirli bir message_id'den büyük mesajları almak için yapılabilir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Corresponds with GET /v2/inbound_messages (the `GetV2InboundMessages` operationId).
 func (c *Client) GetV2InboundMessages(ctx context.Context, params *GetV2InboundMessagesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV2InboundMessagesRequest(c.Server, params)
 	if err != nil {
@@ -28,6 +33,11 @@ func (c *Client) GetV2InboundMessages(ctx context.Context, params *GetV2InboundM
 	return c.Client.Do(req)
 }
 
+// GetSmsStatus Rapor Sorgulama (API ID)
+//
+// <p>Gönderim Raporu almak için kullanılır.</p><ul dir="auto"><li>id: Kampanya'ya API tarafından verilen ID'dir. id veya custom_id zorunludur.</li><li>custom_id: Kampanya'ya sizin tarafından verilen ID'dir. id veya custom_id zorunludur.</li><li>dest: Zorunlu değil. Kampanya'da belirli telefon numaralarına gönderilmiş mesajları sorgular.</li><li>greater_than: Verilen message_id'den büyük mesajları sorgular. Bu parametre, içinde çok mesaj olan kampanyaların sorgulanması için zorunludur. Bu sorgu 100 mesaj döndürür, mesajların devamını almak için sonuçtaki son mesaj id'sini vererek ikinci bir sorgu yapmalısınız.</li></ul><p>Bu endpoint /v2/balance, /v2/headers gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Corresponds with GET /v2/status (the `GetSmsStatus` operationId).
 func (c *Client) GetSmsStatus(ctx context.Context, params *GetSmsStatusParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetSmsStatusRequest(c.Server, params)
 	if err != nil {
@@ -40,30 +50,33 @@ func (c *Client) GetSmsStatus(ctx context.Context, params *GetSmsStatusParams, r
 	return c.Client.Do(req)
 }
 
+// NewGetV2InboundMessagesRequest constructs an http.Request for the GetV2InboundMessages method
 func NewGetV2InboundMessagesRequest(server string, params *GetV2InboundMessagesParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/inbound_messages")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// GetV2InboundMessages Gelen SMS Sorgulama
-		//
-		// <p>Bu API, gelen SMS'lerinizi sorgulamak için kullanılır.</p><p>API, hesabınıza gelen SMS'leri iki farklı yöntemle teslim edebilir. Bunlar PUSH ve GET yöntemleridir.</p><p>Bu servis&nbsp;<strong>HTTP GET ile Gelen SMS Alımı</strong>&nbsp;hizmetini sağlar. PUSH ile Gelen SMS Alımı konusu için Inbound Bölümü altındaki ilgili başlığa bakabilirsiniz.<br></p><p>Sorgulama, belirli bir zaman aralığında veya belirli bir message_id'den büyük mesajları almak için yapılabilir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
-		//
-		// Corresponds with GET /v2/inbound_messages (the `GetV2InboundMessages` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -72,6 +85,7 @@ func NewGetV2InboundMessagesRequest(server string, params *GetV2InboundMessagesP
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -79,7 +93,9 @@ func NewGetV2InboundMessagesRequest(server string, params *GetV2InboundMessagesP
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.FromTime != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "from_time", *params.FromTime, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -87,8 +103,11 @@ func NewGetV2InboundMessagesRequest(server string, params *GetV2InboundMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.ToTime != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "to_time", *params.ToTime, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -96,8 +115,11 @@ func NewGetV2InboundMessagesRequest(server string, params *GetV2InboundMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.GreaterThan != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "greater_than", *params.GreaterThan, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -105,39 +127,50 @@ func NewGetV2InboundMessagesRequest(server string, params *GetV2InboundMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetSmsStatusRequest constructs an http.Request for the GetSmsStatus method
 func NewGetSmsStatusRequest(server string, params *GetSmsStatusParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/status")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewGetSmsStatusRequest constructs an http.Request for the GetSmsStatus method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -146,6 +179,7 @@ func NewGetSmsStatusRequest(server string, params *GetSmsStatusParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -153,7 +187,9 @@ func NewGetSmsStatusRequest(server string, params *GetSmsStatusParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.Id != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "id", *params.Id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -161,8 +197,11 @@ func NewGetSmsStatusRequest(server string, params *GetSmsStatusParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Dest != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dest", *params.Dest, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -170,8 +209,11 @@ func NewGetSmsStatusRequest(server string, params *GetSmsStatusParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.GreaterThan != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "greater_than", *params.GreaterThan, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -179,8 +221,11 @@ func NewGetSmsStatusRequest(server string, params *GetSmsStatusParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.CustomId != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "custom_id", *params.CustomId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -188,21 +233,25 @@ func NewGetSmsStatusRequest(server string, params *GetSmsStatusParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r GetV2InboundMessagesResponse) GetJSON200() *[]struct// GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV2InboundMessagesResponse) GetJSON200() *[]struct {
 	Content         *string    `json:"content,omitempty"`
 	CreatedAt       *time.Time `json:"created_at,omitempty"`
 	DestinationAddr *string    `json:"destination_addr,omitempty"`
@@ -215,11 +264,12 @@ func (r GetV2InboundMessagesResponse) GetJSON200() *[]struct// GetJSON200 return
 	return r.JSON200
 }
 
-func (r GetV2InboundMessagesResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetV2InboundMessagesResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetV2InboundMessagesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -227,6 +277,7 @@ func (r GetV2InboundMessagesResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetV2InboundMessagesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -234,6 +285,7 @@ func (r GetV2InboundMessagesResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV2InboundMessagesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -241,9 +293,8 @@ func (r GetV2InboundMessagesResponse) ContentType() string {
 	return ""
 }
 
-func (r GetSmsStatusResponse) GetJSON200() *[]struct// Status returns HTTPResponse.Status
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
+func (r GetSmsStatusResponse) GetJSON200() *[]struct {
 	CampaignCustomId        *string    `json:"campaign_custom_id,omitempty"`
 	CampaignId              *int       `json:"campaign_id,omitempty"`
 	Credits                 *int       `json:"credits,omitempty"`
@@ -260,11 +311,12 @@ func (r GetSmsStatusResponse) GetJSON200() *[]struct// Status returns HTTPRespon
 	return r.JSON200
 }
 
-func (r GetSmsStatusResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetSmsStatusResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetSmsStatusResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -272,6 +324,7 @@ func (r GetSmsStatusResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetSmsStatusResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -279,6 +332,7 @@ func (r GetSmsStatusResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetSmsStatusResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -286,6 +340,13 @@ func (r GetSmsStatusResponse) ContentType() string {
 	return ""
 }
 
+// GetV2InboundMessagesWithResponse Gelen SMS Sorgulama
+//
+// <p>Bu API, gelen SMS'lerinizi sorgulamak için kullanılır.</p><p>API, hesabınıza gelen SMS'leri iki farklı yöntemle teslim edebilir. Bunlar PUSH ve GET yöntemleridir.</p><p>Bu servis&nbsp;<strong>HTTP GET ile Gelen SMS Alımı</strong>&nbsp;hizmetini sağlar. PUSH ile Gelen SMS Alımı konusu için Inbound Bölümü altındaki ilgili başlığa bakabilirsiniz.<br></p><p>Sorgulama, belirli bir zaman aralığında veya belirli bir message_id'den büyük mesajları almak için yapılabilir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/inbound_messages (the `GetV2InboundMessages` operationId).
 func (c *ClientWithResponses) GetV2InboundMessagesWithResponse(ctx context.Context, params *GetV2InboundMessagesParams, reqEditors ...RequestEditorFn) (*GetV2InboundMessagesResponse, error) {
 	rsp, err := c.GetV2InboundMessages(ctx, params, reqEditors...)
 	if err != nil {
@@ -294,6 +355,13 @@ func (c *ClientWithResponses) GetV2InboundMessagesWithResponse(ctx context.Conte
 	return ParseGetV2InboundMessagesResponse(rsp)
 }
 
+// GetSmsStatusWithResponse Rapor Sorgulama (API ID)
+//
+// <p>Gönderim Raporu almak için kullanılır.</p><ul dir="auto"><li>id: Kampanya'ya API tarafından verilen ID'dir. id veya custom_id zorunludur.</li><li>custom_id: Kampanya'ya sizin tarafından verilen ID'dir. id veya custom_id zorunludur.</li><li>dest: Zorunlu değil. Kampanya'da belirli telefon numaralarına gönderilmiş mesajları sorgular.</li><li>greater_than: Verilen message_id'den büyük mesajları sorgular. Bu parametre, içinde çok mesaj olan kampanyaların sorgulanması için zorunludur. Bu sorgu 100 mesaj döndürür, mesajların devamını almak için sonuçtaki son mesaj id'sini vererek ikinci bir sorgu yapmalısınız.</li></ul><p>Bu endpoint /v2/balance, /v2/headers gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/status (the `GetSmsStatus` operationId).
 func (c *ClientWithResponses) GetSmsStatusWithResponse(ctx context.Context, params *GetSmsStatusParams, reqEditors ...RequestEditorFn) (*GetSmsStatusResponse, error) {
 	rsp, err := c.GetSmsStatus(ctx, params, reqEditors...)
 	if err != nil {
@@ -302,20 +370,22 @@ func (c *ClientWithResponses) GetSmsStatusWithResponse(ctx context.Context, para
 	return ParseGetSmsStatusResponse(rsp)
 }
 
+// ParseGetV2InboundMessagesResponse parses an HTTP response from a GetV2InboundMessagesWithResponse call
 func ParseGetV2InboundMessagesResponse(rsp *http.Response) (*GetV2InboundMessagesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetV2InboundMessagesResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetV2InboundMessagesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Status returns HTTPResponse.Status
-		// ParseGetV2InboundMessagesResponse parses an HTTP response from a GetV2InboundMessagesWithResponse call
-		{
+		var dest []struct {
 			Content         *string    `json:"content,omitempty"`
 			CreatedAt       *time.Time `json:"created_at,omitempty"`
 			DestinationAddr *string    `json:"destination_addr,omitempty"`
@@ -329,23 +399,28 @@ func ParseGetV2InboundMessagesResponse(rsp *http.Response) (*GetV2InboundMessage
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseGetSmsStatusResponse parses an HTTP response from a GetSmsStatusWithResponse call
 func ParseGetSmsStatusResponse(rsp *http.Response) (*GetSmsStatusResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetSmsStatusResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetSmsStatusResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// ParseGetSmsStatusResponse parses an HTTP response from a GetSmsStatusWithResponse call
-		{
+		var dest []struct {
 			CampaignCustomId        *string    `json:"campaign_custom_id,omitempty"`
 			CampaignId              *int       `json:"campaign_id,omitempty"`
 			Credits                 *int       `json:"credits,omitempty"`
@@ -363,6 +438,8 @@ func ParseGetSmsStatusResponse(rsp *http.Response) (*GetSmsStatusResponse, error
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }

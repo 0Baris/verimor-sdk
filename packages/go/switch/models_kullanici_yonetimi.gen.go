@@ -6,6 +6,7 @@ package verimorswitch
 
 import "net/http"
 
+// Defines values for ListAgentStatuses200JSONResponseBodyStatus.
 const (
 	ListAgentStatuses200JSONResponseBodyStatusAVAILABLE ListAgentStatuses200JSONResponseBodyStatus = "AVAILABLE"
 	ListAgentStatuses200JSONResponseBodyStatusLOGGEDOUT ListAgentStatuses200JSONResponseBodyStatus = "LOGGED_OUT"
@@ -13,6 +14,7 @@ const (
 	ListAgentStatuses200JSONResponseBodyStatusTALKING   ListAgentStatuses200JSONResponseBodyStatus = "TALKING"
 )
 
+// Defines values for ListUserStatuses200JSONResponseBodyStatus.
 const (
 	ListUserStatuses200JSONResponseBodyStatusAVAILABLE    ListUserStatuses200JSONResponseBodyStatus = "AVAILABLE"
 	ListUserStatuses200JSONResponseBodyStatusSSDND        ListUserStatuses200JSONResponseBodyStatus = "SS_DND"
@@ -20,93 +22,158 @@ const (
 	ListUserStatuses200JSONResponseBodyStatusUNREGISTERED ListUserStatuses200JSONResponseBodyStatus = "UNREGISTERED"
 )
 
+// ListAgentStatusesParams defines parameters for ListAgentStatuses.
 type ListAgentStatusesParams struct {
-	Agent  *string `form:"agent,omitempty" json:"agent,omitempty"`
-	Queue  *string `form:"queue,omitempty" json:"queue,omitempty"`
+	// Agent Belirli bir MT'nin durumunu öğrenmek için kullanılır
+	Agent *string `form:"agent,omitempty" json:"agent,omitempty"`
+
+	// Queue Belirli kuyruktaki MT'lerin durumlarını listelemek için kullanılır
+	Queue *string `form:"queue,omitempty" json:"queue,omitempty"`
+
+	// Status Belirli durumdaki MT'leri listelemek için kullanılır:
+	//  * `AVAILABLE`
+	//  * `TALKING`
+	//  * `LOGGED_OUT`
+	//  * `ON_BREAK`
+	//
 	Status *string `form:"status,omitempty" json:"status,omitempty"`
 }
 
+// ListAgentStatuses200JSONResponseBodyStatus defines parameters for ListAgentStatuses.
 type ListAgentStatuses200JSONResponseBodyStatus string
 
+// CreateDndParams defines parameters for CreateDnd.
 type CreateDndParams struct {
+	// State DND durumu: "on" açmak için, "off" kapatmak için:
+	//  * `on`
+	//  * `off`
+	//
 	State string `form:"state" json:"state"`
 }
 
+// ListUserStatusesParams defines parameters for ListUserStatuses.
 type ListUserStatusesParams struct {
-	User   *string `form:"user,omitempty" json:"user,omitempty"`
+	// User Belirli bir Dahilinin durumunu öğrenmek için kullanılır
+	User *string `form:"user,omitempty" json:"user,omitempty"`
+
+	// Status Belirli durumdaki Dahilileri listelemek için kullanılır:
+	//  * `AVAILABLE`
+	//  * `TALKING`
+	//  * `UNREGISTERED`
+	//  * `SS_DND`
+	//
 	Status *string `form:"status,omitempty" json:"status,omitempty"`
 }
 
+// ListUserStatuses200JSONResponseBodyStatus defines parameters for ListUserStatuses.
 type ListUserStatuses200JSONResponseBodyStatus string
 
+// CreateWebphoneTokenParams defines parameters for CreateWebphoneToken.
 type CreateWebphoneTokenParams struct {
+	// Extension Web telefonunu kullanacak dahili numarası
 	Extension string `form:"extension" json:"extension"`
 }
+
 type ListAgentStatusesResponse struct {
-	Body []byte// Defines values for ListAgentStatuses200JSONResponseBodyStatus.
-	// Extension Web telefonunu kullanacak dahili numarası
-
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
-		Agent            string   `json:"agent"`
-		BreakDescription *string  `json:"break_description,omitempty"`
-		Queues           []string `json:"queues"`// Agent MT numarası
-		// Queues MT'nin üye olduğu kuyruklar
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// Agent MT numarası
+		Agent string `json:"agent"`
 
+		// BreakDescription MT molada ise, mola açıklaması (sadece status ON_BREAK olduğunda mevcut)
+		BreakDescription *string `json:"break_description,omitempty"`
+
+		// Queues MT'nin üye olduğu kuyruklar
+		Queues []string `json:"queues"`
+
+		// Status MT durumu (AVAILABLE=Müsait, TALKING=Çağrıda, LOGGED_OUT=Çevrimdışı, ON_BREAK=Molada)
 		Status ListAgentStatuses200JSONResponseBodyStatus `json:"status"`
 	}
 }
-type CreateDndResponse struct {
-	Body []byte// Status MT durumu (AVAILABLE=Müsait, TALKING=Çağrıda, LOGGED_OUT=Çevrimdışı, ON_BREAK=Molada)
 
+type CreateDndResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type ListExtensionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
-		Dnd     *bool   `json:"dnd,omitempty"`
-		Domain  *string `json:"domain,omitempty"`
-		IsAgent *bool   `json:"is_agent,omitempty"`
-		Name    *string `json:"name,omitempty"`
-		Number  *string `json:"number,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// Dnd Rahatsız Etme (DND) modu açık mı
+		Dnd *bool `json:"dnd,omitempty"`
+
+		// Domain Dahilinin bağlı olduğu santral (domain) adı
+		Domain *string `json:"domain,omitempty"`
+
+		// IsAgent Bu dahili bir Müşteri Temsilcisi (MT) mi
+		IsAgent *bool `json:"is_agent,omitempty"`
+
+		// Name Dahili sahibinin adı
+		Name *string `json:"name,omitempty"`
+
+		// Number Dahili numarası
+		Number *string `json:"number,omitempty"`
 	}
 }
+
 type GetExtensionResponse struct {
-	Body []byte// Dnd Rahatsız Etme (DND) modu açık mı
-	// Number Dahili numarası
-
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Dnd                    *bool   `json:"dnd,omitempty"`
-		Domain                 *string `json:"domain,omitempty"`
-		IsAgent                *bool   `json:"is_agent,omitempty"`
-		MaxCalls               *int    `json:"max_calls,omitempty"`
-		Name                   *string `json:"name,omitempty"`
-		Number                 *string `json:"number,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		// Dnd Rahatsız Etme (DND) modu açık mı
+		Dnd *bool `json:"dnd,omitempty"`
+
+		// Domain Dahilinin bağlı olduğu santral (domain) adı
+		Domain *string `json:"domain,omitempty"`
+
+		// IsAgent Bu dahili bir Müşteri Temsilcisi (MT) mi
+		IsAgent *bool `json:"is_agent,omitempty"`
+
+		// MaxCalls Dahilinin eş zamanlı kabul edebileceği maksimum çağrı sayısı
+		MaxCalls *int `json:"max_calls,omitempty"`
+
+		// Name Dahili sahibinin adı
+		Name *string `json:"name,omitempty"`
+
+		// Number Dahili numarası
+		Number *string `json:"number,omitempty"`
+
+		// OutboundCallerIdNumber Giden aramalarda kullanılan dış numara
 		OutboundCallerIdNumber *string `json:"outbound_caller_id_number,omitempty"`
-		Password               *string `json:"password,omitempty"`
-		TimeRangeBegin         *string `json:"time_range_begin,omitempty"`
-		TimeRangeEnd           *string `json:"time_range_end,omitempty"`
-		UseWebrtc              *bool   `json:"use_webrtc,omitempty"`
+
+		// Password Dahilinin SIP şifresi
+		Password *string `json:"password,omitempty"`
+
+		// TimeRangeBegin Dahilinin çalışma saati başlangıcı
+		TimeRangeBegin *string `json:"time_range_begin,omitempty"`
+
+		// TimeRangeEnd Dahilinin çalışma saati bitişi
+		TimeRangeEnd *string `json:"time_range_end,omitempty"`
+
+		// UseWebrtc WebRTC (web telefon) kullanımı açık mı
+		UseWebrtc *bool `json:"use_webrtc,omitempty"`
 	}
 }
+
 type ListUserStatusesResponse struct {
-	Body []byte// JSON200 the response for an HTTP 200 `application/json` response
-	// UseWebrtc WebRTC (web telefon) kullanımı açık mı
-
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// Status Dahili durumu (AVAILABLE=Müsait, TALKING=Çağrıda, UNREGISTERED=Çevrimdışı, SS_DND=Bulutsantral server side DND ayarı aktif)
 		Status ListUserStatuses200JSONResponseBodyStatus `json:"status"`
-		User   int                                       `json:"user"`
+
+		// User Dahili numarası
+		User int `json:"user"`
 	}
 }
-type CreateWebphoneTokenResponse struct {
-	Body []byte// Status Dahili durumu (AVAILABLE=Müsait, TALKING=Çağrıda, UNREGISTERED=Çevrimdışı, SS_DND=Bulutsantral server side DND ayarı aktif)
-	// User Dahili numarası
 
+type CreateWebphoneTokenResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }

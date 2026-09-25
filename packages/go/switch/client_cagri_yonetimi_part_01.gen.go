@@ -16,6 +16,13 @@ import (
 	"strings"
 )
 
+// AnswerCallPostWithBody Çağrıyı Cevaplama (POST)
+//
+// manual_answer=true parametresi ile başlatılmış bir çağrıyı cevaplamak için HTTP POST metodu ile /answer endpoint'i id parametresi ile çağrılır. Başarılı olduğunda çağrı cevaplanır ve HTTP 200 döner.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /answer (the `AnswerCallPost` operationId).
 func (c *Client) AnswerCallPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAnswerCallPostRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -28,6 +35,13 @@ func (c *Client) AnswerCallPostWithBody(ctx context.Context, contentType string,
 	return c.Client.Do(req)
 }
 
+// AnswerCallPost Çağrıyı Cevaplama (POST)
+//
+// manual_answer=true parametresi ile başlatılmış bir çağrıyı cevaplamak için HTTP POST metodu ile /answer endpoint'i id parametresi ile çağrılır. Başarılı olduğunda çağrı cevaplanır ve HTTP 200 döner.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /answer (the `AnswerCallPost` operationId).
 func (c *Client) AnswerCallPost(ctx context.Context, body AnswerCallPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAnswerCallPostRequest(c.Server, body)
 	if err != nil {
@@ -40,6 +54,13 @@ func (c *Client) AnswerCallPost(ctx context.Context, body AnswerCallPostJSONRequ
 	return c.Client.Do(req)
 }
 
+// AnswerCallPostWithFormdataBody Çağrıyı Cevaplama (POST)
+//
+// manual_answer=true parametresi ile başlatılmış bir çağrıyı cevaplamak için HTTP POST metodu ile /answer endpoint'i id parametresi ile çağrılır. Başarılı olduğunda çağrı cevaplanır ve HTTP 200 döner.
+//
+// Takes a body of the `application/x-www-form-urlencoded` content type.
+//
+// Corresponds with POST /answer (the `AnswerCallPost` operationId).
 func (c *Client) AnswerCallPostWithFormdataBody(ctx context.Context, body AnswerCallPostFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAnswerCallPostRequestWithFormdataBody(c.Server, body)
 	if err != nil {
@@ -52,6 +73,11 @@ func (c *Client) AnswerCallPostWithFormdataBody(ctx context.Context, body Answer
 	return c.Client.Do(req)
 }
 
+// AnswerCall Çağrıyı Cevaplama (GET)
+//
+// manual_answer=true parametresi ile başlatılmış ve dahili telefonda çalmakta olan bir çağrıyı API üzerinden cevaplamak için kullanılır. HTTP GET metodu ile /answer/{id} çağrılır. Başarılı olduğunda çağrı cevaplanır ve HTTP 200 ile +OK veya çağrıya ilişkin bilgi döner. Başarısız olduğunda ilgili hata mesajı body'de döner.
+//
+// Corresponds with GET /answer/{id} (the `AnswerCall` operationId).
 func (c *Client) AnswerCall(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewAnswerCallRequest(c.Server, id)
 	if err != nil {
@@ -64,6 +90,11 @@ func (c *Client) AnswerCall(ctx context.Context, id string, reqEditors ...Reques
 	return c.Client.Do(req)
 }
 
+// CreateBridge Çağrı Bağlama
+//
+// Uygulamalarınız üzerinden iki dış numarayı (örn. cep telefonu) arayıp birbiriyle görüştürmek için kullanılır. Kullanım alanları: Müşteriniz ve saha personelinizi görüştürmek istiyorsunuz fakat bilgi güvenliği (örn. KVKK) nedeniyle cep telefonu numaralarının görünmesini istemiyorsunuz (numara maskeleme/gizleme). Müşteriniz ve saha personelinizin yaptığı görüşmeleri raporlamak ve ses kayıtlarını tutmak istiyorsunuz. Bu endpoint saniyede 3 istek (yaklaşık dakikada 180) limitine tabidir, burst değeri 100'dür.
+//
+// Corresponds with GET /bridge (the `CreateBridge` operationId).
 func (c *Client) CreateBridge(ctx context.Context, params *CreateBridgeParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateBridgeRequest(c.Server, params)
 	if err != nil {
@@ -76,6 +107,11 @@ func (c *Client) CreateBridge(ctx context.Context, params *CreateBridgeParams, r
 	return c.Client.Do(req)
 }
 
+// HangupCall Çağrıyı Sonlandırma
+//
+// Uygulamalarınız üzerinden santralde devam eden bir çağrıyı sonlandırmak için kullanılır. HTTP GET metodu ile api.bulutsantralim.com adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde +OK döner.
+//
+// Corresponds with GET /hangup/{id} (the `HangupCall` operationId).
 func (c *Client) HangupCall(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewHangupCallRequest(c.Server, id)
 	if err != nil {
@@ -88,6 +124,11 @@ func (c *Client) HangupCall(ctx context.Context, id string, reqEditors ...Reques
 	return c.Client.Do(req)
 }
 
+// MuteCall Çağrıyı Sessize Alma / Sesli Yapma
+//
+// Santralde devam eden bir çağrıyı sessize almak veya sesli yapmak için kullanılır. HTTP GET metodu ile çağrı UUID'si ve state parametresi kullanılarak mute işlemi gerçekleştirilir.
+//
+// Corresponds with GET /mute/{id} (the `MuteCall` operationId).
 func (c *Client) MuteCall(ctx context.Context, id string, params *MuteCallParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewMuteCallRequest(c.Server, id, params)
 	if err != nil {
@@ -100,6 +141,16 @@ func (c *Client) MuteCall(ctx context.Context, id string, params *MuteCallParams
 	return c.Client.Do(req)
 }
 
+// OriginateCall Çağrı Başlatma (GET)
+//
+// Uygulamalarınız üzerinden santraldeki bir dahiliye çağrı başlatmak için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde call_uuid döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Bu endpoint saniyede 3 istek (yaklaşık dakikada 180) limitine tabidir, burst değeri 100'dür.
+//
+// HAZIRLIK:
+// Online İşlem Merkezi => Bulut Santralim => Santral Ayarlarım menüsü altından API Anahtarınızı (key) öğrenmelisiniz.
+//
+// Corresponds with GET /originate (the `OriginateCall` operationId).
 func (c *Client) OriginateCall(ctx context.Context, params *OriginateCallParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewOriginateCallRequest(c.Server, params)
 	if err != nil {
@@ -112,6 +163,13 @@ func (c *Client) OriginateCall(ctx context.Context, params *OriginateCallParams,
 	return c.Client.Do(req)
 }
 
+// OriginateCallPostWithBody Çağrı Başlatma (POST)
+//
+// Uygulamalarınız üzerinden santraldeki bir dahiliye çağrı başlatmak için kullanılır. Bunun için HTTP POST metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde call_uuid döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint saniyede 3 istek (yaklaşık dakikada 180) limitine tabidir, burst değeri 100'dür.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /originate (the `OriginateCallPost` operationId).
 func (c *Client) OriginateCallPostWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewOriginateCallPostRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -124,6 +182,13 @@ func (c *Client) OriginateCallPostWithBody(ctx context.Context, contentType stri
 	return c.Client.Do(req)
 }
 
+// OriginateCallPost Çağrı Başlatma (POST)
+//
+// Uygulamalarınız üzerinden santraldeki bir dahiliye çağrı başlatmak için kullanılır. Bunun için HTTP POST metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde call_uuid döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint saniyede 3 istek (yaklaşık dakikada 180) limitine tabidir, burst değeri 100'dür.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /originate (the `OriginateCallPost` operationId).
 func (c *Client) OriginateCallPost(ctx context.Context, body OriginateCallPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewOriginateCallPostRequest(c.Server, body)
 	if err != nil {
@@ -136,6 +201,13 @@ func (c *Client) OriginateCallPost(ctx context.Context, body OriginateCallPostJS
 	return c.Client.Do(req)
 }
 
+// OriginateCallPostWithFormdataBody Çağrı Başlatma (POST)
+//
+// Uygulamalarınız üzerinden santraldeki bir dahiliye çağrı başlatmak için kullanılır. Bunun için HTTP POST metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde call_uuid döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint saniyede 3 istek (yaklaşık dakikada 180) limitine tabidir, burst değeri 100'dür.
+//
+// Takes a body of the `application/x-www-form-urlencoded` content type.
+//
+// Corresponds with POST /originate (the `OriginateCallPost` operationId).
 func (c *Client) OriginateCallPostWithFormdataBody(ctx context.Context, body OriginateCallPostFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewOriginateCallPostRequestWithFormdataBody(c.Server, body)
 	if err != nil {
@@ -148,6 +220,11 @@ func (c *Client) OriginateCallPostWithFormdataBody(ctx context.Context, body Ori
 	return c.Client.Do(req)
 }
 
+// TransferCallPost Çağrıyı Aktarma (POST)
+//
+// Santralde devam eden bir çağrıyı başka bir dahiliye aktarmak için kullanılır. POST metodu ile çağrı UUID'si ve hedef dahili kullanılarak aktarım işlemi gerçekleştirilir.
+//
+// Corresponds with POST /transfer (the `TransferCallPost` operationId).
 func (c *Client) TransferCallPost(ctx context.Context, params *TransferCallPostParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewTransferCallPostRequest(c.Server, params)
 	if err != nil {
@@ -160,6 +237,11 @@ func (c *Client) TransferCallPost(ctx context.Context, params *TransferCallPostP
 	return c.Client.Do(req)
 }
 
+// TransferCall Çağrıyı Aktarma (GET)
+//
+// Santralde devam eden bir çağrıyı aktarmak için kullanılır. HTTP GET metodu ile çağrı UUID'si ve hedef dahili kullanılarak aktarım işlemi gerçekleştirilir. Yeni çağrı başlattığınızda API'den dönen UUID'yi kullanabilirsiniz veya Olay Bildirme ile gelen UUID'leri kullanabilirsiniz.
+//
+// Corresponds with GET /transfer/{id} (the `TransferCall` operationId).
 func (c *Client) TransferCall(ctx context.Context, id string, params *TransferCallParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewTransferCallRequest(c.Server, id, params)
 	if err != nil {
@@ -172,6 +254,7 @@ func (c *Client) TransferCall(ctx context.Context, id string, params *TransferCa
 	return c.Client.Do(req)
 }
 
+// NewAnswerCallPostRequest calls the generic AnswerCallPost builder with application/json body
 func NewAnswerCallPostRequest(server string, body AnswerCallPostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -182,6 +265,7 @@ func NewAnswerCallPostRequest(server string, body AnswerCallPostJSONRequestBody)
 	return NewAnswerCallPostRequestWithBody(server, "application/json", bodyReader)
 }
 
+// NewAnswerCallPostRequestWithFormdataBody calls the generic AnswerCallPost builder with application/x-www-form-urlencoded body
 func NewAnswerCallPostRequestWithFormdataBody(server string, body AnswerCallPostFormdataRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	bodyStr, err := runtime.MarshalForm(body, nil)
@@ -192,80 +276,96 @@ func NewAnswerCallPostRequestWithFormdataBody(server string, body AnswerCallPost
 	return NewAnswerCallPostRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
 }
 
+// NewAnswerCallPostRequestWithBody constructs an http.Request for the AnswerCallPost method, with any body, and a specified content type
 func NewAnswerCallPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/answer")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// NewAnswerCallRequest constructs an http.Request for the AnswerCall method
 func NewAnswerCallRequest(server string, id string) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/answer/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateBridgeRequest constructs an http.Request for the CreateBridge method
 func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/bridge")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// AnswerCallPostWithBody Çağrıyı Cevaplama (POST)
-		//
-		// manual_answer=true parametresi ile başlatılmış bir çağrıyı cevaplamak için HTTP POST metodu ile /answer endpoint'i id parametresi ile çağrılır. Başarılı olduğunda çağrı cevaplanır ve HTTP 200 döner.
-		//
-		// Takes any type of body and a specified content type.
-		//
-		// Corresponds with POST /answer (the `AnswerCallPost` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "source", params.Source, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -274,6 +374,7 @@ func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "destination", params.Destination, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -281,7 +382,9 @@ func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.CallerId != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "caller_id", *params.CallerId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -289,8 +392,11 @@ func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Timeout != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "timeout", *params.Timeout, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -298,8 +404,11 @@ func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.AnnouncementToCaller != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "announcement_to_caller", *params.AnnouncementToCaller, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -307,8 +416,11 @@ func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.AnnouncementToCallee != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "announcement_to_callee", *params.AnnouncementToCallee, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -316,8 +428,11 @@ func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.RecordingEnabled != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "recording_enabled", *params.RecordingEnabled, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -325,70 +440,91 @@ func NewCreateBridgeRequest(server string, params *CreateBridgeParams) (*http.Re
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewHangupCallRequest constructs an http.Request for the HangupCall method
 func NewHangupCallRequest(server string, id string) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/hangup/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewMuteCallRequest constructs an http.Request for the MuteCall method
 func NewMuteCallRequest(server string, id string, params *MuteCallParams) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/mute/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewHangupCallRequest constructs an http.Request for the HangupCall method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "state", params.State, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -397,38 +533,48 @@ func NewMuteCallRequest(server string, id string, params *MuteCallParams) (*http
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewOriginateCallRequest constructs an http.Request for the OriginateCall method
 func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/originate")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewOriginateCallRequest constructs an http.Request for the OriginateCall method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "extension", params.Extension, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -437,6 +583,7 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "destination", params.Destination, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -444,7 +591,9 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.CallerId != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "caller_id", *params.CallerId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -452,8 +601,11 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.ManualAnswer != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "manual_answer", *params.ManualAnswer, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -461,8 +613,11 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Timeout != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "timeout", *params.Timeout, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -470,8 +625,11 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.AnnouncementToCallee != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "announcement_to_callee", *params.AnnouncementToCallee, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -479,8 +637,11 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.AnnouncementToCaller != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "announcement_to_caller", *params.AnnouncementToCaller, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -488,8 +649,11 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.CustomCallType != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "custom_call_type", *params.CustomCallType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -497,19 +661,24 @@ func NewOriginateCallRequest(server string, params *OriginateCallParams) (*http.
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewOriginateCallPostRequest calls the generic OriginateCallPost builder with application/json body
 func NewOriginateCallPostRequest(server string, body OriginateCallPostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -520,6 +689,7 @@ func NewOriginateCallPostRequest(server string, body OriginateCallPostJSONReques
 	return NewOriginateCallPostRequestWithBody(server, "application/json", bodyReader)
 }
 
+// NewOriginateCallPostRequestWithFormdataBody calls the generic OriginateCallPost builder with application/x-www-form-urlencoded body
 func NewOriginateCallPostRequestWithFormdataBody(server string, body OriginateCallPostFormdataRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	bodyStr, err := runtime.MarshalForm(body, nil)
@@ -530,48 +700,62 @@ func NewOriginateCallPostRequestWithFormdataBody(server string, body OriginateCa
 	return NewOriginateCallPostRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
 }
 
+// NewOriginateCallPostRequestWithBody constructs an http.Request for the OriginateCallPost method, with any body, and a specified content type
 func NewOriginateCallPostRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/originate")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// NewTransferCallPostRequest constructs an http.Request for the TransferCallPost method
 func NewTransferCallPostRequest(server string, params *TransferCallPostParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/transfer")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewOriginateCallPostRequest calls the generic OriginateCallPost builder with application/json body
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "id", params.Id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -580,6 +764,7 @@ func NewTransferCallPostRequest(server string, params *TransferCallPostParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "user_number", params.UserNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -587,208 +772,17 @@ func NewTransferCallPostRequest(server string, params *TransferCallPostParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
-
-func NewTransferCallRequest(server string, id string, params *TransferCallParams) (*http.Request, error) {
-	var err error
-	var pathParam0 string
-	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
-	if err != nil {
-		return nil, err
-	}
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-	operationPath := fmt.Sprintf("/transfer/%s", pathParam0)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-	if params != nil {
-		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewTransferCallRequest constructs an http.Request for the TransferCall method
-		// rawQueryFragments collects pre-encoded query fragments from
-		// styled parameters, preserving literal commas as delimiters
-		// per the OpenAPI spec (e.g. "color=blue,black,brown").
-
-		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "user_number", params.UserNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
-			return nil, err
-		} else {
-			for _, qp := range strings.Split(queryFrag, "&") {
-				rawQueryFragments = append(rawQueryFragments, qp)
-			}
-		}
-		if encoded := queryValues.Encode(); encoded != "" {
-			rawQueryFragments = append(rawQueryFragments, encoded)
-		}
-		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
-	}
-	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-	return req, nil
-}
-
-func (r AnswerCallPostResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r AnswerCallPostResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r AnswerCallPostResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r AnswerCallPostResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (r AnswerCallResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r AnswerCallResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r AnswerCallResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r AnswerCallResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (r CreateBridgeResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r CreateBridgeResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r CreateBridgeResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r CreateBridgeResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (r HangupCallResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r HangupCallResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r HangupCallResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r HangupCallResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (r MuteCallResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r MuteCallResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r MuteCallResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r MuteCallResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (r OriginateCallResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r OriginateCallResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// Status returns HTTPResponse.Status

@@ -6,15 +6,14 @@ package verimorswitch
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/oapi-codegen/runtime"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
+// Valid indicates whether the value is a known member of the ListAgentStatuses200JSONResponseBodyStatus enum.
 func (e ListAgentStatuses200JSONResponseBodyStatus) Valid() bool {
 	switch e {
 	case ListAgentStatuses200JSONResponseBodyStatusAVAILABLE:
@@ -30,6 +29,7 @@ func (e ListAgentStatuses200JSONResponseBodyStatus) Valid() bool {
 	}
 }
 
+// Valid indicates whether the value is a known member of the ListUserStatuses200JSONResponseBodyStatus enum.
 func (e ListUserStatuses200JSONResponseBodyStatus) Valid() bool {
 	switch e {
 	case ListUserStatuses200JSONResponseBodyStatusAVAILABLE:
@@ -45,6 +45,11 @@ func (e ListUserStatuses200JSONResponseBodyStatus) Valid() bool {
 	}
 }
 
+// ListAgentStatuses MT Durumlarını ve Üyeliklerini Listeleme
+//
+// Müşteri Temsilcilerinizin durumunu ve hangi kuyruklara üye olduklarını listelemek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/agent_statuses adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde mesajlar döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint, /user_statuses ile aynı hız sınırı havuzunu paylaşır - aynı domain/IP için ikisi birlikte dakikada toplam 2 istek gönderebilirsiniz.
+//
+// Corresponds with GET /agent_statuses (the `ListAgentStatuses` operationId).
 func (c *Client) ListAgentStatuses(ctx context.Context, params *ListAgentStatusesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListAgentStatusesRequest(c.Server, params)
 	if err != nil {
@@ -57,6 +62,11 @@ func (c *Client) ListAgentStatuses(ctx context.Context, params *ListAgentStatuse
 	return c.Client.Do(req)
 }
 
+// CreateDnd Dahili için Rahatsız Etme (DND) Modunu Ayarlama
+//
+// Kullanıcının dahili numarası için Rahatsız Etme (DND) modunu açar veya kapatır. DND açıkken kullanıcıya gelen çağrılar engellenir.
+//
+// Corresponds with GET /dnd/{id} (the `CreateDnd` operationId).
 func (c *Client) CreateDnd(ctx context.Context, id string, params *CreateDndParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateDndRequest(c.Server, id, params)
 	if err != nil {
@@ -69,6 +79,11 @@ func (c *Client) CreateDnd(ctx context.Context, id string, params *CreateDndPara
 	return c.Client.Do(req)
 }
 
+// ListExtensions Dahili Listesi
+//
+// Santralinizdeki tüm dahilileri listelemek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/extensions adresi çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde dahili listesi döner.
+//
+// Corresponds with GET /extensions (the `ListExtensions` operationId).
 func (c *Client) ListExtensions(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListExtensionsRequest(c.Server)
 	if err != nil {
@@ -81,6 +96,14 @@ func (c *Client) ListExtensions(ctx context.Context, reqEditors ...RequestEditor
 	return c.Client.Do(req)
 }
 
+// GetExtension Dahili Detayı
+//
+// Belirli bir dahilinin detaylarını getirmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/extensions/{id} adresi çağrılır.
+//
+// ÖNEMLİ NOT:
+// Yanıt, dahilinin SIP şifresini (`password`) düz metin olarak içerir. Bu yanıtı güvenli şekilde saklayın ve loglamayın.
+//
+// Corresponds with GET /extensions/{id} (the `GetExtension` operationId).
 func (c *Client) GetExtension(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetExtensionRequest(c.Server, id)
 	if err != nil {
@@ -93,6 +116,11 @@ func (c *Client) GetExtension(ctx context.Context, id string, reqEditors ...Requ
 	return c.Client.Do(req)
 }
 
+// ListUserStatuses Dahili Durumlarını Listeleme
+//
+// Dahililerinizin durumlarını listelemek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/user_statuses adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde mesajlar döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint, /agent_statuses ile aynı hız sınırı havuzunu paylaşır - aynı domain/IP için ikisi birlikte dakikada toplam 2 istek gönderebilirsiniz.
+//
+// Corresponds with GET /user_statuses (the `ListUserStatuses` operationId).
 func (c *Client) ListUserStatuses(ctx context.Context, params *ListUserStatusesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewListUserStatusesRequest(c.Server, params)
 	if err != nil {
@@ -105,6 +133,15 @@ func (c *Client) ListUserStatuses(ctx context.Context, params *ListUserStatusesP
 	return c.Client.Do(req)
 }
 
+// CreateWebphoneToken Dahili için Token (Anahtar) Alma (IFrame Gömme için)
+//
+// Web telefonunu kendi uygulamanızda kullanmak için token oluşturur. Her açılışta ilgili dahili için token alınmalıdır. Token 1 gün geçerlidir.
+//
+// Bulut Santral web telefonunu kendi web uygulamanızın içine iframe ile gömmek için kullanılır. Böylece kullanıcılarınız tek pencereyle çalışır ve iki ayrı sisteme login olmak zorunda kalmazlar.
+//
+// Online İşlem Merkezi => Abonelik İşlemleri => Personel Hesapları sayfasında, web telefonunu kullanacak her dahili için bir personel hesabı açıp ilgili dahiliyi seçmiş olmalısınız. Karşılığında personel hesabı olmayan dahililer web telefonunu kullanamaz.
+//
+// Corresponds with POST /webphone_tokens (the `CreateWebphoneToken` operationId).
 func (c *Client) CreateWebphoneToken(ctx context.Context, params *CreateWebphoneTokenParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateWebphoneTokenRequest(c.Server, params)
 	if err != nil {
@@ -117,28 +154,36 @@ func (c *Client) CreateWebphoneToken(ctx context.Context, params *CreateWebphone
 	return c.Client.Do(req)
 }
 
+// NewListAgentStatusesRequest constructs an http.Request for the ListAgentStatuses method
 func NewListAgentStatusesRequest(server string, params *ListAgentStatusesParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/agent_statuses")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// Valid indicates whether the value is a known member of the ListAgentStatuses200JSONResponseBodyStatus enum.
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.Agent != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "agent", *params.Agent, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -146,8 +191,11 @@ func NewListAgentStatusesRequest(server string, params *ListAgentStatusesParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Queue != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue", *params.Queue, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -155,8 +203,11 @@ func NewListAgentStatusesRequest(server string, params *ListAgentStatusesParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Status != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -164,44 +215,57 @@ func NewListAgentStatusesRequest(server string, params *ListAgentStatusesParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateDndRequest constructs an http.Request for the CreateDnd method
 func NewCreateDndRequest(server string, id string, params *CreateDndParams) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/dnd/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewCreateDndRequest constructs an http.Request for the CreateDnd method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "state", params.State, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -210,87 +274,112 @@ func NewCreateDndRequest(server string, id string, params *CreateDndParams) (*ht
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewListExtensionsRequest constructs an http.Request for the ListExtensions method
 func NewListExtensionsRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/extensions")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetExtensionRequest constructs an http.Request for the GetExtension method
 func NewGetExtensionRequest(server string, id string) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/extensions/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewListUserStatusesRequest constructs an http.Request for the ListUserStatuses method
 func NewListUserStatusesRequest(server string, params *ListUserStatusesParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/user_statuses")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewListExtensionsRequest constructs an http.Request for the ListExtensions method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.User != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "user", *params.User, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -298,8 +387,11 @@ func NewListUserStatusesRequest(server string, params *ListUserStatusesParams) (
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Status != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", *params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -307,39 +399,50 @@ func NewListUserStatusesRequest(server string, params *ListUserStatusesParams) (
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateWebphoneTokenRequest constructs an http.Request for the CreateWebphoneToken method
 func NewCreateWebphoneTokenRequest(server string, params *CreateWebphoneTokenParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/webphone_tokens")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewCreateWebphoneTokenRequest constructs an http.Request for the CreateWebphoneToken method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "extension", params.Extension, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -348,36 +451,44 @@ func NewCreateWebphoneTokenRequest(server string, params *CreateWebphoneTokenPar
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r ListAgentStatusesResponse) GetJSON200() *[]struct// GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
-	Agent            string   `json:"agent"`
-	BreakDescription *string  `json:"break_description,omitempty"`
-	Queues           []string `json:"queues"`// Agent MT numarası
-	// Queues MT'nin üye olduğu kuyruklar
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListAgentStatusesResponse) GetJSON200() *[]struct {
+	// Agent MT numarası
+	Agent string `json:"agent"`
 
+	// BreakDescription MT molada ise, mola açıklaması (sadece status ON_BREAK olduğunda mevcut)
+	BreakDescription *string `json:"break_description,omitempty"`
+
+	// Queues MT'nin üye olduğu kuyruklar
+	Queues []string `json:"queues"`
+
+	// Status MT durumu (AVAILABLE=Müsait, TALKING=Çağrıda, LOGGED_OUT=Çevrimdışı, ON_BREAK=Molada)
 	Status ListAgentStatuses200JSONResponseBodyStatus `json:"status"`
 } {
 	return r.JSON200
 }
 
-func (r ListAgentStatusesResponse) GetBody() []byte {// Status MT durumu (AVAILABLE=Müsait, TALKING=Çağrıda, LOGGED_OUT=Çevrimdışı, ON_BREAK=Molada)
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListAgentStatusesResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListAgentStatusesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -385,6 +496,7 @@ func (r ListAgentStatusesResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListAgentStatusesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -392,6 +504,7 @@ func (r ListAgentStatusesResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListAgentStatusesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -399,12 +512,12 @@ func (r ListAgentStatusesResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateDndResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateDndResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateDndResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -412,6 +525,7 @@ func (r CreateDndResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateDndResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -419,6 +533,7 @@ func (r CreateDndResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateDndResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -426,24 +541,32 @@ func (r CreateDndResponse) ContentType() string {
 	return ""
 }
 
-func (r ListExtensionsResponse) GetJSON200() *[]struct// Status returns HTTPResponse.Status
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
-	Dnd     *bool   `json:"dnd,omitempty"`
-	Domain  *string `json:"domain,omitempty"`
-	IsAgent *bool   `json:"is_agent,omitempty"`
-	Name    *string `json:"name,omitempty"`
-	Number  *string `json:"number,omitempty"`
+func (r ListExtensionsResponse) GetJSON200() *[]struct {
+	// Dnd Rahatsız Etme (DND) modu açık mı
+	Dnd *bool `json:"dnd,omitempty"`
+
+	// Domain Dahilinin bağlı olduğu santral (domain) adı
+	Domain *string `json:"domain,omitempty"`
+
+	// IsAgent Bu dahili bir Müşteri Temsilcisi (MT) mi
+	IsAgent *bool `json:"is_agent,omitempty"`
+
+	// Name Dahili sahibinin adı
+	Name *string `json:"name,omitempty"`
+
+	// Number Dahili numarası
+	Number *string `json:"number,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r ListExtensionsResponse) GetBody() []byte {// Dnd Rahatsız Etme (DND) modu açık mı
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListExtensionsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListExtensionsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -451,6 +574,7 @@ func (r ListExtensionsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListExtensionsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -458,6 +582,7 @@ func (r ListExtensionsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListExtensionsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -465,28 +590,50 @@ func (r ListExtensionsResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetExtensionResponse) GetJSON200() *struct {
-	Dnd                    *bool   `json:"dnd,omitempty"`
-	Domain                 *string `json:"domain,omitempty"`
-	IsAgent                *bool   `json:"is_agent,omitempty"`
-	MaxCalls               *int    `json:"max_calls,omitempty"`
-	Name                   *string `json:"name,omitempty"`
-	Number                 *string `json:"number,omitempty"`
+	// Dnd Rahatsız Etme (DND) modu açık mı
+	Dnd *bool `json:"dnd,omitempty"`
+
+	// Domain Dahilinin bağlı olduğu santral (domain) adı
+	Domain *string `json:"domain,omitempty"`
+
+	// IsAgent Bu dahili bir Müşteri Temsilcisi (MT) mi
+	IsAgent *bool `json:"is_agent,omitempty"`
+
+	// MaxCalls Dahilinin eş zamanlı kabul edebileceği maksimum çağrı sayısı
+	MaxCalls *int `json:"max_calls,omitempty"`
+
+	// Name Dahili sahibinin adı
+	Name *string `json:"name,omitempty"`
+
+	// Number Dahili numarası
+	Number *string `json:"number,omitempty"`
+
+	// OutboundCallerIdNumber Giden aramalarda kullanılan dış numara
 	OutboundCallerIdNumber *string `json:"outbound_caller_id_number,omitempty"`
-	Password               *string `json:"password,omitempty"`
-	TimeRangeBegin         *string `json:"time_range_begin,omitempty"`
-	TimeRangeEnd           *string `json:"time_range_end,omitempty"`
-	UseWebrtc              *bool   `json:"use_webrtc,omitempty"`
+
+	// Password Dahilinin SIP şifresi
+	Password *string `json:"password,omitempty"`
+
+	// TimeRangeBegin Dahilinin çalışma saati başlangıcı
+	TimeRangeBegin *string `json:"time_range_begin,omitempty"`
+
+	// TimeRangeEnd Dahilinin çalışma saati bitişi
+	TimeRangeEnd *string `json:"time_range_end,omitempty"`
+
+	// UseWebrtc WebRTC (web telefon) kullanımı açık mı
+	UseWebrtc *bool `json:"use_webrtc,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetExtensionResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetExtensionResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetExtensionResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -494,6 +641,7 @@ func (r GetExtensionResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetExtensionResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -501,6 +649,7 @@ func (r GetExtensionResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetExtensionResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -508,21 +657,23 @@ func (r GetExtensionResponse) ContentType() string {
 	return ""
 }
 
-func (r ListUserStatusesResponse) GetJSON200() *[]struct// Status returns HTTPResponse.Status
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
+func (r ListUserStatusesResponse) GetJSON200() *[]struct {
+	// Status Dahili durumu (AVAILABLE=Müsait, TALKING=Çağrıda, UNREGISTERED=Çevrimdışı, SS_DND=Bulutsantral server side DND ayarı aktif)
 	Status ListUserStatuses200JSONResponseBodyStatus `json:"status"`
-	User   int                                       `json:"user"`
+
+	// User Dahili numarası
+	User int `json:"user"`
 } {
 	return r.JSON200
 }
 
-func (r ListUserStatusesResponse) GetBody() []byte {// Status Dahili durumu (AVAILABLE=Müsait, TALKING=Çağrıda, UNREGISTERED=Çevrimdışı, SS_DND=Bulutsantral server side DND ayarı aktif)
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListUserStatusesResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListUserStatusesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -530,6 +681,7 @@ func (r ListUserStatusesResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListUserStatusesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -537,6 +689,7 @@ func (r ListUserStatusesResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListUserStatusesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -544,12 +697,12 @@ func (r ListUserStatusesResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateWebphoneTokenResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateWebphoneTokenResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateWebphoneTokenResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -557,6 +710,7 @@ func (r CreateWebphoneTokenResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateWebphoneTokenResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -564,6 +718,7 @@ func (r CreateWebphoneTokenResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateWebphoneTokenResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -571,6 +726,13 @@ func (r CreateWebphoneTokenResponse) ContentType() string {
 	return ""
 }
 
+// ListAgentStatusesWithResponse MT Durumlarını ve Üyeliklerini Listeleme
+//
+// Müşteri Temsilcilerinizin durumunu ve hangi kuyruklara üye olduklarını listelemek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/agent_statuses adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde mesajlar döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint, /user_statuses ile aynı hız sınırı havuzunu paylaşır - aynı domain/IP için ikisi birlikte dakikada toplam 2 istek gönderebilirsiniz.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /agent_statuses (the `ListAgentStatuses` operationId).
 func (c *ClientWithResponses) ListAgentStatusesWithResponse(ctx context.Context, params *ListAgentStatusesParams, reqEditors ...RequestEditorFn) (*ListAgentStatusesResponse, error) {
 	rsp, err := c.ListAgentStatuses(ctx, params, reqEditors...)
 	if err != nil {
@@ -579,6 +741,13 @@ func (c *ClientWithResponses) ListAgentStatusesWithResponse(ctx context.Context,
 	return ParseListAgentStatusesResponse(rsp)
 }
 
+// CreateDndWithResponse Dahili için Rahatsız Etme (DND) Modunu Ayarlama
+//
+// Kullanıcının dahili numarası için Rahatsız Etme (DND) modunu açar veya kapatır. DND açıkken kullanıcıya gelen çağrılar engellenir.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /dnd/{id} (the `CreateDnd` operationId).
 func (c *ClientWithResponses) CreateDndWithResponse(ctx context.Context, id string, params *CreateDndParams, reqEditors ...RequestEditorFn) (*CreateDndResponse, error) {
 	rsp, err := c.CreateDnd(ctx, id, params, reqEditors...)
 	if err != nil {
@@ -587,6 +756,13 @@ func (c *ClientWithResponses) CreateDndWithResponse(ctx context.Context, id stri
 	return ParseCreateDndResponse(rsp)
 }
 
+// ListExtensionsWithResponse Dahili Listesi
+//
+// Santralinizdeki tüm dahilileri listelemek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/extensions adresi çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde dahili listesi döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /extensions (the `ListExtensions` operationId).
 func (c *ClientWithResponses) ListExtensionsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListExtensionsResponse, error) {
 	rsp, err := c.ListExtensions(ctx, reqEditors...)
 	if err != nil {
@@ -595,6 +771,16 @@ func (c *ClientWithResponses) ListExtensionsWithResponse(ctx context.Context, re
 	return ParseListExtensionsResponse(rsp)
 }
 
+// GetExtensionWithResponse Dahili Detayı
+//
+// Belirli bir dahilinin detaylarını getirmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/extensions/{id} adresi çağrılır.
+//
+// ÖNEMLİ NOT:
+// Yanıt, dahilinin SIP şifresini (`password`) düz metin olarak içerir. Bu yanıtı güvenli şekilde saklayın ve loglamayın.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /extensions/{id} (the `GetExtension` operationId).
 func (c *ClientWithResponses) GetExtensionWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetExtensionResponse, error) {
 	rsp, err := c.GetExtension(ctx, id, reqEditors...)
 	if err != nil {
@@ -602,160 +788,3 @@ func (c *ClientWithResponses) GetExtensionWithResponse(ctx context.Context, id s
 	}
 	return ParseGetExtensionResponse(rsp)
 }
-
-func (c *ClientWithResponses) ListUserStatusesWithResponse(ctx context.Context, params *ListUserStatusesParams, reqEditors ...RequestEditorFn) (*ListUserStatusesResponse, error) {
-	rsp, err := c.ListUserStatuses(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseListUserStatusesResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateWebphoneTokenWithResponse(ctx context.Context, params *CreateWebphoneTokenParams, reqEditors ...RequestEditorFn) (*CreateWebphoneTokenResponse, error) {
-	rsp, err := c.CreateWebphoneToken(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateWebphoneTokenResponse(rsp)
-}
-
-func ParseListAgentStatusesResponse(rsp *http.Response) (*ListAgentStatusesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &ListAgentStatusesResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Status returns HTTPResponse.Status
-		// ParseListAgentStatusesResponse parses an HTTP response from a ListAgentStatusesWithResponse call
-		{
-			Agent            string   `json:"agent"`
-			BreakDescription *string  `json:"break_description,omitempty"`
-			Queues           []string `json:"queues"`// Agent MT numarası
-			// Queues MT'nin üye olduğu kuyruklar
-
-			Status ListAgentStatuses200JSONResponseBodyStatus `json:"status"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-func ParseCreateDndResponse(rsp *http.Response) (*CreateDndResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &CreateDndResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseListExtensionsResponse(rsp *http.Response) (*ListExtensionsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &ListExtensionsResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Status MT durumu (AVAILABLE=Müsait, TALKING=Çağrıda, LOGGED_OUT=Çevrimdışı, ON_BREAK=Molada)
-		// ParseListExtensionsResponse parses an HTTP response from a ListExtensionsWithResponse call
-		{
-			Dnd     *bool   `json:"dnd,omitempty"`
-			Domain  *string `json:"domain,omitempty"`
-			IsAgent *bool   `json:"is_agent,omitempty"`
-			Name    *string `json:"name,omitempty"`
-			Number  *string `json:"number,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-func ParseGetExtensionResponse(rsp *http.Response) (*GetExtensionResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &GetExtensionResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			Dnd                    *bool   `json:"dnd,omitempty"`
-			Domain                 *string `json:"domain,omitempty"`
-			IsAgent                *bool   `json:"is_agent,omitempty"`
-			MaxCalls               *int    `json:"max_calls,omitempty"`
-			Name                   *string `json:"name,omitempty"`
-			Number                 *string `json:"number,omitempty"`
-			OutboundCallerIdNumber *string `json:"outbound_caller_id_number,omitempty"`
-			Password               *string `json:"password,omitempty"`
-			TimeRangeBegin         *string `json:"time_range_begin,omitempty"`
-			TimeRangeEnd           *string `json:"time_range_end,omitempty"`
-			UseWebrtc              *bool   `json:"use_webrtc,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-func ParseListUserStatusesResponse(rsp *http.Response) (*ListUserStatusesResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &ListUserStatusesResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Dnd Rahatsız Etme (DND) modu açık mı
-		// ParseListUserStatusesResponse parses an HTTP response from a ListUserStatusesWithResponse call
-		{
-			Status ListUserStatuses200JSONResponseBodyStatus `json:"status"`
-			User   int                                       `json:"user"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-func ParseCreateWebphoneTokenResponse(rsp *http.Response) (*CreateWebphoneTokenResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &CreateWebphoneTokenResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-// Status Dahili durumu (AVAILABLE=Müsait, TALKING=Çağrıda, UNREGISTERED=Çevrimdışı, SS_DND=Bulutsantral server side DND ayarı aktif)
-// ParseCreateWebphoneTokenResponse parses an HTTP response from a CreateWebphoneTokenWithResponse call

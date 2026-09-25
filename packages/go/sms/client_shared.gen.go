@@ -14,23 +14,31 @@ import (
 	"strings"
 )
 
+// Creates a new Client, with reasonable defaults
 func NewClient(server string, opts ...ClientOption) (*Client, error) {
-	client := Client{Server: server}
-	for _, o := range // Creates a new Client, with reasonable defaults
-	opts {
+	// create a client with sane default values
+	client := Client{
+		Server: server,
+	}
+	// mutate client and add all optional params
+	for _, o := range opts {
 		if err := o(&client); err != nil {
 			return nil, err
 		}
 	}
+	// ensure the server URL always has a trailing slash
 	if !strings.HasSuffix(client.Server, "/") {
 		client.Server += "/"
 	}
+	// create httpClient, if not already present
 	if client.Client == nil {
 		client.Client = &http.Client{}
 	}
 	return &client, nil
 }
 
+// WithHTTPClient allows overriding the default Doer, which is
+// automatically created using http.Client. This is useful for tests.
 func WithHTTPClient(doer HttpRequestDoer) ClientOption {
 	return func(c *Client) error {
 		c.Client = doer
@@ -38,17 +46,16 @@ func WithHTTPClient(doer HttpRequestDoer) ClientOption {
 	}
 }
 
+// WithRequestEditorFn allows setting up a callback function, which will be
+// called right before sending the request. This can be used to mutate the request.
 func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 	return func(c *Client) error {
 		c.RequestEditors = append(c.RequestEditors, fn)
 		return nil
 	}
 }
-func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {// WithHTTPClient allows overriding the default Doer, which is
-	// automatically created using http.Client. This is useful for tests.
-	// WithRequestEditorFn allows setting up a callback function, which will be
-	// called right before sending the request. This can be used to mutate the request.
 
+func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
 			return err
@@ -62,6 +69,8 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 	return nil
 }
 
+// NewClientWithResponses creates a new ClientWithResponses, which wraps
+// Client with return type handling
 func NewClientWithResponses(server string, opts ...ClientOption) (*ClientWithResponses, error) {
 	client, err := NewClient(server, opts...)
 	if err != nil {
@@ -70,6 +79,7 @@ func NewClientWithResponses(server string, opts ...ClientOption) (*ClientWithRes
 	return &ClientWithResponses{client}, nil
 }
 
+// WithBaseURL overrides the baseURL.
 func WithBaseURL(baseURL string) ClientOption {
 	return func(c *Client) error {
 		newBaseURL, err := url.Parse(baseURL)
@@ -81,12 +91,10 @@ func WithBaseURL(baseURL string) ClientOption {
 	}
 }
 
+// NewWebhookInitiator creates a new WebhookInitiator with reasonable defaults.
 func NewWebhookInitiator(opts ...WebhookInitiatorOption) (*WebhookInitiator, error) {
 	initiator := WebhookInitiator{}
-	for _, o := range // NewClientWithResponses creates a new ClientWithResponses, which wraps
-	// Client with return type handling
-	// NewWebhookInitiator creates a new WebhookInitiator with reasonable defaults.
-	opts {
+	for _, o := range opts {
 		if err := o(&initiator); err != nil {
 			return nil, err
 		}
@@ -97,6 +105,8 @@ func NewWebhookInitiator(opts ...WebhookInitiatorOption) (*WebhookInitiator, err
 	return &initiator, nil
 }
 
+// WithWebhookHTTPClient allows overriding the default Doer, which is
+// automatically created using http.Client. This is useful for tests.
 func WithWebhookHTTPClient(doer HttpRequestDoer) WebhookInitiatorOption {
 	return func(p *WebhookInitiator) error {
 		p.Client = doer
@@ -104,18 +114,17 @@ func WithWebhookHTTPClient(doer HttpRequestDoer) WebhookInitiatorOption {
 	}
 }
 
+// WithWebhookRequestEditorFn allows setting up a callback function, which
+// will be called right before sending the webhook request. This can be
+// used to mutate the request, e.g. to add signature headers.
 func WithWebhookRequestEditorFn(fn RequestEditorFn) WebhookInitiatorOption {
 	return func(p *WebhookInitiator) error {
 		p.RequestEditors = append(p.RequestEditors, fn)
 		return nil
 	}
 }
-func (p *WebhookInitiator) applyWebhookEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {// WithWebhookHTTPClient allows overriding the default Doer, which is
-	// automatically created using http.Client. This is useful for tests.
-	// WithWebhookRequestEditorFn allows setting up a callback function, which
-	// will be called right before sending the webhook request. This can be
-	// used to mutate the request, e.g. to add signature headers.
 
+func (p *WebhookInitiator) applyWebhookEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range p.RequestEditors {
 		if err := r(ctx, req); err != nil {
 			return err
@@ -128,6 +137,7 @@ func (p *WebhookInitiator) applyWebhookEditors(ctx context.Context, req *http.Re
 	}
 	return nil
 }
+
 func (p *WebhookInitiator) GelenSMSAlimiWithBody(ctx context.Context, targetURL string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGelenSMSAlimiWebhookRequestWithBody(targetURL, contentType, body)
 	if err != nil {
@@ -139,6 +149,7 @@ func (p *WebhookInitiator) GelenSMSAlimiWithBody(ctx context.Context, targetURL 
 	}
 	return p.Client.Do(req)
 }
+
 func (p *WebhookInitiator) GelenSMSAlimi(ctx context.Context, targetURL string, body GelenSMSAlimiJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGelenSMSAlimiWebhookRequest(targetURL, body)
 	if err != nil {
@@ -150,6 +161,7 @@ func (p *WebhookInitiator) GelenSMSAlimi(ctx context.Context, targetURL string, 
 	}
 	return p.Client.Do(req)
 }
+
 func (p *WebhookInitiator) GonderimRaporuAlimiWithBody(ctx context.Context, targetURL string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGonderimRaporuAlimiWebhookRequestWithBody(targetURL, contentType, body)
 	if err != nil {
@@ -161,6 +173,7 @@ func (p *WebhookInitiator) GonderimRaporuAlimiWithBody(ctx context.Context, targ
 	}
 	return p.Client.Do(req)
 }
+
 func (p *WebhookInitiator) GonderimRaporuAlimi(ctx context.Context, targetURL string, body GonderimRaporuAlimiJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGonderimRaporuAlimiWebhookRequest(targetURL, body)
 	if err != nil {
@@ -172,6 +185,7 @@ func (p *WebhookInitiator) GonderimRaporuAlimi(ctx context.Context, targetURL st
 	}
 	return p.Client.Do(req)
 }
+
 func (p *WebhookInitiator) IYSGunlukVatandasRaporuWithBody(ctx context.Context, targetURL string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewIYSGunlukVatandasRaporuWebhookRequestWithBody(targetURL, contentType, body)
 	if err != nil {
@@ -183,6 +197,7 @@ func (p *WebhookInitiator) IYSGunlukVatandasRaporuWithBody(ctx context.Context, 
 	}
 	return p.Client.Do(req)
 }
+
 func (p *WebhookInitiator) IYSGunlukVatandasRaporu(ctx context.Context, targetURL string, body IYSGunlukVatandasRaporuJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewIYSGunlukVatandasRaporuWebhookRequest(targetURL, body)
 	if err != nil {
@@ -195,6 +210,7 @@ func (p *WebhookInitiator) IYSGunlukVatandasRaporu(ctx context.Context, targetUR
 	return p.Client.Do(req)
 }
 
+// NewGelenSMSAlimiWebhookRequest builds a application/json POST request for the GelenSMSAlimi webhook
 func NewGelenSMSAlimiWebhookRequest(targetURL string, body GelenSMSAlimiJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -205,21 +221,27 @@ func NewGelenSMSAlimiWebhookRequest(targetURL string, body GelenSMSAlimiJSONRequ
 	return NewGelenSMSAlimiWebhookRequestWithBody(targetURL, "application/json", bodyReader)
 }
 
+// NewGelenSMSAlimiWebhookRequestWithBody builds a POST request for the GelenSMSAlimi webhook with any body
 func NewGelenSMSAlimiWebhookRequestWithBody(targetURL string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 	_ = err
+
 	reqURL, err := url.Parse(targetURL)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, reqURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// NewGonderimRaporuAlimiWebhookRequest builds a application/json POST request for the GonderimRaporuAlimi webhook
 func NewGonderimRaporuAlimiWebhookRequest(targetURL string, body GonderimRaporuAlimiJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -230,21 +252,27 @@ func NewGonderimRaporuAlimiWebhookRequest(targetURL string, body GonderimRaporuA
 	return NewGonderimRaporuAlimiWebhookRequestWithBody(targetURL, "application/json", bodyReader)
 }
 
+// NewGonderimRaporuAlimiWebhookRequestWithBody builds a POST request for the GonderimRaporuAlimi webhook with any body
 func NewGonderimRaporuAlimiWebhookRequestWithBody(targetURL string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 	_ = err
+
 	reqURL, err := url.Parse(targetURL)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, reqURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// NewIYSGunlukVatandasRaporuWebhookRequest builds a application/json POST request for the IYSGunlukVatandasRaporu webhook
 func NewIYSGunlukVatandasRaporuWebhookRequest(targetURL string, body IYSGunlukVatandasRaporuJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -255,20 +283,22 @@ func NewIYSGunlukVatandasRaporuWebhookRequest(targetURL string, body IYSGunlukVa
 	return NewIYSGunlukVatandasRaporuWebhookRequestWithBody(targetURL, "application/json", bodyReader)
 }
 
+// NewIYSGunlukVatandasRaporuWebhookRequestWithBody builds a POST request for the IYSGunlukVatandasRaporu webhook with any body
 func NewIYSGunlukVatandasRaporuWebhookRequestWithBody(targetURL string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 	_ = err
+
 	reqURL, err := url.Parse(targetURL)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, reqURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
-
-// NewGelenSMSAlimiWebhookRequest builds a application/json POST request for the GelenSMSAlimi webhook
-// NewIYSGunlukVatandasRaporuWebhookRequestWithBody builds a POST request for the IYSGunlukVatandasRaporu webhook with any body

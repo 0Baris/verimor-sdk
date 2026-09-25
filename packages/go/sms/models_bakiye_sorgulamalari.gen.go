@@ -6,13 +6,16 @@ package verimorsms
 
 import "net/http"
 
+// GetV2BalanceParams defines parameters for GetV2Balance.
 type GetV2BalanceParams struct {
+	// Username Kullanıcı Adı
 	Username string `form:"username" json:"username"`
+
+	// Password Şifre
 	Password string `form:"password" json:"password"`
 }
-type GetV2BalanceResponse struct {
-	Body []byte// GetV2BalanceParams defines parameters for GetV2Balance.
-	// Password Şifre
 
+type GetV2BalanceResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }

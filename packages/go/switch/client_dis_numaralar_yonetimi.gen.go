@@ -15,6 +15,14 @@ import (
 	"strings"
 )
 
+// GetCallerIds Dış Numaralar Listesine Erişim
+//
+// Santralinizdeki Arayan Numara olarak kullanabileceğiniz numaraların listesine erişmek için kullanılır.
+//
+// HAZIRLIK:
+// Online İşlem Merkezi => Bulut Santralim => Santral Ayarlarım menüsü altından API Anahtarınızı (key) öğrenmelisiniz.
+//
+// Corresponds with GET /caller_ids (the `GetCallerIds` operationId).
 func (c *Client) GetCallerIds(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCallerIdsRequest(c.Server)
 	if err != nil {
@@ -27,6 +35,17 @@ func (c *Client) GetCallerIds(ctx context.Context, reqEditors ...RequestEditorFn
 	return c.Client.Do(req)
 }
 
+// UpdateOutboundCallerId Dahilinin Dış Numarasını (Arayan No) Değiştirme
+//
+// Santralinizdeki dahililerin dış numarasını değiştirmek için kullanılır.
+//
+// HAZIRLIK:
+// Online İşlem Merkezi => Bulut Santralim => Santral Ayarlarım menüsü altından API Anahtarınızı (key) öğrenmelisiniz.
+//
+// ÖNEMLİ NOT:
+// Kullanabileceğiniz numara listesini caller_ids API'sinden öğrenebilirsiniz.
+//
+// Corresponds with GET /update_outbound_caller_id (the `UpdateOutboundCallerId` operationId).
 func (c *Client) UpdateOutboundCallerId(ctx context.Context, params *UpdateOutboundCallerIdParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateOutboundCallerIdRequest(c.Server, params)
 	if err != nil {
@@ -39,54 +58,60 @@ func (c *Client) UpdateOutboundCallerId(ctx context.Context, params *UpdateOutbo
 	return c.Client.Do(req)
 }
 
+// NewGetCallerIdsRequest constructs an http.Request for the GetCallerIds method
 func NewGetCallerIdsRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/caller_ids")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewUpdateOutboundCallerIdRequest constructs an http.Request for the UpdateOutboundCallerId method
 func NewUpdateOutboundCallerIdRequest(server string, params *UpdateOutboundCallerIdParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/update_outbound_caller_id")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// GetCallerIds Dış Numaralar Listesine Erişim
-		//
-		// Santralinizdeki Arayan Numara olarak kullanabileceğiniz numaraların listesine erişmek için kullanılır.
-		//
-		// HAZIRLIK:
-		// Online İşlem Merkezi => Bulut Santralim => Santral Ayarlarım menüsü altından API Anahtarınızı (key) öğrenmelisiniz.
-		//
-		// Corresponds with GET /caller_ids (the `GetCallerIds` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "extension", params.Extension, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -95,6 +120,7 @@ func NewUpdateOutboundCallerIdRequest(server string, params *UpdateOutboundCalle
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "caller_id", params.CallerId, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -102,28 +128,32 @@ func NewUpdateOutboundCallerIdRequest(server string, params *UpdateOutboundCalle
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r GetCallerIdsResponse) GetJSON200() *[]string {// GetJSON200 returns the response for an HTTP 200 `application/json` response
-
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetCallerIdsResponse) GetJSON200() *[]string {
 	return r.JSON200
 }
 
-func (r GetCallerIdsResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetCallerIdsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetCallerIdsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -131,6 +161,7 @@ func (r GetCallerIdsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetCallerIdsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -138,6 +169,7 @@ func (r GetCallerIdsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetCallerIdsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -145,12 +177,12 @@ func (r GetCallerIdsResponse) ContentType() string {
 	return ""
 }
 
-func (r UpdateOutboundCallerIdResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r UpdateOutboundCallerIdResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r UpdateOutboundCallerIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -158,6 +190,7 @@ func (r UpdateOutboundCallerIdResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r UpdateOutboundCallerIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -165,6 +198,7 @@ func (r UpdateOutboundCallerIdResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateOutboundCallerIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -172,6 +206,16 @@ func (r UpdateOutboundCallerIdResponse) ContentType() string {
 	return ""
 }
 
+// GetCallerIdsWithResponse Dış Numaralar Listesine Erişim
+//
+// Santralinizdeki Arayan Numara olarak kullanabileceğiniz numaraların listesine erişmek için kullanılır.
+//
+// HAZIRLIK:
+// Online İşlem Merkezi => Bulut Santralim => Santral Ayarlarım menüsü altından API Anahtarınızı (key) öğrenmelisiniz.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /caller_ids (the `GetCallerIds` operationId).
 func (c *ClientWithResponses) GetCallerIdsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCallerIdsResponse, error) {
 	rsp, err := c.GetCallerIds(ctx, reqEditors...)
 	if err != nil {
@@ -180,6 +224,19 @@ func (c *ClientWithResponses) GetCallerIdsWithResponse(ctx context.Context, reqE
 	return ParseGetCallerIdsResponse(rsp)
 }
 
+// UpdateOutboundCallerIdWithResponse Dahilinin Dış Numarasını (Arayan No) Değiştirme
+//
+// Santralinizdeki dahililerin dış numarasını değiştirmek için kullanılır.
+//
+// HAZIRLIK:
+// Online İşlem Merkezi => Bulut Santralim => Santral Ayarlarım menüsü altından API Anahtarınızı (key) öğrenmelisiniz.
+//
+// ÖNEMLİ NOT:
+// Kullanabileceğiniz numara listesini caller_ids API'sinden öğrenebilirsiniz.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /update_outbound_caller_id (the `UpdateOutboundCallerId` operationId).
 func (c *ClientWithResponses) UpdateOutboundCallerIdWithResponse(ctx context.Context, params *UpdateOutboundCallerIdParams, reqEditors ...RequestEditorFn) (*UpdateOutboundCallerIdResponse, error) {
 	rsp, err := c.UpdateOutboundCallerId(ctx, params, reqEditors...)
 	if err != nil {
@@ -188,38 +245,44 @@ func (c *ClientWithResponses) UpdateOutboundCallerIdWithResponse(ctx context.Con
 	return ParseUpdateOutboundCallerIdResponse(rsp)
 }
 
+// ParseGetCallerIdsResponse parses an HTTP response from a GetCallerIdsWithResponse call
 func ParseGetCallerIdsResponse(rsp *http.Response) (*GetCallerIdsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetCallerIdsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetCallerIdsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []string// Status returns HTTPResponse.Status
-		// ParseGetCallerIdsResponse parses an HTTP response from a GetCallerIdsWithResponse call
-
+		var dest []string
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
-	}
-	return response, nil
-}
 
-func ParseUpdateOutboundCallerIdResponse(rsp *http.Response) (*UpdateOutboundCallerIdResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
 	}
-	response := &UpdateOutboundCallerIdResponse{Body: bodyBytes, HTTPResponse: rsp}
+
 	return response, nil
 }
 
 // ParseUpdateOutboundCallerIdResponse parses an HTTP response from a UpdateOutboundCallerIdWithResponse call
+func ParseUpdateOutboundCallerIdResponse(rsp *http.Response) (*UpdateOutboundCallerIdResponse, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &UpdateOutboundCallerIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	return response, nil
+}

@@ -6,55 +6,73 @@ package verimorswitch
 
 import "net/http"
 
+// ManageQueueUsersParams defines parameters for ManageQueueUsers.
 type ManageQueueUsersParams struct {
+	// QueueNumber Dahili ayarını değiştirmek istediğiniz kuyruğun numarası
 	QueueNumber string `form:"queue_number" json:"queue_number"`
-	UserList    string `form:"user_list" json:"user_list"`
+
+	// UserList Kuyruğa dahili eklemek, çıkarmak veya yerini değiştirmek için göndermeniz gereken değer (virgülle ayrılmış)
+	UserList string `form:"user_list" json:"user_list"`
 }
 
+// GetQueueUserListParams defines parameters for GetQueueUserList.
 type GetQueueUserListParams struct {
+	// QueueNumber Kuyruk numarası
 	QueueNumber string `form:"queue_number" json:"queue_number"`
 }
-type ManageQueueUsersResponse struct {
-	Body []byte// ManageQueueUsersParams defines parameters for ManageQueueUsers.
-	// QueueNumber Kuyruk numarası
 
+type ManageQueueUsersResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type GetQueueUserListResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// Name Dahili adı
 		Name *string `json:"name,omitempty"`
-		User *int    `json:"user,omitempty"`
+
+		// User Dahili numarası
+		User *int `json:"user,omitempty"`
 	}
 }
+
 type GetQueuesResponse struct {
-	Body []byte// Name Dahili adı
-	// User Dahili numarası
-
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
-		Name   *string `json:"name,omitempty"`
-		Number *int    `json:"number,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// Name Kuyruk adı
+		Name *string `json:"name,omitempty"`
+
+		// Number Kuyruk numarası
+		Number *int `json:"number,omitempty"`
 	}
 }
+
 type GetQueuesPendingResponse struct {
-	Body []byte// Name Kuyruk adı
-	// Number Kuyruk numarası
-
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
-		CallUuid    *string `json:"call_uuid,omitempty"`
-		CallerId    *string `json:"caller_id,omitempty"`
-		JoinedAt    *string `json:"joined_at,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// CallUuid Çağrı UUID'si
+		CallUuid *string `json:"call_uuid,omitempty"`
+
+		// CallerId Arayan numara
+		CallerId *string `json:"caller_id,omitempty"`
+
+		// JoinedAt Kuyruğa katılma zamanı (timestamp)
+		JoinedAt *string `json:"joined_at,omitempty"`
+
+		// QueueNumber Kuyruk numarası
 		QueueNumber *string `json:"queue_number,omitempty"`
-		Uuid        *string `json:"uuid,omitempty"`
-		WaitTime    *int    `json:"wait_time,omitempty"`
+
+		// Uuid Çağrı UUID'si
+		Uuid *string `json:"uuid,omitempty"`
+
+		// WaitTime Bekleme süresi (saniye)
+		WaitTime *int `json:"wait_time,omitempty"`
 	}
 }
-
-// CallUuid Çağrı UUID'si
-// WaitTime Bekleme süresi (saniye)

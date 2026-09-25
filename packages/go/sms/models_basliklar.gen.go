@@ -6,15 +6,18 @@ package verimorsms
 
 import "net/http"
 
+// GetV2HeadersParams defines parameters for GetV2Headers.
 type GetV2HeadersParams struct {
+	// Username Kullanıcı Adı
 	Username string `form:"username" json:"username"`
+
+	// Password Şifre
 	Password string `form:"password" json:"password"`
 }
+
 type GetV2HeadersResponse struct {
-	Body []byte// GetV2HeadersParams defines parameters for GetV2Headers.
-	// Password Şifre
-
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]string// JSON200 the response for an HTTP 200 `application/json` response
-
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]string
 }

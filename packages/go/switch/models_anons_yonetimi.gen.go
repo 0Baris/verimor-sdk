@@ -6,40 +6,53 @@ package verimorswitch
 
 import "net/http"
 
+// CreateAnnouncementFormdataBody defines parameters for CreateAnnouncement.
 type CreateAnnouncementFormdataBody struct {
-	Name      string `form:"name" json:"name"`
+	// Name Ses dosyasının adı
+	Name string `form:"name" json:"name"`
+
+	// Sounddata Ses dosyasının içeriği, base64 ile kodlanmış olarak
 	Sounddata string `form:"sounddata" json:"sounddata"`
 }
 
+// UpdateAnnouncementFormdataBody defines parameters for UpdateAnnouncement.
 type UpdateAnnouncementFormdataBody struct {
-	Name      *string `form:"name,omitempty" json:"name,omitempty"`
+	// Name Ses dosyasının yeni adı (opsiyonel)
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// Sounddata Ses dosyasının yeni içeriği, base64 ile kodlanmış olarak (opsiyonel)
 	Sounddata *string `form:"sounddata,omitempty" json:"sounddata,omitempty"`
 }
 
+// CreateAnnouncementFormdataRequestBody defines body for CreateAnnouncement for application/x-www-form-urlencoded ContentType.
 type CreateAnnouncementFormdataRequestBody CreateAnnouncementFormdataBody
 
+// UpdateAnnouncementFormdataRequestBody defines body for UpdateAnnouncement for application/x-www-form-urlencoded ContentType.
 type UpdateAnnouncementFormdataRequestBody UpdateAnnouncementFormdataBody
-type GetAnnouncementsResponse struct {
-	Body []byte// CreateAnnouncementFormdataBody defines parameters for CreateAnnouncement.
-	// UpdateAnnouncementFormdataRequestBody defines body for UpdateAnnouncement for application/x-www-form-urlencoded ContentType.
 
+type GetAnnouncementsResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
-		Id   *int    `json:"id,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// Id Ses dosyası ID
+		Id *int `json:"id,omitempty"`
+
+		// Name Ses dosyası adı
 		Name *string `json:"name,omitempty"`
 	}
 }
-type CreateAnnouncementResponse struct {
-	Body []byte// Id Ses dosyası ID
-	// Name Ses dosyası adı
 
+type CreateAnnouncementResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type DeleteAnnouncementResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type UpdateAnnouncementResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response

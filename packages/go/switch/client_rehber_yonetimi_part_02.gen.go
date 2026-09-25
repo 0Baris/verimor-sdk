@@ -6,42 +6,50 @@ package verimorswitch
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/oapi-codegen/runtime"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
+// NewUpdateContactRequest constructs an http.Request for the UpdateContact method
 func NewUpdateContactRequest(server string, id int, params *UpdateContactParams) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "integer", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/contacts/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewUpdateContactRequest constructs an http.Request for the UpdateContact method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.Salutation != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "salutation", *params.Salutation, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -49,8 +57,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Name != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "name", *params.Name, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -58,8 +69,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Surname != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "surname", *params.Surname, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -67,8 +81,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Tckn != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "tckn", *params.Tckn, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -76,8 +93,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Description != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "description", *params.Description, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -85,8 +105,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Phone != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "phone", *params.Phone, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -94,8 +117,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Phone1 != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "phone1", *params.Phone1, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -103,8 +129,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Email != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "email", *params.Email, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -112,8 +141,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Title != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "title", *params.Title, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -121,8 +153,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Phone2 != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "phone2", *params.Phone2, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -130,8 +165,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Fax != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "fax", *params.Fax, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -139,8 +177,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Gender != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "gender", *params.Gender, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -148,8 +189,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Birthday != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "birthday", *params.Birthday, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -157,8 +201,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.BirthdaySms != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "birthday_sms", *params.BirthdaySms, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -166,8 +213,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Weddingday != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "weddingday", *params.Weddingday, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -175,8 +225,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.WeddingdaySms != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "weddingday_sms", *params.WeddingdaySms, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -184,8 +237,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Address != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "address", *params.Address, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -193,8 +249,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Note1 != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "note1", *params.Note1, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -202,8 +261,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Note2 != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "note2", *params.Note2, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -211,8 +273,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Note3 != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "note3", *params.Note3, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -220,8 +285,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Note4 != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "note4", *params.Note4, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -229,8 +297,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.CompanyName != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "company_name", *params.CompanyName, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -238,8 +309,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.MonthlySmsDay != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "monthly_sms_day", *params.MonthlySmsDay, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -247,8 +321,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.MonthlySmsMessage != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "monthly_sms_message", *params.MonthlySmsMessage, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -256,8 +333,11 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.GroupIds != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "group_ids", *params.GroupIds, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "array", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -265,33 +345,40 @@ func NewUpdateContactRequest(server string, id int, params *UpdateContactParams)
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r ListContactGroupsResponse) GetJSON200() *[]struct// GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
-	Id   int    `json:"id"`
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r ListContactGroupsResponse) GetJSON200() *[]struct {
+	// Id Grubun benzersiz kimlik numarası
+	Id int `json:"id"`
+
+	// Name Grup adı
 	Name string `json:"name"`
 } {
 	return r.JSON200
 }
 
-func (r ListContactGroupsResponse) GetBody() []byte {// Id Grubun benzersiz kimlik numarası
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListContactGroupsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListContactGroupsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -299,6 +386,7 @@ func (r ListContactGroupsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListContactGroupsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -306,6 +394,7 @@ func (r ListContactGroupsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListContactGroupsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -313,12 +402,12 @@ func (r ListContactGroupsResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateContactGroupResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateContactGroupResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateContactGroupResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -326,6 +415,7 @@ func (r CreateContactGroupResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateContactGroupResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -333,6 +423,7 @@ func (r CreateContactGroupResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateContactGroupResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -340,12 +431,12 @@ func (r CreateContactGroupResponse) ContentType() string {
 	return ""
 }
 
-func (r DeleteContactGroupResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r DeleteContactGroupResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r DeleteContactGroupResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -353,6 +444,7 @@ func (r DeleteContactGroupResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r DeleteContactGroupResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -360,6 +452,7 @@ func (r DeleteContactGroupResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteContactGroupResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -367,12 +460,12 @@ func (r DeleteContactGroupResponse) ContentType() string {
 	return ""
 }
 
-func (r UpdateContactGroupResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r UpdateContactGroupResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r UpdateContactGroupResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -380,6 +473,7 @@ func (r UpdateContactGroupResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r UpdateContactGroupResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -387,6 +481,7 @@ func (r UpdateContactGroupResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateContactGroupResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -394,53 +489,104 @@ func (r UpdateContactGroupResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r ListContactsResponse) GetJSON200() *struct {
-	Contacts []struct// Status returns HTTPResponse.Status
-	// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
-		Birthday    *string `json:"birthday,omitempty"`
-		BirthdaySms *bool   `json:"birthday_sms,omitempty"`
-		CompanyName *string `json:"company_name,omitempty"`
-		Description *string `json:"description,omitempty"`
-		Email       string  `json:"email"`
-		Fax         *string `json:"fax,omitempty"`
-		Gender      *string `json:"gender,omitempty"`
-		GroupIds    *[]int  `json:"group_ids,omitempty"`// Birthday Doğum günü
-		// GroupIds Kişinin eklendiği gruplar
+	Contacts []struct {
+		// Birthday Doğum günü
+		Birthday *string `json:"birthday,omitempty"`
 
-		Id                int     `json:"id"`
-		MonthlySmsDay     *int    `json:"monthly_sms_day,omitempty"`
+		// BirthdaySms Doğum gününde otomatik mesaj gönderimi. 'true' veya 'false' döner
+		BirthdaySms *bool `json:"birthday_sms,omitempty"`
+
+		// CompanyName Firma adı
+		CompanyName *string `json:"company_name,omitempty"`
+
+		// Description Açıklama
+		Description *string `json:"description,omitempty"`
+
+		// Email E-posta adresi
+		Email string `json:"email"`
+
+		// Fax Fax numarası
+		Fax *string `json:"fax,omitempty"`
+
+		// Gender Cinsiyet
+		Gender *string `json:"gender,omitempty"`
+
+		// GroupIds Kişinin eklendiği gruplar
+		GroupIds *[]int `json:"group_ids,omitempty"`
+
+		// Id ID değeri. Bu değeri kullanarak Kişi silme veya güncelleme işlemlerini gerçekleştirebilirsiniz
+		Id int `json:"id"`
+
+		// MonthlySmsDay Kişiye aylık otomatik SMS gönderilecek gün. 0-31 arası rakam veya 'null' döner
+		MonthlySmsDay *int `json:"monthly_sms_day,omitempty"`
+
+		// MonthlySmsMessage Aylık SMS mesajı
 		MonthlySmsMessage *string `json:"monthly_sms_message,omitempty"`
-		Name              string  `json:"name"`
-		Note1             *string `json:"note1,omitempty"`
-		Note2             *string `json:"note2,omitempty"`
-		Note3             *string `json:"note3,omitempty"`
-		Note4             *string `json:"note4,omitempty"`
-		Phone             string  `json:"phone"`
-		Phone1            *string `json:"phone1,omitempty"`
-		Phone2            *string `json:"phone2,omitempty"`
-		Surname           string  `json:"surname"`
-		Tckn              *string `json:"tckn,omitempty"`
-		Title             *string `json:"title,omitempty"`
-		Weddingday        *string `json:"weddingday,omitempty"`
-		WeddingdaySms     *bool   `json:"weddingday_sms,omitempty"`
+
+		// Name Ad
+		Name string `json:"name"`
+
+		// Note1 Kişiyle ilgili notlar
+		Note1 *string `json:"note1,omitempty"`
+
+		// Note2 Kişiyle ilgili notlar 2
+		Note2 *string `json:"note2,omitempty"`
+
+		// Note3 Kişiyle ilgili notlar 3
+		Note3 *string `json:"note3,omitempty"`
+
+		// Note4 Kişiyle ilgili notlar 4
+		Note4 *string `json:"note4,omitempty"`
+
+		// Phone GSM numarası 1
+		Phone string `json:"phone"`
+
+		// Phone1 GSM numarası 2
+		Phone1 *string `json:"phone1,omitempty"`
+
+		// Phone2 Ek telefon numarası
+		Phone2 *string `json:"phone2,omitempty"`
+
+		// Surname Soyad
+		Surname string `json:"surname"`
+
+		// Tckn TC kimlik numarası
+		Tckn *string `json:"tckn,omitempty"`
+
+		// Title Unvan
+		Title *string `json:"title,omitempty"`
+
+		// Weddingday Evlilik günü
+		Weddingday *string `json:"weddingday,omitempty"`
+
+		// WeddingdaySms Evlilik gününde otomatik mesaj gönderimi. 'true' veya 'false' döner
+		WeddingdaySms *bool `json:"weddingday_sms,omitempty"`
 	} `json:"contacts"`
 	Pagination struct {
-		Limit      int `json:"limit"`
-		Page       int `json:"page"`
+		// Limit Listeye verilen sınır
+		Limit int `json:"limit"`
+
+		// Page Listenin hangi sayfasında olduğunuz
+		Page int `json:"page"`
+
+		// TotalCount Listede dönen kişi sayısı
 		TotalCount int `json:"total_count"`
+
+		// TotalPages Listenin kaç sayfadan oluştuğu (total_pages=total_count/limit)
 		TotalPages int `json:"total_pages"`
 	} `json:"pagination"`
 } {
 	return r.JSON200
 }
 
-func (r ListContactsResponse) GetBody() []byte {// Id ID değeri. Bu değeri kullanarak Kişi silme veya güncelleme işlemlerini gerçekleştirebilirsiniz
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ListContactsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ListContactsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -448,6 +594,7 @@ func (r ListContactsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ListContactsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -455,6 +602,7 @@ func (r ListContactsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ListContactsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -462,12 +610,12 @@ func (r ListContactsResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateContactResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateContactResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateContactResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -475,6 +623,7 @@ func (r CreateContactResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateContactResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -482,6 +631,7 @@ func (r CreateContactResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateContactResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -489,12 +639,12 @@ func (r CreateContactResponse) ContentType() string {
 	return ""
 }
 
-func (r DeleteContactResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r DeleteContactResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r DeleteContactResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -502,6 +652,7 @@ func (r DeleteContactResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r DeleteContactResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -509,6 +660,7 @@ func (r DeleteContactResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteContactResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -516,12 +668,12 @@ func (r DeleteContactResponse) ContentType() string {
 	return ""
 }
 
-func (r UpdateContactResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r UpdateContactResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r UpdateContactResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -529,6 +681,7 @@ func (r UpdateContactResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r UpdateContactResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -536,6 +689,7 @@ func (r UpdateContactResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateContactResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -543,6 +697,13 @@ func (r UpdateContactResponse) ContentType() string {
 	return ""
 }
 
+// ListContactGroupsWithResponse Grup Listesine Erişim
+//
+// Santralinizdeki kişi gruplarının listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/contact_groups adresi çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde gruplar listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /contact_groups (the `ListContactGroups` operationId).
 func (c *ClientWithResponses) ListContactGroupsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*ListContactGroupsResponse, error) {
 	rsp, err := c.ListContactGroups(ctx, reqEditors...)
 	if err != nil {
@@ -551,6 +712,13 @@ func (c *ClientWithResponses) ListContactGroupsWithResponse(ctx context.Context,
 	return ParseListContactGroupsResponse(rsp)
 }
 
+// CreateContactGroupWithResponse Grup Oluşturma
+//
+// Yeni bir kişi grubu oluşturur. Google Kişiler entegrasyonunun kapalı olması gerekir. POST metodu ile api.bulutsantralim.com/contact_groups adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde oluşturulan grubun ID'si döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /contact_groups (the `CreateContactGroup` operationId).
 func (c *ClientWithResponses) CreateContactGroupWithResponse(ctx context.Context, params *CreateContactGroupParams, reqEditors ...RequestEditorFn) (*CreateContactGroupResponse, error) {
 	rsp, err := c.CreateContactGroup(ctx, params, reqEditors...)
 	if err != nil {
@@ -559,6 +727,13 @@ func (c *ClientWithResponses) CreateContactGroupWithResponse(ctx context.Context
 	return ParseCreateContactGroupResponse(rsp)
 }
 
+// DeleteContactGroupWithResponse Grup Silme
+//
+// Mevcut bir kişi grubunu siler. Google Kişiler entegrasyonunun kapalı olması gerekir. DELETE metodu ile api.bulutsantralim.com/contact_groups/{id} adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde OK döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /contact_groups/{id} (the `DeleteContactGroup` operationId).
 func (c *ClientWithResponses) DeleteContactGroupWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*DeleteContactGroupResponse, error) {
 	rsp, err := c.DeleteContactGroup(ctx, id, reqEditors...)
 	if err != nil {
@@ -567,6 +742,13 @@ func (c *ClientWithResponses) DeleteContactGroupWithResponse(ctx context.Context
 	return ParseDeleteContactGroupResponse(rsp)
 }
 
+// UpdateContactGroupWithResponse Grup Güncelleme
+//
+// Mevcut bir kişi grubunu günceller. Google Kişiler entegrasyonunun kapalı olması gerekir. PATCH metodu ile api.bulutsantralim.com/contact_groups/{id} adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde OK döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /contact_groups/{id} (the `UpdateContactGroup` operationId).
 func (c *ClientWithResponses) UpdateContactGroupWithResponse(ctx context.Context, id int, params *UpdateContactGroupParams, reqEditors ...RequestEditorFn) (*UpdateContactGroupResponse, error) {
 	rsp, err := c.UpdateContactGroup(ctx, id, params, reqEditors...)
 	if err != nil {
@@ -575,6 +757,13 @@ func (c *ClientWithResponses) UpdateContactGroupWithResponse(ctx context.Context
 	return ParseUpdateContactGroupResponse(rsp)
 }
 
+// ListContactsWithResponse Kişiler Listesine Erişim
+//
+// Santralinizdeki kişiler listesine erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com/contacts adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde kişiler listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /contacts (the `ListContacts` operationId).
 func (c *ClientWithResponses) ListContactsWithResponse(ctx context.Context, params *ListContactsParams, reqEditors ...RequestEditorFn) (*ListContactsResponse, error) {
 	rsp, err := c.ListContacts(ctx, params, reqEditors...)
 	if err != nil {
@@ -583,6 +772,13 @@ func (c *ClientWithResponses) ListContactsWithResponse(ctx context.Context, para
 	return ParseListContactsResponse(rsp)
 }
 
+// CreateContactWithResponse Kişi Ekleme
+//
+// Yeni bir kişi oluşturur. Google Kişiler entegrasyonunun kapalı olması gerekir. POST metodu ile api.bulutsantralim.com/contacts adresine istek gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde oluşturulan kişinin ID'si döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /contacts (the `CreateContact` operationId).
 func (c *ClientWithResponses) CreateContactWithResponse(ctx context.Context, params *CreateContactParams, reqEditors ...RequestEditorFn) (*CreateContactResponse, error) {
 	rsp, err := c.CreateContact(ctx, params, reqEditors...)
 	if err != nil {
@@ -590,176 +786,3 @@ func (c *ClientWithResponses) CreateContactWithResponse(ctx context.Context, par
 	}
 	return ParseCreateContactResponse(rsp)
 }
-
-func (c *ClientWithResponses) DeleteContactWithResponse(ctx context.Context, id int, reqEditors ...RequestEditorFn) (*DeleteContactResponse, error) {
-	rsp, err := c.DeleteContact(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseDeleteContactResponse(rsp)
-}
-
-func (c *ClientWithResponses) UpdateContactWithResponse(ctx context.Context, id int, params *UpdateContactParams, reqEditors ...RequestEditorFn) (*UpdateContactResponse, error) {
-	rsp, err := c.UpdateContact(ctx, id, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseUpdateContactResponse(rsp)
-}
-
-func ParseListContactGroupsResponse(rsp *http.Response) (*ListContactGroupsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &ListContactGroupsResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Status returns HTTPResponse.Status
-		// ParseListContactGroupsResponse parses an HTTP response from a ListContactGroupsWithResponse call
-		{
-			Id   int    `json:"id"`
-			Name string `json:"name"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-func ParseCreateContactGroupResponse(rsp *http.Response) (*CreateContactGroupResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &CreateContactGroupResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseDeleteContactGroupResponse(rsp *http.Response) (*DeleteContactGroupResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &DeleteContactGroupResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseUpdateContactGroupResponse(rsp *http.Response) (*UpdateContactGroupResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &UpdateContactGroupResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseListContactsResponse(rsp *http.Response) (*ListContactsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &ListContactsResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			Contacts []struct// Id Grubun benzersiz kimlik numarası
-			// ParseListContactsResponse parses an HTTP response from a ListContactsWithResponse call
-			{
-				Birthday    *string `json:"birthday,omitempty"`
-				BirthdaySms *bool   `json:"birthday_sms,omitempty"`
-				CompanyName *string `json:"company_name,omitempty"`
-				Description *string `json:"description,omitempty"`
-				Email       string  `json:"email"`
-				Fax         *string `json:"fax,omitempty"`
-				Gender      *string `json:"gender,omitempty"`
-				GroupIds    *[]int  `json:"group_ids,omitempty"`// Birthday Doğum günü
-				// GroupIds Kişinin eklendiği gruplar
-
-				Id                int     `json:"id"`
-				MonthlySmsDay     *int    `json:"monthly_sms_day,omitempty"`
-				MonthlySmsMessage *string `json:"monthly_sms_message,omitempty"`
-				Name              string  `json:"name"`
-				Note1             *string `json:"note1,omitempty"`
-				Note2             *string `json:"note2,omitempty"`
-				Note3             *string `json:"note3,omitempty"`
-				Note4             *string `json:"note4,omitempty"`
-				Phone             string  `json:"phone"`
-				Phone1            *string `json:"phone1,omitempty"`
-				Phone2            *string `json:"phone2,omitempty"`
-				Surname           string  `json:"surname"`
-				Tckn              *string `json:"tckn,omitempty"`
-				Title             *string `json:"title,omitempty"`
-				Weddingday        *string `json:"weddingday,omitempty"`
-				WeddingdaySms     *bool   `json:"weddingday_sms,omitempty"`
-			} `json:"contacts"`
-			Pagination struct {
-				Limit      int `json:"limit"`
-				Page       int `json:"page"`
-				TotalCount int `json:"total_count"`
-				TotalPages int `json:"total_pages"`
-			} `json:"pagination"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-func ParseCreateContactResponse(rsp *http.Response) (*CreateContactResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &CreateContactResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseDeleteContactResponse(rsp *http.Response) (*DeleteContactResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &DeleteContactResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-func ParseUpdateContactResponse(rsp *http.Response) (*UpdateContactResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &UpdateContactResponse{Body: bodyBytes, HTTPResponse: rsp}
-	return response, nil
-}
-
-// Id ID değeri. Bu değeri kullanarak Kişi silme veya güncelleme işlemlerini gerçekleştirebilirsiniz
-// ParseUpdateContactResponse parses an HTTP response from a UpdateContactWithResponse call

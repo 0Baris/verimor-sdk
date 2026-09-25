@@ -6,68 +6,148 @@ package verimorswitch
 
 import "net/http"
 
+// CreateIvrCampaignJSONBody defines parameters for CreateIvrCampaign.
 type CreateIvrCampaignJSONBody struct {
-	ActiveDays *[]int `json:"active_days,omitempty"`// CreateIvrCampaignJSONBody defines parameters for CreateIvrCampaign.
 	// ActiveDays Kampanyanın çalışma günleri. 1=Pazartesi, 7=Pazar olacak şekilde integer array olarak verilir ve kampanyanın haftanın sadece belirli günleri çalışmasını sağlar.
+	ActiveDays *[]int `json:"active_days,omitempty"`
 
-	CallRetries       *int    `json:"call_retries,omitempty"`
-	CallType          string  `json:"call_type"`
-	Cli               *string `json:"cli,omitempty"`
-	DateRangeBegin    *string `json:"date_range_begin,omitempty"`
-	DateRangeEnd      *string `json:"date_range_end,omitempty"`
-	DigitRetries      *int    `json:"digit_retries,omitempty"`
-	DigitTarget0      *string `json:"digit_target_0,omitempty"`
-	DigitTarget1      *string `json:"digit_target_1,omitempty"`
-	DigitTarget2      *string `json:"digit_target_2,omitempty"`
-	DigitTarget3      *string `json:"digit_target_3,omitempty"`
-	DigitTarget4      *string `json:"digit_target_4,omitempty"`
-	DigitTarget5      *string `json:"digit_target_5,omitempty"`
-	DigitTarget6      *string `json:"digit_target_6,omitempty"`
-	DigitTarget7      *string `json:"digit_target_7,omitempty"`
-	DigitTarget8      *string `json:"digit_target_8,omitempty"`
-	DigitTarget9      *string `json:"digit_target_9,omitempty"`
+	// CallRetries Tekrar arama sayısı. Meşgul, ulaşılamıyor, cevap yok gibi durumlarda numaranın kaç defa daha aranacağını belirtir.
+	CallRetries *int `json:"call_retries,omitempty"`
+
+	// CallType Otomatik aramanın tipi. "queue" ya da "ivr" olabilir.
+	CallType string `json:"call_type"`
+
+	// Cli Arayan numara. Karşı taraf bu numarayı görür.
+	Cli *string `json:"cli,omitempty"`
+
+	// DateRangeBegin Opsiyonel. Kampanyanın aramaya başlayacağı tarih, YYYY-AA-GG formatında olmalıdır. Gönderilmezse o anki tarih kullanılır.
+	DateRangeBegin *string `json:"date_range_begin,omitempty"`
+
+	// DateRangeEnd Opsiyonel. Kampanyanın arama bitiş tarihi. YYYY-AA-GG formatında olmalıdır. Gönderilmezse date_range_begin değeri kullanılır.
+	DateRangeEnd *string `json:"date_range_end,omitempty"`
+
+	// DigitRetries Tuşlama tekrar sayısı. Geçersiz tuşlama yapıldığında veya hiç tuşlama yapılmayıp digit_timeout süresi dolduğunda, ilgili uyarı okunup Menü baştan okunur.
+	DigitRetries *int `json:"digit_retries,omitempty"`
+
+	// DigitTarget0 Aranan kişi 0 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget0 *string `json:"digit_target_0,omitempty"`
+
+	// DigitTarget1 Aranan kişi 1 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget1 *string `json:"digit_target_1,omitempty"`
+
+	// DigitTarget2 Aranan kişi 2 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget2 *string `json:"digit_target_2,omitempty"`
+
+	// DigitTarget3 Aranan kişi 3 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget3 *string `json:"digit_target_3,omitempty"`
+
+	// DigitTarget4 Aranan kişi 4 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget4 *string `json:"digit_target_4,omitempty"`
+
+	// DigitTarget5 Aranan kişi 5 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget5 *string `json:"digit_target_5,omitempty"`
+
+	// DigitTarget6 Aranan kişi 6 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget6 *string `json:"digit_target_6,omitempty"`
+
+	// DigitTarget7 Aranan kişi 7 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget7 *string `json:"digit_target_7,omitempty"`
+
+	// DigitTarget8 Aranan kişi 8 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget8 *string `json:"digit_target_8,omitempty"`
+
+	// DigitTarget9 Aranan kişi 9 tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTarget9 *string `json:"digit_target_9,omitempty"`
+
+	// DigitTargetSquare Aranan kişi kare (#) tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
 	DigitTargetSquare *string `json:"digit_target_square,omitempty"`
-	DigitTargetStar   *string `json:"digit_target_star,omitempty"`
-	DigitTimeout      *int    `json:"digit_timeout,omitempty"`
-	InvalidTarget     *string `json:"invalid_target,omitempty"`
-	IsCommercial      *bool   `json:"is_commercial,omitempty"`
-	IysBrandCode      *string `json:"iys_brand_code,omitempty"`
-	IysRecipientType  *string `json:"iys_recipient_type,omitempty"`
-	MaxThreadCount    *int    `json:"max_thread_count,omitempty"`
-	Name              string  `json:"name"`
-	PhoneList         []struct// CallRetries Tekrar arama sayısı. Meşgul, ulaşılamıyor, cevap yok gibi durumlarda numaranın kaç defa daha aranacağını belirtir.
+
+	// DigitTargetStar Aranan kişi yıldız (*) tuşuna bastığında yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	DigitTargetStar *string `json:"digit_target_star,omitempty"`
+
+	// DigitTimeout Opsiyonel. Min:1, Maks:10, Varsayılan 4'tür. Ses kaydı dinletildikten sonra burada belirtilen süre kadar bekletilip senaryoya göre ya zaman aşımı hedefine aktarılır ya da menü baştan okutulur.
+	DigitTimeout *int `json:"digit_timeout,omitempty"`
+
+	// InvalidTarget Aranan kişi ses kaydını dinledikten sonra hatalı bir tuşa bastığında ve retry_count adedi kadar tekrar denemenin sonunda yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	InvalidTarget *string `json:"invalid_target,omitempty"`
+
+	// IsCommercial Opsiyonel. true | false değeri alır. Varsayılan false. Ticari gönderimlerde true olarak belirlemelisiniz.
+	IsCommercial *bool `json:"is_commercial,omitempty"`
+
+	// IysBrandCode Sistemde kayıtlı ve onaylı başlıklarınızdan birinin "İYS Marka Kodu" değeri olmalıdır. Ticari gönderimlerde bu alanı zorunlu olarak göndermelisiniz.
+	IysBrandCode *string `json:"iys_brand_code,omitempty"`
+
+	// IysRecipientType "BIREYSEL" ya da "TACIR" olmalıdır. Ticari gönderimlerde bu alanı zorunlu olarak göndermelisiniz.
+	IysRecipientType *string `json:"iys_recipient_type,omitempty"`
+
+	// MaxThreadCount Kampanya için, eşzamanlı maksimum çağrı sayısını belirtir. Bu parametre belirtilmezse, santralin değerleri referans alınır. (Santral ayarlarında, "Otomatik Arama Kanal Sayısı" değeri referans alınır. Bu ayar için "Otomatik Arama / Sesli Mesaj (Çoklu) modülü gereklidir.)
+	MaxThreadCount *int `json:"max_thread_count,omitempty"`
+
+	// Name Kampanyanın adı.
+	Name string `json:"name"`
+
 	// PhoneList Aranacak numara listesi (zorunlu). "phone" aranacak numaradır, "905111111111" veya "05111111111" veya "5111111111" veya uluslararası için "00491234567" şeklinde olmalıdır, "phone" sahası zorunludur. "phrase" sahası bu numaraya okunacak özel mesajı belirtir, formatı için aşağıda Cümle (phrase) Formatı başlığına bakınız. "phrase" sahası zorunlu değildir. "lang" sahası, mesajın hangi dilde okunacağını belirtir. Zorunlu değildir. Geçerli diller: "tr-TR", "en-US" ve "ar-XA".
-	{
-		Lang   *string `json:"lang,omitempty"`
-		Phone  *string `json:"phone,omitempty"`
+	PhoneList []struct {
+		// Lang Mesajın dili. Gönderilmediği durumda varsayılan olarak "tr-TR" kabul edilir.
+		Lang *string `json:"lang,omitempty"`
+
+		// Phone Aranacak numara.
+		Phone *string `json:"phone,omitempty"`
+
+		// Phrase Bu numaraya okunacak özel mesaj.
 		Phrase *string `json:"phrase,omitempty"`
 	} `json:"phone_list"`
-	QueueNumber           *string `json:"queue_number,omitempty"`
-	RecordingEnabled      *bool   `json:"recording_enabled,omitempty"`
-	RingTimeout           *int    `json:"ring_timeout,omitempty"`
-	ThreadMultiplier      *int    `json:"thread_multiplier,omitempty"`
-	TimeRangeBegin        *string `json:"time_range_begin,omitempty"`
-	TimeRangeEnd          *string `json:"time_range_end,omitempty"`
-	TimeoutTarget         *string `json:"timeout_target,omitempty"`
-	WebhookUrl            *string `json:"webhook_url,omitempty"`
-	WelcomeAnnouncementId *int    `json:"welcome_announcement_id,omitempty"`
+
+	// QueueNumber Kuyruk tipi otomatik aramalarda, çağrıların hangi kuyruğa aktarılacağını belirtir.
+	QueueNumber *string `json:"queue_number,omitempty"`
+
+	// RecordingEnabled Arama başlar başlamaz kayıt yapılmasını istiyorsanız bu parametreye "true" (String) ya da "t" vermelisiniz.
+	RecordingEnabled *bool `json:"recording_enabled,omitempty"`
+
+	// RingTimeout Aranan numara çalarken beklenecek süre (saniye), 25 – 60 sn. arasında olabilir.
+	RingTimeout *int `json:"ring_timeout,omitempty"`
+
+	// ThreadMultiplier Kuyruk tipi otomatik aramalarda, eşzamanlı olarak, müsait temsilci sayısının kaç katı arama yapılacağını belirtir.
+	ThreadMultiplier *int `json:"thread_multiplier,omitempty"`
+
+	// TimeRangeBegin Opsiyonel. Kampanyanın çalışma saatlerinin başlangıcı. SS:DD (veya S:DD) formatında olmalı. Gönderilmezse "00:00" değeri kullanılır.
+	TimeRangeBegin *string `json:"time_range_begin,omitempty"`
+
+	// TimeRangeEnd Opsiyonel. Kampanyanın çalışma saatlerinin bitişi. SS:DD (veya S:DD) formatında olmalı. Gönderilmezse "23:59" değeri kullanılır.
+	TimeRangeEnd *string `json:"time_range_end,omitempty"`
+
+	// TimeoutTarget Aranan kişi ses kaydını dinledikten sonra digit_timeout süresi içinde bir tuşa basmadığında ve retry_count adedi kadar tekrar denemenin sonunda yönlendirilecek hedef (gerçekleşecek eylem). Verebileceğiniz hedeflerin listesi: 0-9, star, square, timeout, invalid. En az birisi için hedef verilmesi zorunludur.
+	TimeoutTarget *string `json:"timeout_target,omitempty"`
+
+	// WebhookUrl Tuşlamaların bildirileceği URL. Doluysa tüm tuşlamalar bu URL'e gönderilir. Kampanya oluşturulurken bu URL'e boş bir POST request'i gönderilip 200 dönmesi beklenir, bu şekilde URL'i doğruluyoruz. Aranan kişi tuşlama yaptıktan sonra bir yere yönlenmeyecekse, sadece tuşlamayı kaydetmek istiyorsanız, tuşa hedef olarak anons verebilirsiniz.
+	WebhookUrl *string `json:"webhook_url,omitempty"`
+
+	// WelcomeAnnouncementId Aranan numaralara dinletilecek ses dosyasının ID'si. Bu ses dinletilip peşinden tuşlama beklenir. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz.
+	WelcomeAnnouncementId *int `json:"welcome_announcement_id,omitempty"`
 }
 
+// UpdateIvrCampaignParams defines parameters for UpdateIvrCampaign.
 type UpdateIvrCampaignParams struct {
+	// Status Kampanya durumu: "on" başlatmak için, "off" durdurmak için:
+	//  * `on`
+	//  * `off`
+	//
 	Status string `form:"status" json:"status"`
 }
 
+// CreateIvrCampaignJSONRequestBody defines body for CreateIvrCampaign for application/json ContentType.
 type CreateIvrCampaignJSONRequestBody CreateIvrCampaignJSONBody
-type CreateIvrCampaignResponse struct {
-	Body []byte// Lang Mesajın dili. Gönderilmediği durumda varsayılan olarak "tr-TR" kabul edilir.
-	// CreateIvrCampaignJSONRequestBody defines body for CreateIvrCampaign for application/json ContentType.
 
+type CreateIvrCampaignResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type DeleteIvrCampaignResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type UpdateIvrCampaignResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response

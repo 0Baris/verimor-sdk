@@ -11,23 +11,31 @@ import (
 	"strings"
 )
 
+// Creates a new Client, with reasonable defaults
 func NewClient(server string, opts ...ClientOption) (*Client, error) {
-	client := Client{Server: server}
-	for _, o := range // Creates a new Client, with reasonable defaults
-	opts {
+	// create a client with sane default values
+	client := Client{
+		Server: server,
+	}
+	// mutate client and add all optional params
+	for _, o := range opts {
 		if err := o(&client); err != nil {
 			return nil, err
 		}
 	}
+	// ensure the server URL always has a trailing slash
 	if !strings.HasSuffix(client.Server, "/") {
 		client.Server += "/"
 	}
+	// create httpClient, if not already present
 	if client.Client == nil {
 		client.Client = &http.Client{}
 	}
 	return &client, nil
 }
 
+// WithHTTPClient allows overriding the default Doer, which is
+// automatically created using http.Client. This is useful for tests.
 func WithHTTPClient(doer HttpRequestDoer) ClientOption {
 	return func(c *Client) error {
 		c.Client = doer
@@ -35,17 +43,16 @@ func WithHTTPClient(doer HttpRequestDoer) ClientOption {
 	}
 }
 
+// WithRequestEditorFn allows setting up a callback function, which will be
+// called right before sending the request. This can be used to mutate the request.
 func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 	return func(c *Client) error {
 		c.RequestEditors = append(c.RequestEditors, fn)
 		return nil
 	}
 }
-func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {// WithHTTPClient allows overriding the default Doer, which is
-	// automatically created using http.Client. This is useful for tests.
-	// WithRequestEditorFn allows setting up a callback function, which will be
-	// called right before sending the request. This can be used to mutate the request.
 
+func (c *Client) applyEditors(ctx context.Context, req *http.Request, additionalEditors []RequestEditorFn) error {
 	for _, r := range c.RequestEditors {
 		if err := r(ctx, req); err != nil {
 			return err
@@ -59,6 +66,8 @@ func (c *Client) applyEditors(ctx context.Context, req *http.Request, additional
 	return nil
 }
 
+// NewClientWithResponses creates a new ClientWithResponses, which wraps
+// Client with return type handling
 func NewClientWithResponses(server string, opts ...ClientOption) (*ClientWithResponses, error) {
 	client, err := NewClient(server, opts...)
 	if err != nil {
@@ -67,6 +76,7 @@ func NewClientWithResponses(server string, opts ...ClientOption) (*ClientWithRes
 	return &ClientWithResponses{client}, nil
 }
 
+// WithBaseURL overrides the baseURL.
 func WithBaseURL(baseURL string) ClientOption {
 	return func(c *Client) error {
 		newBaseURL, err := url.Parse(baseURL)
@@ -77,7 +87,3 @@ func WithBaseURL(baseURL string) ClientOption {
 		return nil
 	}
 }
-
-// NewClientWithResponses creates a new ClientWithResponses, which wraps
-// Client with return type handling
-// WithBaseURL overrides the baseURL.

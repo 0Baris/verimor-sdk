@@ -15,6 +15,11 @@ import (
 	"strings"
 )
 
+// GetAnnouncements Ses Dosyaları Listesine Erişim
+//
+// Santralinizdeki ses dosyalarının listesine erişmek için kullanılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde ses dosyalarının listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with GET /announcements (the `GetAnnouncements` operationId).
 func (c *Client) GetAnnouncements(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetAnnouncementsRequest(c.Server)
 	if err != nil {
@@ -27,6 +32,13 @@ func (c *Client) GetAnnouncements(ctx context.Context, reqEditors ...RequestEdit
 	return c.Client.Do(req)
 }
 
+// CreateAnnouncementWithBody Yeni Ses Dosyası Yükleme
+//
+// Yeni ses dosyası yüklemek için kullanılır. Yeni ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini POST etmeniz yeterlidir. Başarılı durumda oluşturulan ses dosyasının ID'si döner.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /announcements (the `CreateAnnouncement` operationId).
 func (c *Client) CreateAnnouncementWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateAnnouncementRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -39,6 +51,13 @@ func (c *Client) CreateAnnouncementWithBody(ctx context.Context, contentType str
 	return c.Client.Do(req)
 }
 
+// CreateAnnouncementWithFormdataBody Yeni Ses Dosyası Yükleme
+//
+// Yeni ses dosyası yüklemek için kullanılır. Yeni ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini POST etmeniz yeterlidir. Başarılı durumda oluşturulan ses dosyasının ID'si döner.
+//
+// Takes a body of the `application/x-www-form-urlencoded` content type.
+//
+// Corresponds with POST /announcements (the `CreateAnnouncement` operationId).
 func (c *Client) CreateAnnouncementWithFormdataBody(ctx context.Context, body CreateAnnouncementFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateAnnouncementRequestWithFormdataBody(c.Server, body)
 	if err != nil {
@@ -51,6 +70,11 @@ func (c *Client) CreateAnnouncementWithFormdataBody(ctx context.Context, body Cr
 	return c.Client.Do(req)
 }
 
+// DeleteAnnouncement Ses Dosyası Silme
+//
+// Ses dosyasını silmek için kullanılır. Ses dosyasının id ile DELETE etmeniz yeterlidir. Başarılı durumda OK döner.
+//
+// Corresponds with DELETE /announcements/{id} (the `DeleteAnnouncement` operationId).
 func (c *Client) DeleteAnnouncement(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteAnnouncementRequest(c.Server, id)
 	if err != nil {
@@ -63,6 +87,13 @@ func (c *Client) DeleteAnnouncement(ctx context.Context, id string, reqEditors .
 	return c.Client.Do(req)
 }
 
+// UpdateAnnouncementWithBody Ses Dosyası Güncelleme
+//
+// Mevcut ses dosyasının adını ve içeriğini güncellemek için kullanılır. Ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini PATCH etmeniz yeterlidir. Başarılı durumda OK döner.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with PATCH /announcements/{id} (the `UpdateAnnouncement` operationId).
 func (c *Client) UpdateAnnouncementWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateAnnouncementRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -75,6 +106,13 @@ func (c *Client) UpdateAnnouncementWithBody(ctx context.Context, id string, cont
 	return c.Client.Do(req)
 }
 
+// UpdateAnnouncementWithFormdataBody Ses Dosyası Güncelleme
+//
+// Mevcut ses dosyasının adını ve içeriğini güncellemek için kullanılır. Ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini PATCH etmeniz yeterlidir. Başarılı durumda OK döner.
+//
+// Takes a body of the `application/x-www-form-urlencoded` content type.
+//
+// Corresponds with PATCH /announcements/{id} (the `UpdateAnnouncement` operationId).
 func (c *Client) UpdateAnnouncementWithFormdataBody(ctx context.Context, id string, body UpdateAnnouncementFormdataRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateAnnouncementRequestWithFormdataBody(c.Server, id, body)
 	if err != nil {
@@ -87,27 +125,34 @@ func (c *Client) UpdateAnnouncementWithFormdataBody(ctx context.Context, id stri
 	return c.Client.Do(req)
 }
 
+// NewGetAnnouncementsRequest constructs an http.Request for the GetAnnouncements method
 func NewGetAnnouncementsRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/announcements")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateAnnouncementRequestWithFormdataBody calls the generic CreateAnnouncement builder with application/x-www-form-urlencoded body
 func NewCreateAnnouncementRequestWithFormdataBody(server string, body CreateAnnouncementFormdataRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	bodyStr, err := runtime.MarshalForm(body, nil)
@@ -118,54 +163,70 @@ func NewCreateAnnouncementRequestWithFormdataBody(server string, body CreateAnno
 	return NewCreateAnnouncementRequestWithBody(server, "application/x-www-form-urlencoded", bodyReader)
 }
 
+// NewCreateAnnouncementRequestWithBody constructs an http.Request for the CreateAnnouncement method, with any body, and a specified content type
 func NewCreateAnnouncementRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/announcements")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// NewDeleteAnnouncementRequest constructs an http.Request for the DeleteAnnouncement method
 func NewDeleteAnnouncementRequest(server string, id string) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/announcements/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewUpdateAnnouncementRequestWithFormdataBody calls the generic UpdateAnnouncement builder with application/x-www-form-urlencoded body
 func NewUpdateAnnouncementRequestWithFormdataBody(server string, id string, body UpdateAnnouncementFormdataRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	bodyStr, err := runtime.MarshalForm(body, nil)
@@ -176,52 +237,59 @@ func NewUpdateAnnouncementRequestWithFormdataBody(server string, id string, body
 	return NewUpdateAnnouncementRequestWithBody(server, id, "application/x-www-form-urlencoded", bodyReader)
 }
 
+// NewUpdateAnnouncementRequestWithBody constructs an http.Request for the UpdateAnnouncement method, with any body, and a specified content type
 func NewUpdateAnnouncementRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/announcements/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
-func (r GetAnnouncementsResponse) GetJSON200() *[]struct// GetAnnouncements Ses Dosyaları Listesine Erişim
-//
-// Santralinizdeki ses dosyalarının listesine erişmek için kullanılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde ses dosyalarının listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
-//
-// Corresponds with GET /announcements (the `GetAnnouncements` operationId).
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
-	Id   *int    `json:"id,omitempty"`
+func (r GetAnnouncementsResponse) GetJSON200() *[]struct {
+	// Id Ses dosyası ID
+	Id *int `json:"id,omitempty"`
+
+	// Name Ses dosyası adı
 	Name *string `json:"name,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetAnnouncementsResponse) GetBody() []byte {// Id Ses dosyası ID
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetAnnouncementsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetAnnouncementsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -229,6 +297,7 @@ func (r GetAnnouncementsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetAnnouncementsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -236,6 +305,7 @@ func (r GetAnnouncementsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetAnnouncementsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -243,12 +313,12 @@ func (r GetAnnouncementsResponse) ContentType() string {
 	return ""
 }
 
-func (r CreateAnnouncementResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateAnnouncementResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateAnnouncementResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -256,6 +326,7 @@ func (r CreateAnnouncementResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateAnnouncementResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -263,6 +334,7 @@ func (r CreateAnnouncementResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateAnnouncementResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -270,12 +342,12 @@ func (r CreateAnnouncementResponse) ContentType() string {
 	return ""
 }
 
-func (r DeleteAnnouncementResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r DeleteAnnouncementResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r DeleteAnnouncementResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -283,6 +355,7 @@ func (r DeleteAnnouncementResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r DeleteAnnouncementResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -290,6 +363,7 @@ func (r DeleteAnnouncementResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteAnnouncementResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -297,12 +371,12 @@ func (r DeleteAnnouncementResponse) ContentType() string {
 	return ""
 }
 
-func (r UpdateAnnouncementResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r UpdateAnnouncementResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r UpdateAnnouncementResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -310,6 +384,7 @@ func (r UpdateAnnouncementResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r UpdateAnnouncementResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -317,6 +392,7 @@ func (r UpdateAnnouncementResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateAnnouncementResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -324,6 +400,13 @@ func (r UpdateAnnouncementResponse) ContentType() string {
 	return ""
 }
 
+// GetAnnouncementsWithResponse Ses Dosyaları Listesine Erişim
+//
+// Santralinizdeki ses dosyalarının listesine erişmek için kullanılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde ses dosyalarının listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /announcements (the `GetAnnouncements` operationId).
 func (c *ClientWithResponses) GetAnnouncementsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetAnnouncementsResponse, error) {
 	rsp, err := c.GetAnnouncements(ctx, reqEditors...)
 	if err != nil {
@@ -332,6 +415,13 @@ func (c *ClientWithResponses) GetAnnouncementsWithResponse(ctx context.Context, 
 	return ParseGetAnnouncementsResponse(rsp)
 }
 
+// CreateAnnouncementWithBodyWithResponse Yeni Ses Dosyası Yükleme
+//
+// Yeni ses dosyası yüklemek için kullanılır. Yeni ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini POST etmeniz yeterlidir. Başarılı durumda oluşturulan ses dosyasının ID'si döner.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /announcements (the `CreateAnnouncement` operationId).
 func (c *ClientWithResponses) CreateAnnouncementWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateAnnouncementResponse, error) {
 	rsp, err := c.CreateAnnouncementWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -340,6 +430,13 @@ func (c *ClientWithResponses) CreateAnnouncementWithBodyWithResponse(ctx context
 	return ParseCreateAnnouncementResponse(rsp)
 }
 
+// CreateAnnouncementWithFormdataBodyWithResponse Yeni Ses Dosyası Yükleme
+//
+// Yeni ses dosyası yüklemek için kullanılır. Yeni ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini POST etmeniz yeterlidir. Başarılı durumda oluşturulan ses dosyasının ID'si döner.
+//
+// Takes a body of the `application/x-www-form-urlencoded` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /announcements (the `CreateAnnouncement` operationId).
 func (c *ClientWithResponses) CreateAnnouncementWithFormdataBodyWithResponse(ctx context.Context, body CreateAnnouncementFormdataRequestBody, reqEditors ...RequestEditorFn) (*CreateAnnouncementResponse, error) {
 	rsp, err := c.CreateAnnouncementWithFormdataBody(ctx, body, reqEditors...)
 	if err != nil {
@@ -348,6 +445,13 @@ func (c *ClientWithResponses) CreateAnnouncementWithFormdataBodyWithResponse(ctx
 	return ParseCreateAnnouncementResponse(rsp)
 }
 
+// DeleteAnnouncementWithResponse Ses Dosyası Silme
+//
+// Ses dosyasını silmek için kullanılır. Ses dosyasının id ile DELETE etmeniz yeterlidir. Başarılı durumda OK döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /announcements/{id} (the `DeleteAnnouncement` operationId).
 func (c *ClientWithResponses) DeleteAnnouncementWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteAnnouncementResponse, error) {
 	rsp, err := c.DeleteAnnouncement(ctx, id, reqEditors...)
 	if err != nil {
@@ -356,6 +460,13 @@ func (c *ClientWithResponses) DeleteAnnouncementWithResponse(ctx context.Context
 	return ParseDeleteAnnouncementResponse(rsp)
 }
 
+// UpdateAnnouncementWithBodyWithResponse Ses Dosyası Güncelleme
+//
+// Mevcut ses dosyasının adını ve içeriğini güncellemek için kullanılır. Ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini PATCH etmeniz yeterlidir. Başarılı durumda OK döner.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /announcements/{id} (the `UpdateAnnouncement` operationId).
 func (c *ClientWithResponses) UpdateAnnouncementWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*UpdateAnnouncementResponse, error) {
 	rsp, err := c.UpdateAnnouncementWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -364,6 +475,13 @@ func (c *ClientWithResponses) UpdateAnnouncementWithBodyWithResponse(ctx context
 	return ParseUpdateAnnouncementResponse(rsp)
 }
 
+// UpdateAnnouncementWithFormdataBodyWithResponse Ses Dosyası Güncelleme
+//
+// Mevcut ses dosyasının adını ve içeriğini güncellemek için kullanılır. Ses dosyasının ismini ve içeriğinin base64 ile kodlanmış halini PATCH etmeniz yeterlidir. Başarılı durumda OK döner.
+//
+// Takes a body of the `application/x-www-form-urlencoded` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /announcements/{id} (the `UpdateAnnouncement` operationId).
 func (c *ClientWithResponses) UpdateAnnouncementWithFormdataBodyWithResponse(ctx context.Context, id string, body UpdateAnnouncementFormdataRequestBody, reqEditors ...RequestEditorFn) (*UpdateAnnouncementResponse, error) {
 	rsp, err := c.UpdateAnnouncementWithFormdataBody(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -372,66 +490,82 @@ func (c *ClientWithResponses) UpdateAnnouncementWithFormdataBodyWithResponse(ctx
 	return ParseUpdateAnnouncementResponse(rsp)
 }
 
+// ParseGetAnnouncementsResponse parses an HTTP response from a GetAnnouncementsWithResponse call
 func ParseGetAnnouncementsResponse(rsp *http.Response) (*GetAnnouncementsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetAnnouncementsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetAnnouncementsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Status returns HTTPResponse.Status
-		// ParseGetAnnouncementsResponse parses an HTTP response from a GetAnnouncementsWithResponse call
-		{
-			Id   *int    `json:"id,omitempty"`
+		var dest []struct {
+			// Id Ses dosyası ID
+			Id *int `json:"id,omitempty"`
+
+			// Name Ses dosyası adı
 			Name *string `json:"name,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseCreateAnnouncementResponse parses an HTTP response from a CreateAnnouncementWithResponse call
 func ParseCreateAnnouncementResponse(rsp *http.Response) (*CreateAnnouncementResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &CreateAnnouncementResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &CreateAnnouncementResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseDeleteAnnouncementResponse parses an HTTP response from a DeleteAnnouncementWithResponse call
 func ParseDeleteAnnouncementResponse(rsp *http.Response) (*DeleteAnnouncementResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &DeleteAnnouncementResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &DeleteAnnouncementResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseUpdateAnnouncementResponse parses an HTTP response from a UpdateAnnouncementWithResponse call
 func ParseUpdateAnnouncementResponse(rsp *http.Response) (*UpdateAnnouncementResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &UpdateAnnouncementResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &UpdateAnnouncementResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
-
-// Id Ses dosyası ID
-// ParseUpdateAnnouncementResponse parses an HTTP response from a UpdateAnnouncementWithResponse call

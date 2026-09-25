@@ -6,152 +6,315 @@ package verimorswitch
 
 import "net/http"
 
+// CreateContactGroupParams defines parameters for CreateContactGroup.
 type CreateContactGroupParams struct {
+	// Name Oluşturulacak grubun adı
 	Name string `form:"name" json:"name"`
 }
 
+// UpdateContactGroupParams defines parameters for UpdateContactGroup.
 type UpdateContactGroupParams struct {
+	// Name Grubun yeni adı
 	Name string `form:"name" json:"name"`
 }
 
+// ListContactsParams defines parameters for ListContacts.
 type ListContactsParams struct {
-	Page  *int `form:"page,omitempty" json:"page,omitempty"`
+	// Page Listenin hangi sayfasında olduğunuz
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit Listeyi sınırlayabilirsiniz. Varsayılan değer 10, minimum değer 10, maksimum değer 100
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// CreateContactParams defines parameters for CreateContact.
 type CreateContactParams struct {
-	Salutation        *string `form:"salutation,omitempty" json:"salutation,omitempty"`
-	Name              string  `form:"name" json:"name"`
-	Surname           string  `form:"surname" json:"surname"`
-	Tckn              *string `form:"tckn,omitempty" json:"tckn,omitempty"`
-	Description       *string `form:"description,omitempty" json:"description,omitempty"`
-	Phone             string  `form:"phone" json:"phone"`
-	Phone1            *string `form:"phone1,omitempty" json:"phone1,omitempty"`
-	Email             *string `form:"email,omitempty" json:"email,omitempty"`
-	Title             *string `form:"title,omitempty" json:"title,omitempty"`
-	Phone2            *string `form:"phone2,omitempty" json:"phone2,omitempty"`
-	Fax               *string `form:"fax,omitempty" json:"fax,omitempty"`
-	Gender            *string `form:"gender,omitempty" json:"gender,omitempty"`
-	Birthday          *string `form:"birthday,omitempty" json:"birthday,omitempty"`
-	BirthdaySms       *bool   `form:"birthday_sms,omitempty" json:"birthday_sms,omitempty"`
-	Weddingday        *string `form:"weddingday,omitempty" json:"weddingday,omitempty"`
-	WeddingdaySms     *bool   `form:"weddingday_sms,omitempty" json:"weddingday_sms,omitempty"`
-	Address           *string `form:"address,omitempty" json:"address,omitempty"`
-	Note1             *string `form:"note1,omitempty" json:"note1,omitempty"`
-	Note2             *string `form:"note2,omitempty" json:"note2,omitempty"`
-	Note3             *string `form:"note3,omitempty" json:"note3,omitempty"`
-	Note4             *string `form:"note4,omitempty" json:"note4,omitempty"`
-	CompanyName       *string `form:"company_name,omitempty" json:"company_name,omitempty"`
-	MonthlySmsDay     *int    `form:"monthly_sms_day,omitempty" json:"monthly_sms_day,omitempty"`
+	// Salutation Hitap şekli (Bay, Bayan vb.)
+	Salutation *string `form:"salutation,omitempty" json:"salutation,omitempty"`
+
+	// Name Ad
+	Name string `form:"name" json:"name"`
+
+	// Surname Soyad
+	Surname string `form:"surname" json:"surname"`
+
+	// Tckn TC kimlik numarası
+	Tckn *string `form:"tckn,omitempty" json:"tckn,omitempty"`
+
+	// Description Açıklama
+	Description *string `form:"description,omitempty" json:"description,omitempty"`
+
+	// Phone GSM numarası 1
+	Phone string `form:"phone" json:"phone"`
+
+	// Phone1 GSM numarası 2
+	Phone1 *string `form:"phone1,omitempty" json:"phone1,omitempty"`
+
+	// Email E-posta adresi
+	Email *string `form:"email,omitempty" json:"email,omitempty"`
+
+	// Title Unvan
+	Title *string `form:"title,omitempty" json:"title,omitempty"`
+
+	// Phone2 Ek telefon numarası
+	Phone2 *string `form:"phone2,omitempty" json:"phone2,omitempty"`
+
+	// Fax Fax numarası
+	Fax *string `form:"fax,omitempty" json:"fax,omitempty"`
+
+	// Gender Cinsiyet (Erkek: 'm', Kadın: 'f' olarak gönderilmeli)
+	Gender *string `form:"gender,omitempty" json:"gender,omitempty"`
+
+	// Birthday Doğum günü (dd.mm.yyyy formatında olmalı, birthday_sms parametresi 'true' olarak gönderildiği zaman zorunludur)
+	Birthday *string `form:"birthday,omitempty" json:"birthday,omitempty"`
+
+	// BirthdaySms Doğum gününde otomatik mesaj gönderimi. Devreye girmesi için değeri 'true' olarak gönderilmeli
+	BirthdaySms *bool `form:"birthday_sms,omitempty" json:"birthday_sms,omitempty"`
+
+	// Weddingday Evlilik günü (dd.mm.yyyy formatında olmalı, weddingday_sms parametresi 'true' olarak gönderildiği zaman zorunludur)
+	Weddingday *string `form:"weddingday,omitempty" json:"weddingday,omitempty"`
+
+	// WeddingdaySms Evlilik gününde otomatik mesaj gönderimi. Devreye girmesi için değeri 'true' olarak gönderilmeli
+	WeddingdaySms *bool `form:"weddingday_sms,omitempty" json:"weddingday_sms,omitempty"`
+
+	// Address Adres
+	Address *string `form:"address,omitempty" json:"address,omitempty"`
+
+	// Note1 Kişiyle ilgili notlar
+	Note1 *string `form:"note1,omitempty" json:"note1,omitempty"`
+
+	// Note2 Kişiyle ilgili notlar 2
+	Note2 *string `form:"note2,omitempty" json:"note2,omitempty"`
+
+	// Note3 Kişiyle ilgili notlar 3
+	Note3 *string `form:"note3,omitempty" json:"note3,omitempty"`
+
+	// Note4 Kişiyle ilgili notlar 4
+	Note4 *string `form:"note4,omitempty" json:"note4,omitempty"`
+
+	// CompanyName Firma adı
+	CompanyName *string `form:"company_name,omitempty" json:"company_name,omitempty"`
+
+	// MonthlySmsDay Kişiye aylık otomatik SMS gönderilmesini istiyorsanız gönderilecek günü giriniz (1-31 arası)
+	MonthlySmsDay *int `form:"monthly_sms_day,omitempty" json:"monthly_sms_day,omitempty"`
+
+	// MonthlySmsMessage Aylık SMS mesajı (monthly_sms_day parametresi girildiği zaman zorunludur)
 	MonthlySmsMessage *string `form:"monthly_sms_message,omitempty" json:"monthly_sms_message,omitempty"`
-	GroupIds          *[]int  `form:"group_ids,omitempty" json:"group_ids,omitempty"`// CreateContactGroupParams defines parameters for CreateContactGroup.
+
 	// GroupIds Kişinin eklenmesini istediğiniz grubun id değeri
-
+	GroupIds *[]int `form:"group_ids,omitempty" json:"group_ids,omitempty"`
 }
 
+// UpdateContactParams defines parameters for UpdateContact.
 type UpdateContactParams struct {
-	Salutation        *string `form:"salutation,omitempty" json:"salutation,omitempty"`
-	Name              *string `form:"name,omitempty" json:"name,omitempty"`
-	Surname           *string `form:"surname,omitempty" json:"surname,omitempty"`
-	Tckn              *string `form:"tckn,omitempty" json:"tckn,omitempty"`
-	Description       *string `form:"description,omitempty" json:"description,omitempty"`
-	Phone             *string `form:"phone,omitempty" json:"phone,omitempty"`
-	Phone1            *string `form:"phone1,omitempty" json:"phone1,omitempty"`
-	Email             *string `form:"email,omitempty" json:"email,omitempty"`
-	Title             *string `form:"title,omitempty" json:"title,omitempty"`
-	Phone2            *string `form:"phone2,omitempty" json:"phone2,omitempty"`
-	Fax               *string `form:"fax,omitempty" json:"fax,omitempty"`
-	Gender            *string `form:"gender,omitempty" json:"gender,omitempty"`
-	Birthday          *string `form:"birthday,omitempty" json:"birthday,omitempty"`
-	BirthdaySms       *bool   `form:"birthday_sms,omitempty" json:"birthday_sms,omitempty"`
-	Weddingday        *string `form:"weddingday,omitempty" json:"weddingday,omitempty"`
-	WeddingdaySms     *bool   `form:"weddingday_sms,omitempty" json:"weddingday_sms,omitempty"`
-	Address           *string `form:"address,omitempty" json:"address,omitempty"`
-	Note1             *string `form:"note1,omitempty" json:"note1,omitempty"`
-	Note2             *string `form:"note2,omitempty" json:"note2,omitempty"`
-	Note3             *string `form:"note3,omitempty" json:"note3,omitempty"`
-	Note4             *string `form:"note4,omitempty" json:"note4,omitempty"`
-	CompanyName       *string `form:"company_name,omitempty" json:"company_name,omitempty"`
-	MonthlySmsDay     *int    `form:"monthly_sms_day,omitempty" json:"monthly_sms_day,omitempty"`
-	MonthlySmsMessage *string `form:"monthly_sms_message,omitempty" json:"monthly_sms_message,omitempty"`
-	GroupIds          *[]int  `form:"group_ids,omitempty" json:"group_ids,omitempty"`// UpdateContactParams defines parameters for UpdateContact.
-	// GroupIds Kişi grubu ID'leri dizisi
+	// Salutation Hitap şekli (Bay, Bayan vb.)
+	Salutation *string `form:"salutation,omitempty" json:"salutation,omitempty"`
 
+	// Name İsim
+	Name *string `form:"name,omitempty" json:"name,omitempty"`
+
+	// Surname Soyisim
+	Surname *string `form:"surname,omitempty" json:"surname,omitempty"`
+
+	// Tckn T.C. Kimlik Numarası
+	Tckn *string `form:"tckn,omitempty" json:"tckn,omitempty"`
+
+	// Description Açıklama
+	Description *string `form:"description,omitempty" json:"description,omitempty"`
+
+	// Phone Ana telefon numarası
+	Phone *string `form:"phone,omitempty" json:"phone,omitempty"`
+
+	// Phone1 İkinci telefon numarası
+	Phone1 *string `form:"phone1,omitempty" json:"phone1,omitempty"`
+
+	// Email E-posta adresi
+	Email *string `form:"email,omitempty" json:"email,omitempty"`
+
+	// Title Ünvan
+	Title *string `form:"title,omitempty" json:"title,omitempty"`
+
+	// Phone2 Üçüncü telefon numarası
+	Phone2 *string `form:"phone2,omitempty" json:"phone2,omitempty"`
+
+	// Fax Faks numarası
+	Fax *string `form:"fax,omitempty" json:"fax,omitempty"`
+
+	// Gender Cinsiyet
+	Gender *string `form:"gender,omitempty" json:"gender,omitempty"`
+
+	// Birthday Doğum tarihi
+	Birthday *string `form:"birthday,omitempty" json:"birthday,omitempty"`
+
+	// BirthdaySms Doğum günü SMS hatırlatması
+	BirthdaySms *bool `form:"birthday_sms,omitempty" json:"birthday_sms,omitempty"`
+
+	// Weddingday Evlilik yıldönümü tarihi
+	Weddingday *string `form:"weddingday,omitempty" json:"weddingday,omitempty"`
+
+	// WeddingdaySms Evlilik yıldönümü SMS hatırlatması
+	WeddingdaySms *bool `form:"weddingday_sms,omitempty" json:"weddingday_sms,omitempty"`
+
+	// Address Adres
+	Address *string `form:"address,omitempty" json:"address,omitempty"`
+
+	// Note1 Not 1
+	Note1 *string `form:"note1,omitempty" json:"note1,omitempty"`
+
+	// Note2 Not 2
+	Note2 *string `form:"note2,omitempty" json:"note2,omitempty"`
+
+	// Note3 Not 3
+	Note3 *string `form:"note3,omitempty" json:"note3,omitempty"`
+
+	// Note4 Not 4
+	Note4 *string `form:"note4,omitempty" json:"note4,omitempty"`
+
+	// CompanyName Şirket adı
+	CompanyName *string `form:"company_name,omitempty" json:"company_name,omitempty"`
+
+	// MonthlySmsDay Aylık SMS günü (1-31)
+	MonthlySmsDay *int `form:"monthly_sms_day,omitempty" json:"monthly_sms_day,omitempty"`
+
+	// MonthlySmsMessage Aylık SMS mesajı
+	MonthlySmsMessage *string `form:"monthly_sms_message,omitempty" json:"monthly_sms_message,omitempty"`
+
+	// GroupIds Kişi grubu ID'leri dizisi
+	GroupIds *[]int `form:"group_ids,omitempty" json:"group_ids,omitempty"`
 }
+
 type ListContactGroupsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
-		Id   int    `json:"id"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
+		// Id Grubun benzersiz kimlik numarası
+		Id int `json:"id"`
+
+		// Name Grup adı
 		Name string `json:"name"`
 	}
 }
-type CreateContactGroupResponse struct {
-	Body []byte// Id Grubun benzersiz kimlik numarası
-	// Name Grup adı
 
+type CreateContactGroupResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type DeleteContactGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type UpdateContactGroupResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type ListContactsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Contacts []struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
-			Birthday    *string `json:"birthday,omitempty"`
-			BirthdaySms *bool   `json:"birthday_sms,omitempty"`
-			CompanyName *string `json:"company_name,omitempty"`
-			Description *string `json:"description,omitempty"`
-			Email       string  `json:"email"`
-			Fax         *string `json:"fax,omitempty"`
-			Gender      *string `json:"gender,omitempty"`
-			GroupIds    *[]int  `json:"group_ids,omitempty"`// Birthday Doğum günü
-			// GroupIds Kişinin eklendiği gruplar
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Contacts []struct {
+			// Birthday Doğum günü
+			Birthday *string `json:"birthday,omitempty"`
 
-			Id                int     `json:"id"`
-			MonthlySmsDay     *int    `json:"monthly_sms_day,omitempty"`
+			// BirthdaySms Doğum gününde otomatik mesaj gönderimi. 'true' veya 'false' döner
+			BirthdaySms *bool `json:"birthday_sms,omitempty"`
+
+			// CompanyName Firma adı
+			CompanyName *string `json:"company_name,omitempty"`
+
+			// Description Açıklama
+			Description *string `json:"description,omitempty"`
+
+			// Email E-posta adresi
+			Email string `json:"email"`
+
+			// Fax Fax numarası
+			Fax *string `json:"fax,omitempty"`
+
+			// Gender Cinsiyet
+			Gender *string `json:"gender,omitempty"`
+
+			// GroupIds Kişinin eklendiği gruplar
+			GroupIds *[]int `json:"group_ids,omitempty"`
+
+			// Id ID değeri. Bu değeri kullanarak Kişi silme veya güncelleme işlemlerini gerçekleştirebilirsiniz
+			Id int `json:"id"`
+
+			// MonthlySmsDay Kişiye aylık otomatik SMS gönderilecek gün. 0-31 arası rakam veya 'null' döner
+			MonthlySmsDay *int `json:"monthly_sms_day,omitempty"`
+
+			// MonthlySmsMessage Aylık SMS mesajı
 			MonthlySmsMessage *string `json:"monthly_sms_message,omitempty"`
-			Name              string  `json:"name"`
-			Note1             *string `json:"note1,omitempty"`
-			Note2             *string `json:"note2,omitempty"`
-			Note3             *string `json:"note3,omitempty"`
-			Note4             *string `json:"note4,omitempty"`
-			Phone             string  `json:"phone"`
-			Phone1            *string `json:"phone1,omitempty"`
-			Phone2            *string `json:"phone2,omitempty"`
-			Surname           string  `json:"surname"`
-			Tckn              *string `json:"tckn,omitempty"`
-			Title             *string `json:"title,omitempty"`
-			Weddingday        *string `json:"weddingday,omitempty"`
-			WeddingdaySms     *bool   `json:"weddingday_sms,omitempty"`
+
+			// Name Ad
+			Name string `json:"name"`
+
+			// Note1 Kişiyle ilgili notlar
+			Note1 *string `json:"note1,omitempty"`
+
+			// Note2 Kişiyle ilgili notlar 2
+			Note2 *string `json:"note2,omitempty"`
+
+			// Note3 Kişiyle ilgili notlar 3
+			Note3 *string `json:"note3,omitempty"`
+
+			// Note4 Kişiyle ilgili notlar 4
+			Note4 *string `json:"note4,omitempty"`
+
+			// Phone GSM numarası 1
+			Phone string `json:"phone"`
+
+			// Phone1 GSM numarası 2
+			Phone1 *string `json:"phone1,omitempty"`
+
+			// Phone2 Ek telefon numarası
+			Phone2 *string `json:"phone2,omitempty"`
+
+			// Surname Soyad
+			Surname string `json:"surname"`
+
+			// Tckn TC kimlik numarası
+			Tckn *string `json:"tckn,omitempty"`
+
+			// Title Unvan
+			Title *string `json:"title,omitempty"`
+
+			// Weddingday Evlilik günü
+			Weddingday *string `json:"weddingday,omitempty"`
+
+			// WeddingdaySms Evlilik gününde otomatik mesaj gönderimi. 'true' veya 'false' döner
+			WeddingdaySms *bool `json:"weddingday_sms,omitempty"`
 		} `json:"contacts"`
 		Pagination struct {
-			Limit      int `json:"limit"`
-			Page       int `json:"page"`
+			// Limit Listeye verilen sınır
+			Limit int `json:"limit"`
+
+			// Page Listenin hangi sayfasında olduğunuz
+			Page int `json:"page"`
+
+			// TotalCount Listede dönen kişi sayısı
 			TotalCount int `json:"total_count"`
+
+			// TotalPages Listenin kaç sayfadan oluştuğu (total_pages=total_count/limit)
 			TotalPages int `json:"total_pages"`
 		} `json:"pagination"`
 	}
 }
-type CreateContactResponse struct {
-	Body []byte// Id ID değeri. Bu değeri kullanarak Kişi silme veya güncelleme işlemlerini gerçekleştirebilirsiniz
-	// TotalPages Listenin kaç sayfadan oluştuğu (total_pages=total_count/limit)
 
+type CreateContactResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type DeleteContactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type UpdateContactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response

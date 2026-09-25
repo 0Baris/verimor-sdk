@@ -6,55 +6,81 @@ package verimorswitch
 
 import "net/http"
 
+// Defines values for GetCrmIntegrations200JSONResponseBodyAnswered.
 const (
 	GetCrmIntegrations200JSONResponseBodyAnsweredOff GetCrmIntegrations200JSONResponseBodyAnswered = "off"
 	GetCrmIntegrations200JSONResponseBodyAnsweredOn  GetCrmIntegrations200JSONResponseBodyAnswered = "on"
 )
 
+// Defines values for GetCrmIntegrations200JSONResponseBodyHangup.
 const (
 	GetCrmIntegrations200JSONResponseBodyHangupOff GetCrmIntegrations200JSONResponseBodyHangup = "off"
 	GetCrmIntegrations200JSONResponseBodyHangupOn  GetCrmIntegrations200JSONResponseBodyHangup = "on"
 )
 
+// Defines values for GetCrmIntegrations200JSONResponseBodyRinging.
 const (
 	GetCrmIntegrations200JSONResponseBodyRingingOff GetCrmIntegrations200JSONResponseBodyRinging = "off"
 	GetCrmIntegrations200JSONResponseBodyRingingOn  GetCrmIntegrations200JSONResponseBodyRinging = "on"
 )
 
+// GetCrmIntegrations200JSONResponseBodyAnswered defines parameters for GetCrmIntegrations.
 type GetCrmIntegrations200JSONResponseBodyAnswered string
 
+// GetCrmIntegrations200JSONResponseBodyHangup defines parameters for GetCrmIntegrations.
 type GetCrmIntegrations200JSONResponseBodyHangup string
 
+// GetCrmIntegrations200JSONResponseBodyRinging defines parameters for GetCrmIntegrations.
 type GetCrmIntegrations200JSONResponseBodyRinging string
 
+// UpdateCrmIntegrationsParams defines parameters for UpdateCrmIntegrations.
 type UpdateCrmIntegrationsParams struct {
-	Ringing         *string `form:"ringing,omitempty" json:"ringing,omitempty"`
-	Answered        *string `form:"answered,omitempty" json:"answered,omitempty"`
-	Hangup          *string `form:"hangup,omitempty" json:"hangup,omitempty"`
+	// Ringing Çağrı çalma olayı bildirimlerini etkinleştir/devre dışı bırak:
+	//  * `on`
+	//  * `off`
+	//
+	Ringing *string `form:"ringing,omitempty" json:"ringing,omitempty"`
+
+	// Answered Çağrı cevaplanma olayı bildirimlerini etkinleştir/devre dışı bırak
+	Answered *string `form:"answered,omitempty" json:"answered,omitempty"`
+
+	// Hangup Çağrı kapanma olayı bildirimlerini etkinleştir/devre dışı bırak
+	Hangup *string `form:"hangup,omitempty" json:"hangup,omitempty"`
+
+	// NotificationUrl CRM bildirimlerinin gönderileceği webhook URL adresi
 	NotificationUrl *string `form:"notification_url,omitempty" json:"notification_url,omitempty"`
 }
-type GetCrmIntegrationsResponse struct {
-	Body []byte// Defines values for GetCrmIntegrations200JSONResponseBodyAnswered.
-	// NotificationUrl CRM bildirimlerinin gönderileceği webhook URL adresi
 
+type GetCrmIntegrationsResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Answered        GetCrmIntegrations200JSONResponseBodyAnswered `json:"answered"`
-		Hangup          GetCrmIntegrations200JSONResponseBodyHangup   `json:"hangup"`
-		NotificationUrl string                                        `json:"notification_url"`
-		Ringing         GetCrmIntegrations200JSONResponseBodyRinging  `json:"ringing"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		// Answered Çağrı cevaplanma olayları için webhook bildirimi (on: aktif, off: pasif)
+		Answered GetCrmIntegrations200JSONResponseBodyAnswered `json:"answered"`
+
+		// Hangup Çağrı kapanma olayları için webhook bildirimi (on: aktif, off: pasif)
+		Hangup GetCrmIntegrations200JSONResponseBodyHangup `json:"hangup"`
+
+		// NotificationUrl CRM bildirimlerinin gönderileceği webhook URL adresi
+		NotificationUrl string `json:"notification_url"`
+
+		// Ringing Çağrı çalma olayları için webhook bildirimi (on: aktif, off: pasif)
+		Ringing GetCrmIntegrations200JSONResponseBodyRinging `json:"ringing"`
 	}
 }
-type UpdateCrmIntegrationsResponse struct {
-	Body []byte// JSON200 the response for an HTTP 200 `application/json` response
-	// Ringing Çağrı çalma olayları için webhook bildirimi (on: aktif, off: pasif)
 
+type UpdateCrmIntegrationsResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type WebhookPayloadExamplesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		// AnsweredEvent Çağrı cevaplandığında gönderilen payload
 		AnsweredEvent *struct {
 			AnswerTime   *string `json:"answer_time,omitempty"`
 			CallId       *string `json:"call_id,omitempty"`
@@ -62,6 +88,8 @@ type WebhookPayloadExamplesResponse struct {
 			CallerNumber *string `json:"caller_number,omitempty"`
 			Event        *string `json:"event,omitempty"`
 		} `json:"answered_event,omitempty"`
+
+		// HangupEvent Çağrı sonlandığında gönderilen payload
 		HangupEvent *struct {
 			CallId       *string `json:"call_id,omitempty"`
 			CalledNumber *string `json:"called_number,omitempty"`
@@ -70,6 +98,8 @@ type WebhookPayloadExamplesResponse struct {
 			Event        *string `json:"event,omitempty"`
 			HangupCause  *string `json:"hangup_cause,omitempty"`
 		} `json:"hangup_event,omitempty"`
+
+		// RingingEvent Çağrı çalmaya başladığında gönderilen payload
 		RingingEvent *struct {
 			CallId       *string `json:"call_id,omitempty"`
 			CalledNumber *string `json:"called_number,omitempty"`
@@ -79,6 +109,3 @@ type WebhookPayloadExamplesResponse struct {
 		} `json:"ringing_event,omitempty"`
 	}
 }
-
-// JSON200 the response for an HTTP 200 `application/json` response
-// RingingEvent Çağrı çalmaya başladığında gönderilen payload

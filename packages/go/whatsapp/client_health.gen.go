@@ -14,6 +14,9 @@ import (
 	"strings"
 )
 
+// HealthHealthGet Health check
+//
+// Corresponds with GET /health (the `HealthHealthGet` operationId).
 func (c *Client) HealthHealthGet(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewHealthHealthGetRequest(c.Server)
 	if err != nil {
@@ -26,39 +29,44 @@ func (c *Client) HealthHealthGet(ctx context.Context, reqEditors ...RequestEdito
 	return c.Client.Do(req)
 }
 
+// NewHealthHealthGetRequest constructs an http.Request for the HealthHealthGet method
 func NewHealthHealthGetRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/health")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r HealthHealthGetResponse) GetJSON200() *interface{} {
 	return r.JSON200
 }
 
-func (r HealthHealthGetResponse) GetBody() []byte {// HealthHealthGet Health check
-	//
-	// Corresponds with GET /health (the `HealthHealthGet` operationId).
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r HealthHealthGetResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r HealthHealthGetResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -66,6 +74,7 @@ func (r HealthHealthGetResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r HealthHealthGetResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -73,6 +82,7 @@ func (r HealthHealthGetResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r HealthHealthGetResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -80,6 +90,11 @@ func (r HealthHealthGetResponse) ContentType() string {
 	return ""
 }
 
+// HealthHealthGetWithResponse Health check
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /health (the `HealthHealthGet` operationId).
 func (c *ClientWithResponses) HealthHealthGetWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*HealthHealthGetResponse, error) {
 	rsp, err := c.HealthHealthGet(ctx, reqEditors...)
 	if err != nil {
@@ -88,15 +103,19 @@ func (c *ClientWithResponses) HealthHealthGetWithResponse(ctx context.Context, r
 	return ParseHealthHealthGetResponse(rsp)
 }
 
+// ParseHealthHealthGetResponse parses an HTTP response from a HealthHealthGetWithResponse call
 func ParseHealthHealthGetResponse(rsp *http.Response) (*HealthHealthGetResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &HealthHealthGetResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &HealthHealthGetResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest interface{}
@@ -104,9 +123,8 @@ func ParseHealthHealthGetResponse(rsp *http.Response) (*HealthHealthGetResponse,
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
-
-// Status returns HTTPResponse.Status
-// ParseHealthHealthGetResponse parses an HTTP response from a HealthHealthGetWithResponse call

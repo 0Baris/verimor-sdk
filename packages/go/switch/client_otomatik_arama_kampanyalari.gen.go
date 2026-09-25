@@ -16,6 +16,13 @@ import (
 	"strings"
 )
 
+// CreateIvrCampaignWithBody Otomatik Arama Kampanyası Oluşturma
+//
+// Yeni otomatik arama kampanyası oluşturmak için kullanılır. JSON formatında parametreler ile POST isteği gönderilir. ivr_campaigns endpoint'leri saniyede 2 istek (yaklaşık dakikada 120) limitine tabidir, burst değeri 50'dir.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /ivr_campaigns.json (the `CreateIvrCampaign` operationId).
 func (c *Client) CreateIvrCampaignWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateIvrCampaignRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -28,6 +35,13 @@ func (c *Client) CreateIvrCampaignWithBody(ctx context.Context, contentType stri
 	return c.Client.Do(req)
 }
 
+// CreateIvrCampaign Otomatik Arama Kampanyası Oluşturma
+//
+// Yeni otomatik arama kampanyası oluşturmak için kullanılır. JSON formatında parametreler ile POST isteği gönderilir. ivr_campaigns endpoint'leri saniyede 2 istek (yaklaşık dakikada 120) limitine tabidir, burst değeri 50'dir.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /ivr_campaigns.json (the `CreateIvrCampaign` operationId).
 func (c *Client) CreateIvrCampaign(ctx context.Context, body CreateIvrCampaignJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateIvrCampaignRequest(c.Server, body)
 	if err != nil {
@@ -40,6 +54,11 @@ func (c *Client) CreateIvrCampaign(ctx context.Context, body CreateIvrCampaignJS
 	return c.Client.Do(req)
 }
 
+// DeleteIvrCampaign Otomatik Arama Kampanyasını Silme
+//
+// Otomatik arama kampanyasını iptal etmek/silmek için kullanılır. Kampanya ID'si ve API anahtarı ile DELETE isteği gönderilir.
+//
+// Corresponds with DELETE /ivr_campaigns/{id}.json (the `DeleteIvrCampaign` operationId).
 func (c *Client) DeleteIvrCampaign(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewDeleteIvrCampaignRequest(c.Server, id)
 	if err != nil {
@@ -52,6 +71,11 @@ func (c *Client) DeleteIvrCampaign(ctx context.Context, id string, reqEditors ..
 	return c.Client.Do(req)
 }
 
+// UpdateIvrCampaign Otomatik Arama Kampanyasını Başlatma/Durdurma
+//
+// Otomatik arama kampanyasını durdurmak veya tekrar başlatmak için kullanılır. PATCH ile status=off gönderilirse kampanya durur, status=on gönderilirse tekrar başlar.
+//
+// Corresponds with PATCH /ivr_campaigns/{id}.json (the `UpdateIvrCampaign` operationId).
 func (c *Client) UpdateIvrCampaign(ctx context.Context, id string, params *UpdateIvrCampaignParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateIvrCampaignRequest(c.Server, id, params)
 	if err != nil {
@@ -64,6 +88,7 @@ func (c *Client) UpdateIvrCampaign(ctx context.Context, id string, params *Updat
 	return c.Client.Do(req)
 }
 
+// NewCreateIvrCampaignRequest calls the generic CreateIvrCampaign builder with application/json body
 func NewCreateIvrCampaignRequest(server string, body CreateIvrCampaignJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -74,85 +99,103 @@ func NewCreateIvrCampaignRequest(server string, body CreateIvrCampaignJSONReques
 	return NewCreateIvrCampaignRequestWithBody(server, "application/json", bodyReader)
 }
 
+// NewCreateIvrCampaignRequestWithBody constructs an http.Request for the CreateIvrCampaign method, with any body, and a specified content type
 func NewCreateIvrCampaignRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/ivr_campaigns.json")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// NewDeleteIvrCampaignRequest constructs an http.Request for the DeleteIvrCampaign method
 func NewDeleteIvrCampaignRequest(server string, id string) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/ivr_campaigns/%s.json", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodDelete, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewUpdateIvrCampaignRequest constructs an http.Request for the UpdateIvrCampaign method
 func NewUpdateIvrCampaignRequest(server string, id string, params *UpdateIvrCampaignParams) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/ivr_campaigns/%s.json", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// CreateIvrCampaignWithBody Otomatik Arama Kampanyası Oluşturma
-		//
-		// Yeni otomatik arama kampanyası oluşturmak için kullanılır. JSON formatında parametreler ile POST isteği gönderilir. ivr_campaigns endpoint'leri saniyede 2 istek (yaklaşık dakikada 120) limitine tabidir, burst değeri 50'dir.
-		//
-		// Takes any type of body and a specified content type.
-		//
-		// Corresponds with POST /ivr_campaigns.json (the `CreateIvrCampaign` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "status", params.Status, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -161,23 +204,27 @@ func NewUpdateIvrCampaignRequest(server string, id string, params *UpdateIvrCamp
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPatch, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r CreateIvrCampaignResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r CreateIvrCampaignResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r CreateIvrCampaignResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -185,6 +232,7 @@ func (r CreateIvrCampaignResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r CreateIvrCampaignResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -192,6 +240,7 @@ func (r CreateIvrCampaignResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r CreateIvrCampaignResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -199,12 +248,12 @@ func (r CreateIvrCampaignResponse) ContentType() string {
 	return ""
 }
 
-func (r DeleteIvrCampaignResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r DeleteIvrCampaignResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r DeleteIvrCampaignResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -212,6 +261,7 @@ func (r DeleteIvrCampaignResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r DeleteIvrCampaignResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -219,6 +269,7 @@ func (r DeleteIvrCampaignResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r DeleteIvrCampaignResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -226,12 +277,12 @@ func (r DeleteIvrCampaignResponse) ContentType() string {
 	return ""
 }
 
-func (r UpdateIvrCampaignResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r UpdateIvrCampaignResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r UpdateIvrCampaignResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -239,6 +290,7 @@ func (r UpdateIvrCampaignResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r UpdateIvrCampaignResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -246,6 +298,7 @@ func (r UpdateIvrCampaignResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateIvrCampaignResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -253,6 +306,13 @@ func (r UpdateIvrCampaignResponse) ContentType() string {
 	return ""
 }
 
+// CreateIvrCampaignWithBodyWithResponse Otomatik Arama Kampanyası Oluşturma
+//
+// Yeni otomatik arama kampanyası oluşturmak için kullanılır. JSON formatında parametreler ile POST isteği gönderilir. ivr_campaigns endpoint'leri saniyede 2 istek (yaklaşık dakikada 120) limitine tabidir, burst değeri 50'dir.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /ivr_campaigns.json (the `CreateIvrCampaign` operationId).
 func (c *ClientWithResponses) CreateIvrCampaignWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CreateIvrCampaignResponse, error) {
 	rsp, err := c.CreateIvrCampaignWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -261,6 +321,13 @@ func (c *ClientWithResponses) CreateIvrCampaignWithBodyWithResponse(ctx context.
 	return ParseCreateIvrCampaignResponse(rsp)
 }
 
+// CreateIvrCampaignWithResponse Otomatik Arama Kampanyası Oluşturma
+//
+// Yeni otomatik arama kampanyası oluşturmak için kullanılır. JSON formatında parametreler ile POST isteği gönderilir. ivr_campaigns endpoint'leri saniyede 2 istek (yaklaşık dakikada 120) limitine tabidir, burst değeri 50'dir.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /ivr_campaigns.json (the `CreateIvrCampaign` operationId).
 func (c *ClientWithResponses) CreateIvrCampaignWithResponse(ctx context.Context, body CreateIvrCampaignJSONRequestBody, reqEditors ...RequestEditorFn) (*CreateIvrCampaignResponse, error) {
 	rsp, err := c.CreateIvrCampaign(ctx, body, reqEditors...)
 	if err != nil {
@@ -269,6 +336,13 @@ func (c *ClientWithResponses) CreateIvrCampaignWithResponse(ctx context.Context,
 	return ParseCreateIvrCampaignResponse(rsp)
 }
 
+// DeleteIvrCampaignWithResponse Otomatik Arama Kampanyasını Silme
+//
+// Otomatik arama kampanyasını iptal etmek/silmek için kullanılır. Kampanya ID'si ve API anahtarı ile DELETE isteği gönderilir.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with DELETE /ivr_campaigns/{id}.json (the `DeleteIvrCampaign` operationId).
 func (c *ClientWithResponses) DeleteIvrCampaignWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*DeleteIvrCampaignResponse, error) {
 	rsp, err := c.DeleteIvrCampaign(ctx, id, reqEditors...)
 	if err != nil {
@@ -277,6 +351,13 @@ func (c *ClientWithResponses) DeleteIvrCampaignWithResponse(ctx context.Context,
 	return ParseDeleteIvrCampaignResponse(rsp)
 }
 
+// UpdateIvrCampaignWithResponse Otomatik Arama Kampanyasını Başlatma/Durdurma
+//
+// Otomatik arama kampanyasını durdurmak veya tekrar başlatmak için kullanılır. PATCH ile status=off gönderilirse kampanya durur, status=on gönderilirse tekrar başlar.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with PATCH /ivr_campaigns/{id}.json (the `UpdateIvrCampaign` operationId).
 func (c *ClientWithResponses) UpdateIvrCampaignWithResponse(ctx context.Context, id string, params *UpdateIvrCampaignParams, reqEditors ...RequestEditorFn) (*UpdateIvrCampaignResponse, error) {
 	rsp, err := c.UpdateIvrCampaign(ctx, id, params, reqEditors...)
 	if err != nil {
@@ -285,41 +366,50 @@ func (c *ClientWithResponses) UpdateIvrCampaignWithResponse(ctx context.Context,
 	return ParseUpdateIvrCampaignResponse(rsp)
 }
 
+// ParseCreateIvrCampaignResponse parses an HTTP response from a CreateIvrCampaignWithResponse call
 func ParseCreateIvrCampaignResponse(rsp *http.Response) (*CreateIvrCampaignResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &CreateIvrCampaignResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &CreateIvrCampaignResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseDeleteIvrCampaignResponse parses an HTTP response from a DeleteIvrCampaignWithResponse call
 func ParseDeleteIvrCampaignResponse(rsp *http.Response) (*DeleteIvrCampaignResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &DeleteIvrCampaignResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &DeleteIvrCampaignResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseUpdateIvrCampaignResponse parses an HTTP response from a UpdateIvrCampaignWithResponse call
 func ParseUpdateIvrCampaignResponse(rsp *http.Response) (*UpdateIvrCampaignResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &UpdateIvrCampaignResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &UpdateIvrCampaignResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
-
-// Status returns HTTPResponse.Status
-// ParseUpdateIvrCampaignResponse parses an HTTP response from a UpdateIvrCampaignWithResponse call

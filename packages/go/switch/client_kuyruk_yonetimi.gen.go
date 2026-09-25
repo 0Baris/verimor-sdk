@@ -15,6 +15,11 @@ import (
 	"strings"
 )
 
+// ManageQueueUsers Kuyruğa Dahili Ekleme, Çıkarma veya Yer Değiştirme
+//
+// Santralinizdeki kuyruklara dahili ekleme, çıkarma veya yer değiştirme için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde OK döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with GET /queue/manage_users (the `ManageQueueUsers` operationId).
 func (c *Client) ManageQueueUsers(ctx context.Context, params *ManageQueueUsersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewManageQueueUsersRequest(c.Server, params)
 	if err != nil {
@@ -27,6 +32,11 @@ func (c *Client) ManageQueueUsers(ctx context.Context, params *ManageQueueUsersP
 	return c.Client.Do(req)
 }
 
+// GetQueueUserList Kuyruktaki Dahili Listesine Erişim
+//
+// Santralinizdeki kuyruğun dahili sırasını listeler. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde dahili listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with GET /queue/user_list (the `GetQueueUserList` operationId).
 func (c *Client) GetQueueUserList(ctx context.Context, params *GetQueueUserListParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetQueueUserListRequest(c.Server, params)
 	if err != nil {
@@ -39,6 +49,11 @@ func (c *Client) GetQueueUserList(ctx context.Context, params *GetQueueUserListP
 	return c.Client.Do(req)
 }
 
+// GetQueues Kuyruklar Listesine Erişim
+//
+// Santralinizdeki kuyrukların listesine erişmek için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde kuyrukların listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with GET /queues (the `GetQueues` operationId).
 func (c *Client) GetQueues(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetQueuesRequest(c.Server)
 	if err != nil {
@@ -51,6 +66,11 @@ func (c *Client) GetQueues(ctx context.Context, reqEditors ...RequestEditorFn) (
 	return c.Client.Do(req)
 }
 
+// GetQueuesPending Kuyrukta Bekleyenler Listesine Erişim
+//
+// Santralinizdeki kuyrukta bekleyenlerin listesine erişmek için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde kuyrukta bekleyenlerin listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint dakikada en fazla 10 istek ile sınırlıdır.
+//
+// Corresponds with GET /queues/pending (the `GetQueuesPending` operationId).
 func (c *Client) GetQueuesPending(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetQueuesPendingRequest(c.Server)
 	if err != nil {
@@ -63,30 +83,33 @@ func (c *Client) GetQueuesPending(ctx context.Context, reqEditors ...RequestEdit
 	return c.Client.Do(req)
 }
 
+// NewManageQueueUsersRequest constructs an http.Request for the ManageQueueUsers method
 func NewManageQueueUsersRequest(server string, params *ManageQueueUsersParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/queue/manage_users")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// ManageQueueUsers Kuyruğa Dahili Ekleme, Çıkarma veya Yer Değiştirme
-		//
-		// Santralinizdeki kuyruklara dahili ekleme, çıkarma veya yer değiştirme için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde OK döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
-		//
-		// Corresponds with GET /queue/manage_users (the `ManageQueueUsers` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue_number", params.QueueNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -95,6 +118,7 @@ func NewManageQueueUsersRequest(server string, params *ManageQueueUsersParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "user_list", params.UserList, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -102,38 +126,48 @@ func NewManageQueueUsersRequest(server string, params *ManageQueueUsersParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetQueueUserListRequest constructs an http.Request for the GetQueueUserList method
 func NewGetQueueUserListRequest(server string, params *GetQueueUserListParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/queue/user_list")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewGetQueueUserListRequest constructs an http.Request for the GetQueueUserList method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue_number", params.QueueNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -142,66 +176,81 @@ func NewGetQueueUserListRequest(server string, params *GetQueueUserListParams) (
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetQueuesRequest constructs an http.Request for the GetQueues method
 func NewGetQueuesRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/queues")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetQueuesPendingRequest constructs an http.Request for the GetQueuesPending method
 func NewGetQueuesPendingRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/queues/pending")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r ManageQueueUsersResponse) GetBody() []byte {// NewGetQueuesRequest constructs an http.Request for the GetQueues method
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r ManageQueueUsersResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r ManageQueueUsersResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -209,6 +258,7 @@ func (r ManageQueueUsersResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r ManageQueueUsersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -216,6 +266,7 @@ func (r ManageQueueUsersResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r ManageQueueUsersResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -223,21 +274,23 @@ func (r ManageQueueUsersResponse) ContentType() string {
 	return ""
 }
 
-func (r GetQueueUserListResponse) GetJSON200() *[]struct// Status returns HTTPResponse.Status
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
+func (r GetQueueUserListResponse) GetJSON200() *[]struct {
+	// Name Dahili adı
 	Name *string `json:"name,omitempty"`
-	User *int    `json:"user,omitempty"`
+
+	// User Dahili numarası
+	User *int `json:"user,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetQueueUserListResponse) GetBody() []byte {// Name Dahili adı
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetQueueUserListResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetQueueUserListResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -245,6 +298,7 @@ func (r GetQueueUserListResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetQueueUserListResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -252,6 +306,7 @@ func (r GetQueueUserListResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetQueueUserListResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -259,21 +314,23 @@ func (r GetQueueUserListResponse) ContentType() string {
 	return ""
 }
 
-func (r GetQueuesResponse) GetJSON200() *[]struct// Status returns HTTPResponse.Status
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
-	Name   *string `json:"name,omitempty"`
-	Number *int    `json:"number,omitempty"`
+func (r GetQueuesResponse) GetJSON200() *[]struct {
+	// Name Kuyruk adı
+	Name *string `json:"name,omitempty"`
+
+	// Number Kuyruk numarası
+	Number *int `json:"number,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetQueuesResponse) GetBody() []byte {// Name Kuyruk adı
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetQueuesResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetQueuesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -281,6 +338,7 @@ func (r GetQueuesResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetQueuesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -288,6 +346,7 @@ func (r GetQueuesResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetQueuesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -295,25 +354,35 @@ func (r GetQueuesResponse) ContentType() string {
 	return ""
 }
 
-func (r GetQueuesPendingResponse) GetJSON200() *[]struct// Status returns HTTPResponse.Status
 // GetJSON200 returns the response for an HTTP 200 `application/json` response
-{
-	CallUuid    *string `json:"call_uuid,omitempty"`
-	CallerId    *string `json:"caller_id,omitempty"`
-	JoinedAt    *string `json:"joined_at,omitempty"`
+func (r GetQueuesPendingResponse) GetJSON200() *[]struct {
+	// CallUuid Çağrı UUID'si
+	CallUuid *string `json:"call_uuid,omitempty"`
+
+	// CallerId Arayan numara
+	CallerId *string `json:"caller_id,omitempty"`
+
+	// JoinedAt Kuyruğa katılma zamanı (timestamp)
+	JoinedAt *string `json:"joined_at,omitempty"`
+
+	// QueueNumber Kuyruk numarası
 	QueueNumber *string `json:"queue_number,omitempty"`
-	Uuid        *string `json:"uuid,omitempty"`
-	WaitTime    *int    `json:"wait_time,omitempty"`
+
+	// Uuid Çağrı UUID'si
+	Uuid *string `json:"uuid,omitempty"`
+
+	// WaitTime Bekleme süresi (saniye)
+	WaitTime *int `json:"wait_time,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetQueuesPendingResponse) GetBody() []byte {// CallUuid Çağrı UUID'si
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetQueuesPendingResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetQueuesPendingResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -321,6 +390,7 @@ func (r GetQueuesPendingResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetQueuesPendingResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -328,6 +398,7 @@ func (r GetQueuesPendingResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetQueuesPendingResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -335,6 +406,13 @@ func (r GetQueuesPendingResponse) ContentType() string {
 	return ""
 }
 
+// ManageQueueUsersWithResponse Kuyruğa Dahili Ekleme, Çıkarma veya Yer Değiştirme
+//
+// Santralinizdeki kuyruklara dahili ekleme, çıkarma veya yer değiştirme için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde OK döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /queue/manage_users (the `ManageQueueUsers` operationId).
 func (c *ClientWithResponses) ManageQueueUsersWithResponse(ctx context.Context, params *ManageQueueUsersParams, reqEditors ...RequestEditorFn) (*ManageQueueUsersResponse, error) {
 	rsp, err := c.ManageQueueUsers(ctx, params, reqEditors...)
 	if err != nil {
@@ -343,6 +421,13 @@ func (c *ClientWithResponses) ManageQueueUsersWithResponse(ctx context.Context, 
 	return ParseManageQueueUsersResponse(rsp)
 }
 
+// GetQueueUserListWithResponse Kuyruktaki Dahili Listesine Erişim
+//
+// Santralinizdeki kuyruğun dahili sırasını listeler. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde dahili listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /queue/user_list (the `GetQueueUserList` operationId).
 func (c *ClientWithResponses) GetQueueUserListWithResponse(ctx context.Context, params *GetQueueUserListParams, reqEditors ...RequestEditorFn) (*GetQueueUserListResponse, error) {
 	rsp, err := c.GetQueueUserList(ctx, params, reqEditors...)
 	if err != nil {
@@ -351,6 +436,13 @@ func (c *ClientWithResponses) GetQueueUserListWithResponse(ctx context.Context, 
 	return ParseGetQueueUserListResponse(rsp)
 }
 
+// GetQueuesWithResponse Kuyruklar Listesine Erişim
+//
+// Santralinizdeki kuyrukların listesine erişmek için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde kuyrukların listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /queues (the `GetQueues` operationId).
 func (c *ClientWithResponses) GetQueuesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetQueuesResponse, error) {
 	rsp, err := c.GetQueues(ctx, reqEditors...)
 	if err != nil {
@@ -359,6 +451,13 @@ func (c *ClientWithResponses) GetQueuesWithResponse(ctx context.Context, reqEdit
 	return ParseGetQueuesResponse(rsp)
 }
 
+// GetQueuesPendingWithResponse Kuyrukta Bekleyenler Listesine Erişim
+//
+// Santralinizdeki kuyrukta bekleyenlerin listesine erişmek için kullanılır. Bunun için HTTP GET metodu ile api.bulutsantralim.com adresi aşağıdaki parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde kuyrukta bekleyenlerin listesi döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. Bu endpoint dakikada en fazla 10 istek ile sınırlıdır.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /queues/pending (the `GetQueuesPending` operationId).
 func (c *ClientWithResponses) GetQueuesPendingWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetQueuesPendingResponse, error) {
 	rsp, err := c.GetQueuesPending(ctx, reqEditors...)
 	if err != nil {
@@ -367,96 +466,126 @@ func (c *ClientWithResponses) GetQueuesPendingWithResponse(ctx context.Context, 
 	return ParseGetQueuesPendingResponse(rsp)
 }
 
+// ParseManageQueueUsersResponse parses an HTTP response from a ManageQueueUsersWithResponse call
 func ParseManageQueueUsersResponse(rsp *http.Response) (*ManageQueueUsersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &ManageQueueUsersResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &ManageQueueUsersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseGetQueueUserListResponse parses an HTTP response from a GetQueueUserListWithResponse call
 func ParseGetQueueUserListResponse(rsp *http.Response) (*GetQueueUserListResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetQueueUserListResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetQueueUserListResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Status returns HTTPResponse.Status
-		// ParseGetQueueUserListResponse parses an HTTP response from a GetQueueUserListWithResponse call
-		{
+		var dest []struct {
+			// Name Dahili adı
 			Name *string `json:"name,omitempty"`
-			User *int    `json:"user,omitempty"`
+
+			// User Dahili numarası
+			User *int `json:"user,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseGetQueuesResponse parses an HTTP response from a GetQueuesWithResponse call
 func ParseGetQueuesResponse(rsp *http.Response) (*GetQueuesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetQueuesResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetQueuesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Name Dahili adı
-		// ParseGetQueuesResponse parses an HTTP response from a GetQueuesWithResponse call
-		{
-			Name   *string `json:"name,omitempty"`
-			Number *int    `json:"number,omitempty"`
+		var dest []struct {
+			// Name Kuyruk adı
+			Name *string `json:"name,omitempty"`
+
+			// Number Kuyruk numarası
+			Number *int `json:"number,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseGetQueuesPendingResponse parses an HTTP response from a GetQueuesPendingWithResponse call
 func ParseGetQueuesPendingResponse(rsp *http.Response) (*GetQueuesPendingResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetQueuesPendingResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetQueuesPendingResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []struct// Name Kuyruk adı
-		// ParseGetQueuesPendingResponse parses an HTTP response from a GetQueuesPendingWithResponse call
-		{
-			CallUuid    *string `json:"call_uuid,omitempty"`
-			CallerId    *string `json:"caller_id,omitempty"`
-			JoinedAt    *string `json:"joined_at,omitempty"`
+		var dest []struct {
+			// CallUuid Çağrı UUID'si
+			CallUuid *string `json:"call_uuid,omitempty"`
+
+			// CallerId Arayan numara
+			CallerId *string `json:"caller_id,omitempty"`
+
+			// JoinedAt Kuyruğa katılma zamanı (timestamp)
+			JoinedAt *string `json:"joined_at,omitempty"`
+
+			// QueueNumber Kuyruk numarası
 			QueueNumber *string `json:"queue_number,omitempty"`
-			Uuid        *string `json:"uuid,omitempty"`
-			WaitTime    *int    `json:"wait_time,omitempty"`
+
+			// Uuid Çağrı UUID'si
+			Uuid *string `json:"uuid,omitempty"`
+
+			// WaitTime Bekleme süresi (saniye)
+			WaitTime *int `json:"wait_time,omitempty"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
-
-// CallUuid Çağrı UUID'si
-// WaitTime Bekleme süresi (saniye)

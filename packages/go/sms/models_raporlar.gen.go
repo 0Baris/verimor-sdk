@@ -9,29 +9,50 @@ import (
 	"time"
 )
 
+// GetV2InboundMessagesParams defines parameters for GetV2InboundMessages.
 type GetV2InboundMessagesParams struct {
-	Username    string  `form:"username" json:"username"`
-	Password    string  `form:"password" json:"password"`
-	FromTime    *string `form:"from_time,omitempty" json:"from_time,omitempty"`
-	ToTime      *string `form:"to_time,omitempty" json:"to_time,omitempty"`
-	GreaterThan *int    `form:"greater_than,omitempty" json:"greater_than,omitempty"`
+	// Username Kullanıcı adı
+	Username string `form:"username" json:"username"`
+
+	// Password Şifre
+	Password string `form:"password" json:"password"`
+
+	// FromTime Sorgulanacak zaman aralığının başlangıcı (YYYY-MM-DD HH:MM:SS)
+	FromTime *string `form:"from_time,omitempty" json:"from_time,omitempty"`
+
+	// ToTime Sorgulanacak zaman aralığının bitişi (YYYY-MM-DD HH:MM:SS)
+	ToTime *string `form:"to_time,omitempty" json:"to_time,omitempty"`
+
+	// GreaterThan Verilen message_id'den büyük mesajları sorgular. Bu sorgu 100 mesaj döndürür, mesajların devamını almak için sonuçtaki son mesaj id'sini vererek ikinci bir sorgu yapmalısınız.
+	GreaterThan *int `form:"greater_than,omitempty" json:"greater_than,omitempty"`
 }
 
+// GetSmsStatusParams defines parameters for GetSmsStatus.
 type GetSmsStatusParams struct {
-	Username    string  `form:"username" json:"username"`
-	Password    string  `form:"password" json:"password"`
-	Id          *int    `form:"id,omitempty" json:"id,omitempty"`
-	Dest        *string `form:"dest,omitempty" json:"dest,omitempty"`
-	GreaterThan *int    `form:"greater_than,omitempty" json:"greater_than,omitempty"`
-	CustomId    *string `form:"custom_id,omitempty" json:"custom_id,omitempty"`
-}
-type GetV2InboundMessagesResponse struct {
-	Body []byte// GetV2InboundMessagesParams defines parameters for GetV2InboundMessages.
-	// CustomId Kampanya Özel ID'si. Bu parametre zorunludur. Kampanya Özel ID'si, API'nin gönderim sırasında ürettiği Özel ID'dir. Bu ID ile sorgulama yapabilirsiniz.
+	// Username kullanıcı adı
+	Username string `form:"username" json:"username"`
 
+	// Password Şifre
+	Password string `form:"password" json:"password"`
+
+	// Id Kampanya ID'si. Bu parametre zorunludur. Kampanya ID'si, API'nin gönderim sırasında ürettiği ID'dir. Bu ID ile sorgulama yapabilirsiniz.
+	Id *int `form:"id,omitempty" json:"id,omitempty"`
+
+	// Dest Zorunlu değil. Kampanya'da belirli telefon numaralarına gönderilmiş mesajları sorgular
+	Dest *string `form:"dest,omitempty" json:"dest,omitempty"`
+
+	// GreaterThan Verilen message_id'den büyük mesajları sorgular. Bu parametre, içinde çok mesaj olan kampanyaların sorgulanması için zorunludur. Bu sorgu 100 mesaj döndürür, mesajların devamını almak için sonuçtaki son mesaj id'sini vererek ikinci bir sorgu yapmalısınız.
+	GreaterThan *int `form:"greater_than,omitempty" json:"greater_than,omitempty"`
+
+	// CustomId Kampanya Özel ID'si. Bu parametre zorunludur. Kampanya Özel ID'si, API'nin gönderim sırasında ürettiği Özel ID'dir. Bu ID ile sorgulama yapabilirsiniz.
+	CustomId *string `form:"custom_id,omitempty" json:"custom_id,omitempty"`
+}
+
+type GetV2InboundMessagesResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
 		Content         *string    `json:"content,omitempty"`
 		CreatedAt       *time.Time `json:"created_at,omitempty"`
 		DestinationAddr *string    `json:"destination_addr,omitempty"`
@@ -42,11 +63,12 @@ type GetV2InboundMessagesResponse struct {
 		SourceAddr      *string    `json:"source_addr,omitempty"`
 	}
 }
+
 type GetSmsStatusResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-	{
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]struct {
 		CampaignCustomId        *string    `json:"campaign_custom_id,omitempty"`
 		CampaignId              *int       `json:"campaign_id,omitempty"`
 		Credits                 *int       `json:"credits,omitempty"`

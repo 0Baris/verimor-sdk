@@ -6,142 +6,295 @@ package verimorswitch
 
 import "net/http"
 
+// GetCdrsParams defines parameters for GetCdrs.
 type GetCdrsParams struct {
-	StartStampFrom    *string `form:"start_stamp_from,omitempty" json:"start_stamp_from,omitempty"`
-	StartStampTo      *string `form:"start_stamp_to,omitempty" json:"start_stamp_to,omitempty"`
-	RecordingPresent  *string `form:"recording_present,omitempty" json:"recording_present,omitempty"`
-	Direction         *string `form:"direction,omitempty" json:"direction,omitempty"`
-	CallerIdNumber    *string `form:"caller_id_number,omitempty" json:"caller_id_number,omitempty"`
+	// StartStampFrom Başlangıç tarihi/zamanı (ISO formatı)
+	StartStampFrom *string `form:"start_stamp_from,omitempty" json:"start_stamp_from,omitempty"`
+
+	// StartStampTo Bitiş tarihi/zamanı (ISO formatı)
+	StartStampTo *string `form:"start_stamp_to,omitempty" json:"start_stamp_to,omitempty"`
+
+	// RecordingPresent Kayıt durumu filtresi:
+	//  * `true`
+	//  * `false`
+	//  * `deleted`
+	//
+	RecordingPresent *string `form:"recording_present,omitempty" json:"recording_present,omitempty"`
+
+	// Direction Çağrı yönü filtresi
+	Direction *string `form:"direction,omitempty" json:"direction,omitempty"`
+
+	// CallerIdNumber Arayan numara filtresi
+	CallerIdNumber *string `form:"caller_id_number,omitempty" json:"caller_id_number,omitempty"`
+
+	// DestinationNumber Hedef numara filtresi
 	DestinationNumber *string `form:"destination_number,omitempty" json:"destination_number,omitempty"`
-	Missed            *string `form:"missed,omitempty" json:"missed,omitempty"`
-	Queue             *string `form:"queue,omitempty" json:"queue,omitempty"`
-	Page              *int    `form:"page,omitempty" json:"page,omitempty"`
-	Limit             *int    `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Missed Cevapsız çağrı filtresi
+	Missed *string `form:"missed,omitempty" json:"missed,omitempty"`
+
+	// Queue Kuyruk adı filtresi
+	Queue *string `form:"queue,omitempty" json:"queue,omitempty"`
+
+	// Page Sayfa numarası (varsayılan: 1)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit Sayfa başına kayıt sayısı
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// GetCdrs200JSONResponseBodyCdrsResult defines parameters for GetCdrs.
 type GetCdrs200JSONResponseBodyCdrsResult string
 
+// CreateRecordingUrlParams defines parameters for CreateRecordingUrl.
 type CreateRecordingUrlParams struct {
+	// CallUuid URL'ini istediğiniz ses kaydına ait çağrı UUID'si
 	CallUuid string `form:"call_uuid" json:"call_uuid"`
 }
 
+// GetVoicemailMessagesParams defines parameters for GetVoicemailMessages.
 type GetVoicemailMessagesParams struct {
+	// StartStampFrom Mesaj bırakma tarihi yazdığınız tarihden sonra olan çağrıları listeler
 	StartStampFrom *string `form:"start_stamp_from,omitempty" json:"start_stamp_from,omitempty"`
-	StartStampTo   *string `form:"start_stamp_to,omitempty" json:"start_stamp_to,omitempty"`
-	Read           *string `form:"read,omitempty" json:"read,omitempty"`
-	UserNumber     *string `form:"user_number,omitempty" json:"user_number,omitempty"`
-	Uuid           *string `form:"uuid,omitempty" json:"uuid,omitempty"`
-	Page           *int    `form:"page,omitempty" json:"page,omitempty"`
-	Limit          *int    `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// StartStampTo Mesaj bırakma tarihi yazdığınız tarihe kadar olan çağrıları listeler. Tarih aralığı 31 günden uzun olamaz
+	StartStampTo *string `form:"start_stamp_to,omitempty" json:"start_stamp_to,omitempty"`
+
+	// Read Değeri "true" olarak gönderilirse okunmuş mesajları, değeri "false" olarak gönderilirse henüz okunmamış mesajları listeler:
+	//  * `true`
+	//  * `false`
+	//
+	Read *string `form:"read,omitempty" json:"read,omitempty"`
+
+	// UserNumber Mesajın bırakıldığı dahilinin numarası
+	UserNumber *string `form:"user_number,omitempty" json:"user_number,omitempty"`
+
+	// Uuid Mesajın (veya ilgili CDR kaydının) kayıt numarası
+	Uuid *string `form:"uuid,omitempty" json:"uuid,omitempty"`
+
+	// Page Liste limite göre sayfalanıyor. "total_pages" değerinden maksimum kaç sayfa olduğunu belirleyerek görmek istediğiniz sayfanın numarasını girebilirsiniz
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit Listeyi sınırlayabilirsiniz. Varsayılan değer 10, minimum değer 10, maksimum değer 100
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// CreateVoicemailRecordingUrlParams defines parameters for CreateVoicemailRecordingUrl.
 type CreateVoicemailRecordingUrlParams struct {
+	// Uuid URL'ini istediğiniz telesekreter mesajına ait uuid
 	Uuid string `form:"uuid" json:"uuid"`
 }
-type GetCdrsResponse struct {
-	Body []byte// GetCdrsParams defines parameters for GetCdrs.
-	// Uuid URL'ini istediğiniz telesekreter mesajına ait uuid
 
+type GetCdrsResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Cdrs *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
-			AnswerStamp          *string                               `json:"answer_stamp,omitempty"`
-			CallUuid             *string                               `json:"call_uuid,omitempty"`
-			CallerIdName         *string                               `json:"caller_id_name,omitempty"`
-			CallerIdNumber       *string                               `json:"caller_id_number,omitempty"`
-			DestinationName      *string                               `json:"destination_name,omitempty"`
-			DestinationNumber    *string                               `json:"destination_number,omitempty"`
-			Direction            *string                               `json:"direction,omitempty"`
-			Duration             *string                               `json:"duration,omitempty"`
-			EndStamp             *string                               `json:"end_stamp,omitempty"`
-			Missed               *bool                                 `json:"missed,omitempty"`
-			Queue                *string                               `json:"queue,omitempty"`
-			QueueWaitSeconds     *string                               `json:"queue_wait_seconds,omitempty"`
-			RecordingPresent     *string                               `json:"recording_present,omitempty"`
-			Result               *GetCdrs200JSONResponseBodyCdrsResult `json:"result,omitempty"`
-			ReturnUuid           *string                               `json:"return_uuid,omitempty"`
-			SipHangupDisposition *string                               `json:"sip_hangup_disposition,omitempty"`
-			StartStamp           *string                               `json:"start_stamp,omitempty"`
-			TalkDuration         *string                               `json:"talk_duration,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Cdrs *[]struct {
+			// AnswerStamp Çağrı cevaplanma zamanı
+			AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+			// CallUuid Çağrı UUID
+			CallUuid *string `json:"call_uuid,omitempty"`
+
+			// CallerIdName Arayan isim
+			CallerIdName *string `json:"caller_id_name,omitempty"`
+
+			// CallerIdNumber Arayan numara
+			CallerIdNumber *string `json:"caller_id_number,omitempty"`
+
+			// DestinationName Hedef isim
+			DestinationName *string `json:"destination_name,omitempty"`
+
+			// DestinationNumber Hedef numara
+			DestinationNumber *string `json:"destination_number,omitempty"`
+
+			// Direction Çağrı yönü (insan okunabilir)
+			Direction *string `json:"direction,omitempty"`
+
+			// Duration Çağrı süresi (SS:dd:ss)
+			Duration *string `json:"duration,omitempty"`
+
+			// EndStamp Çağrı bitiş zamanı
+			EndStamp *string `json:"end_stamp,omitempty"`
+
+			// Missed Cevapsız çağrı mı?
+			Missed *bool `json:"missed,omitempty"`
+
+			// Queue Kuyruk adı
+			Queue *string `json:"queue,omitempty"`
+
+			// QueueWaitSeconds Kuyruk bekleme süresi (SS:dd:ss)
+			QueueWaitSeconds *string `json:"queue_wait_seconds,omitempty"`
+
+			// RecordingPresent Kayıt durumu
+			RecordingPresent *string `json:"recording_present,omitempty"`
+
+			// Result Human-readable call result in Turkish
+			Result *GetCdrs200JSONResponseBodyCdrsResult `json:"result,omitempty"`
+
+			// ReturnUuid Return UUID
+			ReturnUuid *string `json:"return_uuid,omitempty"`
+
+			// SipHangupDisposition SIP sonlandırma nedeni
+			SipHangupDisposition *string `json:"sip_hangup_disposition,omitempty"`
+
+			// StartStamp Çağrı başlangıç zamanı
+			StartStamp *string `json:"start_stamp,omitempty"`
+
+			// TalkDuration Konuşma süresi (SS:dd:ss)
+			TalkDuration *string `json:"talk_duration,omitempty"`
 		} `json:"cdrs,omitempty"`
 		Pagination *struct {
-			Limit      *int `json:"limit,omitempty"`
-			Page       *int `json:"page,omitempty"`
+			// Limit Sayfa başına kayıt sayısı
+			Limit *int `json:"limit,omitempty"`
+
+			// Page Mevcut sayfa numarası
+			Page *int `json:"page,omitempty"`
+
+			// TotalCount Toplam kayıt sayısı
 			TotalCount *int `json:"total_count,omitempty"`
+
+			// TotalPages Toplam sayfa sayısı
 			TotalPages *int `json:"total_pages,omitempty"`
 		} `json:"pagination,omitempty"`
 	}
 }
-type GetCdrResponse struct {
-	Body []byte// AnswerStamp Çağrı cevaplanma zamanı
-	// TotalPages Toplam sayfa sayısı
 
+type GetCdrResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		CallFlow *[]struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
-			AnswerStamp       *string `json:"answer_stamp,omitempty"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		CallFlow *[]struct {
+			// AnswerStamp Bu bacak için cevaplanma zamanı
+			AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+			// DestinationNumber Bu bacak için hedef numara
 			DestinationNumber *string `json:"destination_number,omitempty"`
-			Duration          *string `json:"duration,omitempty"`
-			EndStamp          *string `json:"end_stamp,omitempty"`
-			IpAddress         *string `json:"ip_address,omitempty"`
-			ReadCodec         *string `json:"read_codec,omitempty"`
-			Result            *string `json:"result,omitempty"`
-			SipUserAgent      *string `json:"sip_user_agent,omitempty"`
-			StartStamp        *string `json:"start_stamp,omitempty"`
-			WriteCodec        *string `json:"write_codec,omitempty"`
+
+			// Duration Bu bacak için süre (SS:dd:ss)
+			Duration *string `json:"duration,omitempty"`
+
+			// EndStamp Bu bacak için bitiş zamanı
+			EndStamp *string `json:"end_stamp,omitempty"`
+
+			// IpAddress Kullanılan IP adresi
+			IpAddress *string `json:"ip_address,omitempty"`
+
+			// ReadCodec Okuma codec'i
+			ReadCodec *string `json:"read_codec,omitempty"`
+
+			// Result Bu bacak için sonuç
+			Result *string `json:"result,omitempty"`
+
+			// SipUserAgent SIP User Agent
+			SipUserAgent *string `json:"sip_user_agent,omitempty"`
+
+			// StartStamp Bu bacak için başlangıç zamanı
+			StartStamp *string `json:"start_stamp,omitempty"`
+
+			// WriteCodec Yazma codec'i
+			WriteCodec *string `json:"write_codec,omitempty"`
 		} `json:"call_flow,omitempty"`
 		Cdr *struct {
-			AnswerStamp          *string `json:"answer_stamp,omitempty"`
-			CallUuid             *string `json:"call_uuid,omitempty"`
-			CallerIdNumber       *string `json:"caller_id_number,omitempty"`
-			DestinationNumber    *string `json:"destination_number,omitempty"`
-			Direction            *string `json:"direction,omitempty"`
-			Duration             *string `json:"duration,omitempty"`
-			EndStamp             *string `json:"end_stamp,omitempty"`
-			Missed               *bool   `json:"missed,omitempty"`
-			QueueWaitSeconds     *string `json:"queue_wait_seconds,omitempty"`
-			RecordingPresent     *string `json:"recording_present,omitempty"`
-			Result               *string `json:"result,omitempty"`
-			ReturnUuid           *string `json:"return_uuid,omitempty"`
+			// AnswerStamp Çağrı cevaplanma zamanı
+			AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+			// CallUuid Çağrı UUID
+			CallUuid *string `json:"call_uuid,omitempty"`
+
+			// CallerIdNumber Arayan numara
+			CallerIdNumber *string `json:"caller_id_number,omitempty"`
+
+			// DestinationNumber Hedef numara
+			DestinationNumber *string `json:"destination_number,omitempty"`
+
+			// Direction Çağrı yönü
+			Direction *string `json:"direction,omitempty"`
+
+			// Duration Çağrı süresi (SS:dd:ss)
+			Duration *string `json:"duration,omitempty"`
+
+			// EndStamp Çağrı bitiş zamanı
+			EndStamp *string `json:"end_stamp,omitempty"`
+
+			// Missed Cevapsız çağrı mı?
+			Missed *bool `json:"missed,omitempty"`
+
+			// QueueWaitSeconds Kuyruk bekleme süresi (SS:dd:ss)
+			QueueWaitSeconds *string `json:"queue_wait_seconds,omitempty"`
+
+			// RecordingPresent Kayıt durumu
+			RecordingPresent *string `json:"recording_present,omitempty"`
+
+			// Result Çağrı sonucu
+			Result *string `json:"result,omitempty"`
+
+			// ReturnUuid Return UUID
+			ReturnUuid *string `json:"return_uuid,omitempty"`
+
+			// SipHangupDisposition SIP sonlandırma nedeni
 			SipHangupDisposition *string `json:"sip_hangup_disposition,omitempty"`
-			StartStamp           *string `json:"start_stamp,omitempty"`
-			TalkDuration         *string `json:"talk_duration,omitempty"`
+
+			// StartStamp Çağrı başlangıç zamanı
+			StartStamp *string `json:"start_stamp,omitempty"`
+
+			// TalkDuration Konuşma süresi (SS:dd:ss)
+			TalkDuration *string `json:"talk_duration,omitempty"`
 		} `json:"cdr,omitempty"`
 	}
 }
-type CreateRecordingUrlResponse struct {
-	Body []byte// AnswerStamp Bu bacak için cevaplanma zamanı
-	// TalkDuration Konuşma süresi (SS:dd:ss)
 
+type CreateRecordingUrlResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type GetVoicemailMessagesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Messages []struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
-			CallerIdName   string `json:"caller_id_name"`
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Messages []struct {
+			// CallerIdName Mesajı bırakan kişinin ismi
+			CallerIdName string `json:"caller_id_name"`
+
+			// CallerIdNumber Mesajı bırakan numara
 			CallerIdNumber string `json:"caller_id_number"`
-			Duration       string `json:"duration"`
-			ReadStamp      string `json:"read_stamp"`
-			StartStamp     string `json:"start_stamp"`
-			UserNumber     string `json:"user_number"`
-			Uuid           string `json:"uuid"`
+
+			// Duration Ses kaydının süresi
+			Duration string `json:"duration"`
+
+			// ReadStamp Telesekreter mesajı okunduysa, okunma zamanı (OİM'den, IVR'dan veya API'den ses kaydı dinlendiği zaman)
+			ReadStamp string `json:"read_stamp"`
+
+			// StartStamp Telesekreter mesajının bırakıldığı zaman
+			StartStamp string `json:"start_stamp"`
+
+			// UserNumber Mesajın bırakıldığı dahili numarası
+			UserNumber string `json:"user_number"`
+
+			// Uuid Bu mesajın kayıt numarası. Aynı zamanda ilgili çağrının numarasıdır, CDR kayıtlarıyla ilişkilidir
+			Uuid string `json:"uuid"`
 		} `json:"messages"`
 		Pagination struct {
-			Limit      int `json:"limit"`
-			Page       int `json:"page"`
+			// Limit Listeye verilen sınır
+			Limit int `json:"limit"`
+
+			// Page Listenin hangi sayfasında olduğunuz
+			Page int `json:"page"`
+
+			// TotalCount Listede dönen çağrı sayısı
 			TotalCount int `json:"total_count"`
+
+			// TotalPages Listenin kaç sayfadan oluştuğu (total_pages=total_count/limit)
 			TotalPages int `json:"total_pages"`
 		} `json:"pagination"`
 	}
 }
-type CreateVoicemailRecordingUrlResponse struct {
-	Body []byte// CallerIdName Mesajı bırakan kişinin ismi
-	// TotalPages Listenin kaç sayfadan oluştuğu (total_pages=total_count/limit)
 
+type CreateVoicemailRecordingUrlResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }

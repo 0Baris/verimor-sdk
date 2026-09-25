@@ -6,111 +6,199 @@ package verimorswitch
 
 import "net/http"
 
+// AnswerCallPostJSONBody defines parameters for AnswerCallPost.
 type AnswerCallPostJSONBody struct {
+	// Id Cevaplanacak çağrının UUID'si
 	Id string `json:"id"`
 }
 
+// AnswerCallPostFormdataBody defines parameters for AnswerCallPost.
 type AnswerCallPostFormdataBody struct {
+	// Id Cevaplanacak çağrının UUID'si
 	Id string `form:"id" json:"id"`
 }
 
+// CreateBridgeParams defines parameters for CreateBridge.
 type CreateBridgeParams struct {
-	Source               string  `form:"source" json:"source"`
-	Destination          string  `form:"destination" json:"destination"`
-	CallerId             *string `form:"caller_id,omitempty" json:"caller_id,omitempty"`
-	Timeout              *int    `form:"timeout,omitempty" json:"timeout,omitempty"`
-	AnnouncementToCaller *int    `form:"announcement_to_caller,omitempty" json:"announcement_to_caller,omitempty"`
-	AnnouncementToCallee *int    `form:"announcement_to_callee,omitempty" json:"announcement_to_callee,omitempty"`
-	RecordingEnabled     *bool   `form:"recording_enabled,omitempty" json:"recording_enabled,omitempty"`
+	// Source İlk olarak bu numara aranır, telefon açılınca destination aranır (yurtiçi çağrılar için 908505320000, yurtdışı çağrılar için 00493027590915 formatında)
+	Source string `form:"source" json:"source"`
+
+	// Destination İkinci aranacak numara (yurtiçi çağrılar için 908505320000, yurtdışı çağrılar için 00493027590915 formatında)
+	Destination string `form:"destination" json:"destination"`
+
+	// CallerId İki tarafı da ararken kullanılacak dış numara (908505320000 formatında. Bu parametre verilmezse 1000 dahilisinde seçili olan dış no kullanılacaktır)
+	CallerId *string `form:"caller_id,omitempty" json:"caller_id,omitempty"`
+
+	// Timeout Telefon çaldırma süresi. 10 ile 60 sn. arasında bir değer olmalı. Varsayılan 29
+	Timeout *int `form:"timeout,omitempty" json:"timeout,omitempty"`
+
+	// AnnouncementToCaller Cevaplanma anında arayan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz
+	AnnouncementToCaller *int `form:"announcement_to_caller,omitempty" json:"announcement_to_caller,omitempty"`
+
+	// AnnouncementToCallee Cevaplanma anında aranan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz
+	AnnouncementToCallee *int `form:"announcement_to_callee,omitempty" json:"announcement_to_callee,omitempty"`
+
+	// RecordingEnabled Görüşmenin kaydedilmesini istemiyorsanız false verin. Varsayılan olarak true kabul edilir
+	RecordingEnabled *bool `form:"recording_enabled,omitempty" json:"recording_enabled,omitempty"`
 }
 
+// MuteCallParams defines parameters for MuteCall.
 type MuteCallParams struct {
+	// State Mute modunu açmak için "on", kapatmak için "off" olarak gönderilir:
+	//  * `on`
+	//  * `off`
+	//
 	State string `form:"state" json:"state"`
 }
 
+// OriginateCallParams defines parameters for OriginateCall.
 type OriginateCallParams struct {
-	Extension            string  `form:"extension" json:"extension"`
-	Destination          string  `form:"destination" json:"destination"`
-	CallerId             *string `form:"caller_id,omitempty" json:"caller_id,omitempty"`
-	ManualAnswer         *bool   `form:"manual_answer,omitempty" json:"manual_answer,omitempty"`
-	Timeout              *int    `form:"timeout,omitempty" json:"timeout,omitempty"`
-	AnnouncementToCallee *int    `form:"announcement_to_callee,omitempty" json:"announcement_to_callee,omitempty"`
-	AnnouncementToCaller *int    `form:"announcement_to_caller,omitempty" json:"announcement_to_caller,omitempty"`
-	CustomCallType       *string `form:"custom_call_type,omitempty" json:"custom_call_type,omitempty"`
+	// Extension Aramanın bağlanacağı dahili numaradır.
+	Extension string `form:"extension" json:"extension"`
+
+	// Destination Aranacak olan numara (yurtiçi çağrılar için 908505320000, yurtdışı çağrılar için 00493027590915 formatında olmalı).
+	Destination string `form:"destination" json:"destination"`
+
+	// CallerId Aramada kullanılacak olan dış numara (908505320000 formatında olmalı. Bu parametre verilmezse dahilide seçili olan dış no kullanılacaktır).
+	CallerId *string `form:"caller_id,omitempty" json:"caller_id,omitempty"`
+
+	// ManualAnswer Değeri true olarak gönderilirse dahilinin telefonu açmasını bekler (Normalde otomatik olarak dahili açılır ve karşı numara aranır).
+	ManualAnswer *bool `form:"manual_answer,omitempty" json:"manual_answer,omitempty"`
+
+	// Timeout Telefon çaldırma süresidir. 10 ile 60 sn. arasında bir değer olmalı. Varsayılan 29'dur.
+	Timeout *int `form:"timeout,omitempty" json:"timeout,omitempty"`
+
+	// AnnouncementToCallee Cevaplanma anında aranan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz.
+	AnnouncementToCallee *int `form:"announcement_to_callee,omitempty" json:"announcement_to_callee,omitempty"`
+
+	// AnnouncementToCaller Cevaplanma anında arayan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz.
+	AnnouncementToCaller *int `form:"announcement_to_caller,omitempty" json:"announcement_to_caller,omitempty"`
+
+	// CustomCallType Opsiyonel, özel çağrı tipi etiketi. Çağrıyı kendi entegrasyonunuzda sınıflandırmak için serbest metin olarak gönderebilirsiniz.
+	CustomCallType *string `form:"custom_call_type,omitempty" json:"custom_call_type,omitempty"`
 }
 
+// OriginateCallPostJSONBody defines parameters for OriginateCallPost.
 type OriginateCallPostJSONBody struct {
-	AnnouncementToCallee *int    `json:"announcement_to_callee,omitempty"`
-	AnnouncementToCaller *int    `json:"announcement_to_caller,omitempty"`
-	CallerId             *string `json:"caller_id,omitempty"`
-	CustomCallType       *string `json:"custom_call_type,omitempty"`
-	Destination          string  `json:"destination"`
-	Extension            string  `json:"extension"`
-	ManualAnswer         *bool   `json:"manual_answer,omitempty"`
-	Timeout              *int    `json:"timeout,omitempty"`
+	// AnnouncementToCallee Cevaplanma anında aranan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz.
+	AnnouncementToCallee *int `json:"announcement_to_callee,omitempty"`
+
+	// AnnouncementToCaller Cevaplanma anında arayan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz.
+	AnnouncementToCaller *int `json:"announcement_to_caller,omitempty"`
+
+	// CallerId Aramada kullanılacak olan dış numara (908505320000 formatında olmalı. Bu parametre verilmezse dahilide seçili olan dış no kullanılacaktır).
+	CallerId *string `json:"caller_id,omitempty"`
+
+	// CustomCallType Opsiyonel, özel çağrı tipi etiketi. Çağrıyı kendi entegrasyonunuzda sınıflandırmak için serbest metin olarak gönderebilirsiniz.
+	CustomCallType *string `json:"custom_call_type,omitempty"`
+
+	// Destination Aranacak olan numara (yurtiçi çağrılar için 908505320000, yurtdışı çağrılar için 00493027590915 formatında olmalı).
+	Destination string `json:"destination"`
+
+	// Extension Aramanın bağlanacağı dahili numaradır.
+	Extension string `json:"extension"`
+
+	// ManualAnswer Değeri true olarak gönderilirse dahilinin telefonu açmasını bekler (Normalde otomatik olarak dahili açılır ve karşı numara aranır).
+	ManualAnswer *bool `json:"manual_answer,omitempty"`
+
+	// Timeout Telefon çaldırma süresidir. 10 ile 60 sn. arasında bir değer olmalı. Varsayılan 29'dur.
+	Timeout *int `json:"timeout,omitempty"`
 }
 
+// OriginateCallPostFormdataBody defines parameters for OriginateCallPost.
 type OriginateCallPostFormdataBody struct {
-	AnnouncementToCallee *int    `form:"announcement_to_callee,omitempty" json:"announcement_to_callee,omitempty"`
-	AnnouncementToCaller *int    `form:"announcement_to_caller,omitempty" json:"announcement_to_caller,omitempty"`
-	CallerId             *string `form:"caller_id,omitempty" json:"caller_id,omitempty"`
-	CustomCallType       *string `form:"custom_call_type,omitempty" json:"custom_call_type,omitempty"`
-	Destination          string  `form:"destination" json:"destination"`
-	Extension            string  `form:"extension" json:"extension"`
-	ManualAnswer         *bool   `form:"manual_answer,omitempty" json:"manual_answer,omitempty"`
-	Timeout              *int    `form:"timeout,omitempty" json:"timeout,omitempty"`
+	// AnnouncementToCallee Cevaplanma anında aranan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz.
+	AnnouncementToCallee *int `form:"announcement_to_callee,omitempty" json:"announcement_to_callee,omitempty"`
+
+	// AnnouncementToCaller Cevaplanma anında arayan tarafa dinletilecek anons. Ses dosyası ID'lerinizi API ile veya Online İşlem Merkezi üzerinden görebilirsiniz.
+	AnnouncementToCaller *int `form:"announcement_to_caller,omitempty" json:"announcement_to_caller,omitempty"`
+
+	// CallerId Aramada kullanılacak olan dış numara (908505320000 formatında olmalı. Bu parametre verilmezse dahilide seçili olan dış no kullanılacaktır).
+	CallerId *string `form:"caller_id,omitempty" json:"caller_id,omitempty"`
+
+	// CustomCallType Opsiyonel, özel çağrı tipi etiketi. Çağrıyı kendi entegrasyonunuzda sınıflandırmak için serbest metin olarak gönderebilirsiniz.
+	CustomCallType *string `form:"custom_call_type,omitempty" json:"custom_call_type,omitempty"`
+
+	// Destination Aranacak olan numara (yurtiçi çağrılar için 908505320000, yurtdışı çağrılar için 00493027590915 formatında olmalı).
+	Destination string `form:"destination" json:"destination"`
+
+	// Extension Aramanın bağlanacağı dahili numaradır.
+	Extension string `form:"extension" json:"extension"`
+
+	// ManualAnswer Değeri true olarak gönderilirse dahilinin telefonu açmasını bekler (Normalde otomatik olarak dahili açılır ve karşı numara aranır).
+	ManualAnswer *bool `form:"manual_answer,omitempty" json:"manual_answer,omitempty"`
+
+	// Timeout Telefon çaldırma süresidir. 10 ile 60 sn. arasında bir değer olmalı. Varsayılan 29'dur.
+	Timeout *int `form:"timeout,omitempty" json:"timeout,omitempty"`
 }
 
+// TransferCallPostParams defines parameters for TransferCallPost.
 type TransferCallPostParams struct {
-	Id         string `form:"id" json:"id"`
+	// Id Aktarmak istediğiniz çağrının UUID'si
+	Id string `form:"id" json:"id"`
+
+	// UserNumber Aktarmak istediğiniz, bağlı kullanıcılarınızdan birinin dahili numarası
 	UserNumber string `form:"user_number" json:"user_number"`
 }
 
+// TransferCallParams defines parameters for TransferCall.
 type TransferCallParams struct {
+	// UserNumber Aktarmak istediğiniz, bağlı kullanıcılarınızdan birinin dahili numarası
 	UserNumber string `form:"user_number" json:"user_number"`
 }
 
+// AnswerCallPostJSONRequestBody defines body for AnswerCallPost for application/json ContentType.
 type AnswerCallPostJSONRequestBody AnswerCallPostJSONBody
 
+// AnswerCallPostFormdataRequestBody defines body for AnswerCallPost for application/x-www-form-urlencoded ContentType.
 type AnswerCallPostFormdataRequestBody AnswerCallPostFormdataBody
 
+// OriginateCallPostJSONRequestBody defines body for OriginateCallPost for application/json ContentType.
 type OriginateCallPostJSONRequestBody OriginateCallPostJSONBody
 
+// OriginateCallPostFormdataRequestBody defines body for OriginateCallPost for application/x-www-form-urlencoded ContentType.
 type OriginateCallPostFormdataRequestBody OriginateCallPostFormdataBody
-type AnswerCallPostResponse struct {
-	Body []byte// AnswerCallPostJSONBody defines parameters for AnswerCallPost.
-	// OriginateCallPostFormdataRequestBody defines body for OriginateCallPost for application/x-www-form-urlencoded ContentType.
 
+type AnswerCallPostResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type AnswerCallResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type CreateBridgeResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type HangupCallResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type MuteCallResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type OriginateCallResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type OriginateCallPostResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type TransferCallPostResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type TransferCallResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response

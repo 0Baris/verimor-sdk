@@ -16,6 +16,7 @@ import (
 	"strings"
 )
 
+// Valid indicates whether the value is a known member of the SendSmsJsonJSONBodyDatacoding enum.
 func (e SendSmsJsonJSONBodyDatacoding) Valid() bool {
 	switch e {
 	case N0:
@@ -29,6 +30,13 @@ func (e SendSmsJsonJSONBodyDatacoding) Valid() bool {
 	}
 }
 
+// PostV2CancelIdWithBody Gönderim İptali
+//
+// <p>İleri tarihli mesaj gönderimini iptal etmek için örnekte olduğu gibi bir JSON string POST edilir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/cancel/{id} (the `PostV2CancelId` operationId).
 func (c *Client) PostV2CancelIdWithBody(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV2CancelIdRequestWithBody(c.Server, id, contentType, body)
 	if err != nil {
@@ -41,6 +49,13 @@ func (c *Client) PostV2CancelIdWithBody(ctx context.Context, id string, contentT
 	return c.Client.Do(req)
 }
 
+// PostV2CancelId Gönderim İptali
+//
+// <p>İleri tarihli mesaj gönderimini iptal etmek için örnekte olduğu gibi bir JSON string POST edilir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/cancel/{id} (the `PostV2CancelId` operationId).
 func (c *Client) PostV2CancelId(ctx context.Context, id string, body PostV2CancelIdJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewPostV2CancelIdRequest(c.Server, id, body)
 	if err != nil {
@@ -53,6 +68,11 @@ func (c *Client) PostV2CancelId(ctx context.Context, id string, body PostV2Cance
 	return c.Client.Do(req)
 }
 
+// GetV2Send SMS Gönderme (GET)
+//
+// Aynı mesajı birden çok numaraya HTTP(S) GET (Plain de denir) ile gönderir; yanıtı düz metin olarak döner. Farklı numaralara farklı mesaj göndermek için /v2/send.json (POST JSON) kullanın. Bu endpoint /v2/iys_consents.json ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).
+//
+// Corresponds with GET /v2/send (the `GetV2Send` operationId).
 func (c *Client) GetV2Send(ctx context.Context, params *GetV2SendParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV2SendRequest(c.Server, params)
 	if err != nil {
@@ -65,6 +85,13 @@ func (c *Client) GetV2Send(ctx context.Context, params *GetV2SendParams, reqEdit
 	return c.Client.Do(req)
 }
 
+// SendSmsJsonWithBody SMS Gönderme (JSON)
+//
+// JSON formatında toplu SMS gönderimi için kullanılır. Birden fazla farklı mesajı farklı numaralara gönderebilirsiniz. Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v2/send.json (the `SendSmsJson` operationId).
 func (c *Client) SendSmsJsonWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendSmsJsonRequestWithBody(c.Server, contentType, body)
 	if err != nil {
@@ -77,6 +104,13 @@ func (c *Client) SendSmsJsonWithBody(ctx context.Context, contentType string, bo
 	return c.Client.Do(req)
 }
 
+// SendSmsJson SMS Gönderme (JSON)
+//
+// JSON formatında toplu SMS gönderimi için kullanılır. Birden fazla farklı mesajı farklı numaralara gönderebilirsiniz. Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v2/send.json (the `SendSmsJson` operationId).
 func (c *Client) SendSmsJson(ctx context.Context, body SendSmsJsonJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendSmsJsonRequest(c.Server, body)
 	if err != nil {
@@ -89,6 +123,7 @@ func (c *Client) SendSmsJson(ctx context.Context, body SendSmsJsonJSONRequestBod
 	return c.Client.Do(req)
 }
 
+// NewPostV2CancelIdRequest calls the generic PostV2CancelId builder with application/json body
 func NewPostV2CancelIdRequest(server string, id string, body PostV2CancelIdJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -99,53 +134,69 @@ func NewPostV2CancelIdRequest(server string, id string, body PostV2CancelIdJSONR
 	return NewPostV2CancelIdRequestWithBody(server, id, "application/json", bodyReader)
 }
 
+// NewPostV2CancelIdRequestWithBody constructs an http.Request for the PostV2CancelId method, with any body, and a specified content type
 func NewPostV2CancelIdRequestWithBody(server string, id string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/cancel/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
+// NewGetV2SendRequest constructs an http.Request for the GetV2Send method
 func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/send")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// Valid indicates whether the value is a known member of the SendSmsJsonJSONBodyDatacoding enum.
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -154,6 +205,7 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -161,6 +213,7 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "dest", params.Dest, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -168,6 +221,7 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "msg", params.Msg, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -175,7 +229,9 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if params.SourceAddr != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "source_addr", *params.SourceAddr, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -183,8 +239,11 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.ValidFor != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "valid_for", *params.ValidFor, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -192,8 +251,11 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Datacoding != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "datacoding", *params.Datacoding, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -201,8 +263,11 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.IsCommercial != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "is_commercial", *params.IsCommercial, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "boolean", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -210,8 +275,11 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.IysRecipientType != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "iys_recipient_type", *params.IysRecipientType, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -219,8 +287,11 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.SendAt != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "send_at", *params.SendAt, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -228,19 +299,24 @@ func NewGetV2SendRequest(server string, params *GetV2SendParams) (*http.Request,
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewSendSmsJsonRequest calls the generic SendSmsJson builder with application/json body
 func NewSendSmsJsonRequest(server string, body SendSmsJsonJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -251,34 +327,41 @@ func NewSendSmsJsonRequest(server string, body SendSmsJsonJSONRequestBody) (*htt
 	return NewSendSmsJsonRequestWithBody(server, "application/json", bodyReader)
 }
 
+// NewSendSmsJsonRequestWithBody constructs an http.Request for the SendSmsJson method, with any body, and a specified content type
 func NewSendSmsJsonRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/send.json")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	return req, nil
 }
 
-func (r PostV2CancelIdResponse) GetBody() []byte {// NewSendSmsJsonRequest calls the generic SendSmsJson builder with application/json body
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r PostV2CancelIdResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r PostV2CancelIdResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -286,6 +369,7 @@ func (r PostV2CancelIdResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r PostV2CancelIdResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -293,6 +377,7 @@ func (r PostV2CancelIdResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r PostV2CancelIdResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -300,12 +385,12 @@ func (r PostV2CancelIdResponse) ContentType() string {
 	return ""
 }
 
-func (r GetV2SendResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetV2SendResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetV2SendResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -313,6 +398,7 @@ func (r GetV2SendResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetV2SendResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -320,6 +406,7 @@ func (r GetV2SendResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV2SendResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -327,12 +414,12 @@ func (r GetV2SendResponse) ContentType() string {
 	return ""
 }
 
-func (r SendSmsJsonResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r SendSmsJsonResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r SendSmsJsonResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -340,6 +427,7 @@ func (r SendSmsJsonResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r SendSmsJsonResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -347,6 +435,7 @@ func (r SendSmsJsonResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r SendSmsJsonResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -354,6 +443,13 @@ func (r SendSmsJsonResponse) ContentType() string {
 	return ""
 }
 
+// PostV2CancelIdWithBodyWithResponse Gönderim İptali
+//
+// <p>İleri tarihli mesaj gönderimini iptal etmek için örnekte olduğu gibi bir JSON string POST edilir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/cancel/{id} (the `PostV2CancelId` operationId).
 func (c *ClientWithResponses) PostV2CancelIdWithBodyWithResponse(ctx context.Context, id string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*PostV2CancelIdResponse, error) {
 	rsp, err := c.PostV2CancelIdWithBody(ctx, id, contentType, body, reqEditors...)
 	if err != nil {
@@ -362,6 +458,13 @@ func (c *ClientWithResponses) PostV2CancelIdWithBodyWithResponse(ctx context.Con
 	return ParsePostV2CancelIdResponse(rsp)
 }
 
+// PostV2CancelIdWithResponse Gönderim İptali
+//
+// <p>İleri tarihli mesaj gönderimini iptal etmek için örnekte olduğu gibi bir JSON string POST edilir.</p><p>Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).</p>
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/cancel/{id} (the `PostV2CancelId` operationId).
 func (c *ClientWithResponses) PostV2CancelIdWithResponse(ctx context.Context, id string, body PostV2CancelIdJSONRequestBody, reqEditors ...RequestEditorFn) (*PostV2CancelIdResponse, error) {
 	rsp, err := c.PostV2CancelId(ctx, id, body, reqEditors...)
 	if err != nil {
@@ -370,6 +473,13 @@ func (c *ClientWithResponses) PostV2CancelIdWithResponse(ctx context.Context, id
 	return ParsePostV2CancelIdResponse(rsp)
 }
 
+// GetV2SendWithResponse SMS Gönderme (GET)
+//
+// Aynı mesajı birden çok numaraya HTTP(S) GET (Plain de denir) ile gönderir; yanıtı düz metin olarak döner. Farklı numaralara farklı mesaj göndermek için /v2/send.json (POST JSON) kullanın. Bu endpoint /v2/iys_consents.json ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/send (the `GetV2Send` operationId).
 func (c *ClientWithResponses) GetV2SendWithResponse(ctx context.Context, params *GetV2SendParams, reqEditors ...RequestEditorFn) (*GetV2SendResponse, error) {
 	rsp, err := c.GetV2Send(ctx, params, reqEditors...)
 	if err != nil {
@@ -378,6 +488,13 @@ func (c *ClientWithResponses) GetV2SendWithResponse(ctx context.Context, params 
 	return ParseGetV2SendResponse(rsp)
 }
 
+// SendSmsJsonWithBodyWithResponse SMS Gönderme (JSON)
+//
+// JSON formatında toplu SMS gönderimi için kullanılır. Birden fazla farklı mesajı farklı numaralara gönderebilirsiniz. Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/send.json (the `SendSmsJson` operationId).
 func (c *ClientWithResponses) SendSmsJsonWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendSmsJsonResponse, error) {
 	rsp, err := c.SendSmsJsonWithBody(ctx, contentType, body, reqEditors...)
 	if err != nil {
@@ -386,6 +503,13 @@ func (c *ClientWithResponses) SendSmsJsonWithBodyWithResponse(ctx context.Contex
 	return ParseSendSmsJsonResponse(rsp)
 }
 
+// SendSmsJsonWithResponse SMS Gönderme (JSON)
+//
+// JSON formatında toplu SMS gönderimi için kullanılır. Birden fazla farklı mesajı farklı numaralara gönderebilirsiniz. Bu endpoint /v2/send ile aynı hız sınırı havuzunu paylaşır — dakikada toplam 240 istek gönderebilirsiniz (burst 80).
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v2/send.json (the `SendSmsJson` operationId).
 func (c *ClientWithResponses) SendSmsJsonWithResponse(ctx context.Context, body SendSmsJsonJSONRequestBody, reqEditors ...RequestEditorFn) (*SendSmsJsonResponse, error) {
 	rsp, err := c.SendSmsJson(ctx, body, reqEditors...)
 	if err != nil {
@@ -394,41 +518,50 @@ func (c *ClientWithResponses) SendSmsJsonWithResponse(ctx context.Context, body 
 	return ParseSendSmsJsonResponse(rsp)
 }
 
+// ParsePostV2CancelIdResponse parses an HTTP response from a PostV2CancelIdWithResponse call
 func ParsePostV2CancelIdResponse(rsp *http.Response) (*PostV2CancelIdResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &PostV2CancelIdResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &PostV2CancelIdResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseGetV2SendResponse parses an HTTP response from a GetV2SendWithResponse call
 func ParseGetV2SendResponse(rsp *http.Response) (*GetV2SendResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetV2SendResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetV2SendResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseSendSmsJsonResponse parses an HTTP response from a SendSmsJsonWithResponse call
 func ParseSendSmsJsonResponse(rsp *http.Response) (*SendSmsJsonResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &SendSmsJsonResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &SendSmsJsonResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
-
-// Status returns HTTPResponse.Status
-// ParseSendSmsJsonResponse parses an HTTP response from a SendSmsJsonWithResponse call

@@ -6,18 +6,22 @@ package verimorswitch
 
 import "net/http"
 
+// UpdateOutboundCallerIdParams defines parameters for UpdateOutboundCallerId.
 type UpdateOutboundCallerIdParams struct {
+	// Extension Dış numarası değiştirilecek olan dahili
 	Extension string `form:"extension" json:"extension"`
-	CallerId  string `form:"caller_id" json:"caller_id"`
-}
-type GetCallerIdsResponse struct {
-	Body []byte// UpdateOutboundCallerIdParams defines parameters for UpdateOutboundCallerId.
+
 	// CallerId Dahilinin kullanacağı dış numara. Kullanabileceğiniz numara listesini caller_ids API'sinden öğrenebilirsiniz
-
-	HTTPResponse *http.Response
-	JSON200      *[]string// JSON200 the response for an HTTP 200 `application/json` response
-
+	CallerId string `form:"caller_id" json:"caller_id"`
 }
+
+type GetCallerIdsResponse struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *[]string
+}
+
 type UpdateOutboundCallerIdResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response

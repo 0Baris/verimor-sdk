@@ -15,6 +15,11 @@ import (
 	"strings"
 )
 
+// GetV2Headers Başlık Yönetimi
+//
+// Tanımlı SMS Başlıklarını listeler. Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).
+//
+// Corresponds with GET /v2/headers (the `GetV2Headers` operationId).
 func (c *Client) GetV2Headers(ctx context.Context, params *GetV2HeadersParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetV2HeadersRequest(c.Server, params)
 	if err != nil {
@@ -27,30 +32,33 @@ func (c *Client) GetV2Headers(ctx context.Context, params *GetV2HeadersParams, r
 	return c.Client.Do(req)
 }
 
+// NewGetV2HeadersRequest constructs an http.Request for the GetV2Headers method
 func NewGetV2HeadersRequest(server string, params *GetV2HeadersParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v2/headers")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// GetV2Headers Başlık Yönetimi
-		//
-		// Tanımlı SMS Başlıklarını listeler. Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).
-		//
-		// Corresponds with GET /v2/headers (the `GetV2Headers` operationId).
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "username", params.Username, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -59,6 +67,7 @@ func NewGetV2HeadersRequest(server string, params *GetV2HeadersParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "password", params.Password, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
 		} else {
@@ -66,28 +75,32 @@ func NewGetV2HeadersRequest(server string, params *GetV2HeadersParams) (*http.Re
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
-func (r GetV2HeadersResponse) GetJSON200() *[]string {// GetJSON200 returns the response for an HTTP 200 `application/json` response
-
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
+func (r GetV2HeadersResponse) GetJSON200() *[]string {
 	return r.JSON200
 }
 
-func (r GetV2HeadersResponse) GetBody() []byte {// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetV2HeadersResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetV2HeadersResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -95,6 +108,7 @@ func (r GetV2HeadersResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetV2HeadersResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -102,6 +116,7 @@ func (r GetV2HeadersResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetV2HeadersResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -109,6 +124,13 @@ func (r GetV2HeadersResponse) ContentType() string {
 	return ""
 }
 
+// GetV2HeadersWithResponse Başlık Yönetimi
+//
+// Tanımlı SMS Başlıklarını listeler. Bu endpoint /v2/status, /v2/balance gibi endpoint'lerle aynı hız sınırı havuzunu paylaşır — dakikada toplam 20 istek gönderebilirsiniz (burst 10).
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /v2/headers (the `GetV2Headers` operationId).
 func (c *ClientWithResponses) GetV2HeadersWithResponse(ctx context.Context, params *GetV2HeadersParams, reqEditors ...RequestEditorFn) (*GetV2HeadersResponse, error) {
 	rsp, err := c.GetV2Headers(ctx, params, reqEditors...)
 	if err != nil {
@@ -117,24 +139,28 @@ func (c *ClientWithResponses) GetV2HeadersWithResponse(ctx context.Context, para
 	return ParseGetV2HeadersResponse(rsp)
 }
 
+// ParseGetV2HeadersResponse parses an HTTP response from a GetV2HeadersWithResponse call
 func ParseGetV2HeadersResponse(rsp *http.Response) (*GetV2HeadersResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetV2HeadersResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetV2HeadersResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest []string// Status returns HTTPResponse.Status
-		// ParseGetV2HeadersResponse parses an HTTP response from a GetV2HeadersWithResponse call
-
+		var dest []string
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }

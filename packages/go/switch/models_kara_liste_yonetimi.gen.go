@@ -6,60 +6,87 @@ package verimorswitch
 
 import "net/http"
 
+// Defines values for CreateBlockedNumberParamsDirection.
 const (
 	CreateBlockedNumberParamsDirectionInbound  CreateBlockedNumberParamsDirection = "inbound"
 	CreateBlockedNumberParamsDirectionOutbound CreateBlockedNumberParamsDirection = "outbound"
 )
 
+// Defines values for DeleteBlockedNumberParamsDirection.
 const (
 	DeleteBlockedNumberParamsDirectionInbound  DeleteBlockedNumberParamsDirection = "inbound"
 	DeleteBlockedNumberParamsDirectionOutbound DeleteBlockedNumberParamsDirection = "outbound"
 )
 
+// ListBlockedNumbersParams defines parameters for ListBlockedNumbers.
 type ListBlockedNumbersParams struct {
-	Page  *int `form:"page,omitempty" json:"page,omitempty"`
+	// Page Sayfa numarası (varsayılan 1)
+	Page *int `form:"page,omitempty" json:"page,omitempty"`
+
+	// Limit Listeyi sınırlayabilirsiniz. Varsayılan değer 10, minimum değer 10, maksimum değer 100
 	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
+// CreateBlockedNumberParams defines parameters for CreateBlockedNumber.
 type CreateBlockedNumberParams struct {
-	Number    string                              `form:"number" json:"number"`
+	// Number Engellenecek telefon numarası (normalize edilecek)
+	Number string `form:"number" json:"number"`
+
+	// Direction Engelleme yönü (inbound veya outbound, varsayılan inbound)
 	Direction *CreateBlockedNumberParamsDirection `form:"direction,omitempty" json:"direction,omitempty"`
 }
 
+// CreateBlockedNumberParamsDirection defines parameters for CreateBlockedNumber.
 type CreateBlockedNumberParamsDirection string
 
+// DeleteBlockedNumberParams defines parameters for DeleteBlockedNumber.
 type DeleteBlockedNumberParams struct {
-	Number    string                              `form:"number" json:"number"`
+	// Number Kara listeden çıkarılacak telefon numarası (normalize edilecek)
+	Number string `form:"number" json:"number"`
+
+	// Direction Engelleme yönü (inbound veya outbound, belirtilmezse tüm yönlerdeki kaydı siler)
 	Direction *DeleteBlockedNumberParamsDirection `form:"direction,omitempty" json:"direction,omitempty"`
 }
 
+// DeleteBlockedNumberParamsDirection defines parameters for DeleteBlockedNumber.
 type DeleteBlockedNumberParamsDirection string
-type ListBlockedNumbersResponse struct {
-	Body []byte// Defines values for CreateBlockedNumberParamsDirection.
-	// DeleteBlockedNumberParamsDirection defines parameters for DeleteBlockedNumber.
 
+type ListBlockedNumbersResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		BlockedNumbers []struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		BlockedNumbers []struct {
+			// Direction Engelleme yönü (inbound veya outbound)
 			Direction *string `json:"direction,omitempty"`
-			Id        int     `json:"id"`
-			Number    string  `json:"number"`
+
+			// Id Engelli numara kaydının benzersiz kimlik numarası
+			Id int `json:"id"`
+
+			// Number Normalize edilmiş engelli telefon numarası
+			Number string `json:"number"`
 		} `json:"blocked_numbers"`
 		Pagination struct {
-			Limit      int `json:"limit"`
-			Page       int `json:"page"`
+			// Limit Sayfa başına kayıt sayısı
+			Limit int `json:"limit"`
+
+			// Page Mevcut sayfa numarası
+			Page int `json:"page"`
+
+			// TotalCount Toplam engelli numara sayısı
 			TotalCount int `json:"total_count"`
+
+			// TotalPages Toplam sayfa sayısı
 			TotalPages int `json:"total_pages"`
 		} `json:"pagination"`
 	}
 }
-type CreateBlockedNumberResponse struct {
-	Body []byte// Direction Engelleme yönü (inbound veya outbound)
-	// TotalPages Toplam sayfa sayısı
 
+type CreateBlockedNumberResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
 }
+
 type DeleteBlockedNumberResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response

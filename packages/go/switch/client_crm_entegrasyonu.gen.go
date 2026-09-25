@@ -15,6 +15,7 @@ import (
 	"strings"
 )
 
+// Valid indicates whether the value is a known member of the GetCrmIntegrations200JSONResponseBodyAnswered enum.
 func (e GetCrmIntegrations200JSONResponseBodyAnswered) Valid() bool {
 	switch e {
 	case GetCrmIntegrations200JSONResponseBodyAnsweredOff:
@@ -26,6 +27,7 @@ func (e GetCrmIntegrations200JSONResponseBodyAnswered) Valid() bool {
 	}
 }
 
+// Valid indicates whether the value is a known member of the GetCrmIntegrations200JSONResponseBodyHangup enum.
 func (e GetCrmIntegrations200JSONResponseBodyHangup) Valid() bool {
 	switch e {
 	case GetCrmIntegrations200JSONResponseBodyHangupOff:
@@ -37,6 +39,7 @@ func (e GetCrmIntegrations200JSONResponseBodyHangup) Valid() bool {
 	}
 }
 
+// Valid indicates whether the value is a known member of the GetCrmIntegrations200JSONResponseBodyRinging enum.
 func (e GetCrmIntegrations200JSONResponseBodyRinging) Valid() bool {
 	switch e {
 	case GetCrmIntegrations200JSONResponseBodyRingingOff:
@@ -48,6 +51,11 @@ func (e GetCrmIntegrations200JSONResponseBodyRinging) Valid() bool {
 	}
 }
 
+// GetCrmIntegrations CRM Entegrasyon Ayarlarını Getirme
+//
+// Çağrı olayları (çalma, cevaplanma, kapanma) için mevcut CRM webhook entegrasyon ayarlarını getirir. Bu endpoint ile hangi olaylar için webhook bildirimleri aktif olduğunu ve webhook URL'ini öğrenebilirsiniz.
+//
+// Corresponds with GET /crm_integrations (the `GetCrmIntegrations` operationId).
 func (c *Client) GetCrmIntegrations(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCrmIntegrationsRequest(c.Server)
 	if err != nil {
@@ -60,6 +68,11 @@ func (c *Client) GetCrmIntegrations(ctx context.Context, reqEditors ...RequestEd
 	return c.Client.Do(req)
 }
 
+// UpdateCrmIntegrations CRM Entegrasyon Ayarlarını Güncelleme
+//
+// Çağrı olayları için CRM webhook entegrasyon ayarlarını günceller. Çalma, cevaplanma ve kapanma olayları için bildirimleri etkinleştirir veya devre dışı bırakır. Webhook URL'i de güncellenebilir.
+//
+// Corresponds with POST /crm_integrations (the `UpdateCrmIntegrations` operationId).
 func (c *Client) UpdateCrmIntegrations(ctx context.Context, params *UpdateCrmIntegrationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewUpdateCrmIntegrationsRequest(c.Server, params)
 	if err != nil {
@@ -72,6 +85,11 @@ func (c *Client) UpdateCrmIntegrations(ctx context.Context, params *UpdateCrmInt
 	return c.Client.Do(req)
 }
 
+// WebhookPayloadExamples CRM Webhook Payload Örnekleri
+//
+// CRM entegrasyonu aktif olduğunda gönderilen webhook payload örnekleri. Bu endpoint gerçek bir API değildir, sadece dokümantasyon amaçlıdır.
+//
+// Corresponds with GET /webhook-payload-examples (the `WebhookPayloadExamples` operationId).
 func (c *Client) WebhookPayloadExamples(ctx context.Context, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewWebhookPayloadExamplesRequest(c.Server)
 	if err != nil {
@@ -84,49 +102,63 @@ func (c *Client) WebhookPayloadExamples(ctx context.Context, reqEditors ...Reque
 	return c.Client.Do(req)
 }
 
+// NewGetCrmIntegrationsRequest constructs an http.Request for the GetCrmIntegrations method
 func NewGetCrmIntegrationsRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/crm_integrations")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewUpdateCrmIntegrationsRequest constructs an http.Request for the UpdateCrmIntegrations method
 func NewUpdateCrmIntegrationsRequest(server string, params *UpdateCrmIntegrationsParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/crm_integrations")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// Valid indicates whether the value is a known member of the GetCrmIntegrations200JSONResponseBodyAnswered enum.
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.Ringing != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "ringing", *params.Ringing, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -134,8 +166,11 @@ func NewUpdateCrmIntegrationsRequest(server string, params *UpdateCrmIntegration
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Answered != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "answered", *params.Answered, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -143,8 +178,11 @@ func NewUpdateCrmIntegrationsRequest(server string, params *UpdateCrmIntegration
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Hangup != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "hangup", *params.Hangup, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -152,8 +190,11 @@ func NewUpdateCrmIntegrationsRequest(server string, params *UpdateCrmIntegration
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.NotificationUrl != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "notification_url", *params.NotificationUrl, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -161,55 +202,73 @@ func NewUpdateCrmIntegrationsRequest(server string, params *UpdateCrmIntegration
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewWebhookPayloadExamplesRequest constructs an http.Request for the WebhookPayloadExamples method
 func NewWebhookPayloadExamplesRequest(server string) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/webhook-payload-examples")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetCrmIntegrationsResponse) GetJSON200() *struct {
-	Answered        GetCrmIntegrations200JSONResponseBodyAnswered `json:"answered"`
-	Hangup          GetCrmIntegrations200JSONResponseBodyHangup   `json:"hangup"`
-	NotificationUrl string                                        `json:"notification_url"`
-	Ringing         GetCrmIntegrations200JSONResponseBodyRinging  `json:"ringing"`
+	// Answered Çağrı cevaplanma olayları için webhook bildirimi (on: aktif, off: pasif)
+	Answered GetCrmIntegrations200JSONResponseBodyAnswered `json:"answered"`
+
+	// Hangup Çağrı kapanma olayları için webhook bildirimi (on: aktif, off: pasif)
+	Hangup GetCrmIntegrations200JSONResponseBodyHangup `json:"hangup"`
+
+	// NotificationUrl CRM bildirimlerinin gönderileceği webhook URL adresi
+	NotificationUrl string `json:"notification_url"`
+
+	// Ringing Çağrı çalma olayları için webhook bildirimi (on: aktif, off: pasif)
+	Ringing GetCrmIntegrations200JSONResponseBodyRinging `json:"ringing"`
 } {
 	return r.JSON200
 }
 
-func (r GetCrmIntegrationsResponse) GetBody() []byte {// NewWebhookPayloadExamplesRequest constructs an http.Request for the WebhookPayloadExamples method
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetCrmIntegrationsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetCrmIntegrationsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -217,6 +276,7 @@ func (r GetCrmIntegrationsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetCrmIntegrationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -224,6 +284,7 @@ func (r GetCrmIntegrationsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetCrmIntegrationsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -231,12 +292,12 @@ func (r GetCrmIntegrationsResponse) ContentType() string {
 	return ""
 }
 
-func (r UpdateCrmIntegrationsResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r UpdateCrmIntegrationsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r UpdateCrmIntegrationsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -244,6 +305,7 @@ func (r UpdateCrmIntegrationsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r UpdateCrmIntegrationsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -251,6 +313,7 @@ func (r UpdateCrmIntegrationsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r UpdateCrmIntegrationsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -258,7 +321,9 @@ func (r UpdateCrmIntegrationsResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r WebhookPayloadExamplesResponse) GetJSON200() *struct {
+	// AnsweredEvent Çağrı cevaplandığında gönderilen payload
 	AnsweredEvent *struct {
 		AnswerTime   *string `json:"answer_time,omitempty"`
 		CallId       *string `json:"call_id,omitempty"`
@@ -266,6 +331,8 @@ func (r WebhookPayloadExamplesResponse) GetJSON200() *struct {
 		CallerNumber *string `json:"caller_number,omitempty"`
 		Event        *string `json:"event,omitempty"`
 	} `json:"answered_event,omitempty"`
+
+	// HangupEvent Çağrı sonlandığında gönderilen payload
 	HangupEvent *struct {
 		CallId       *string `json:"call_id,omitempty"`
 		CalledNumber *string `json:"called_number,omitempty"`
@@ -274,6 +341,8 @@ func (r WebhookPayloadExamplesResponse) GetJSON200() *struct {
 		Event        *string `json:"event,omitempty"`
 		HangupCause  *string `json:"hangup_cause,omitempty"`
 	} `json:"hangup_event,omitempty"`
+
+	// RingingEvent Çağrı çalmaya başladığında gönderilen payload
 	RingingEvent *struct {
 		CallId       *string `json:"call_id,omitempty"`
 		CalledNumber *string `json:"called_number,omitempty"`
@@ -285,12 +354,12 @@ func (r WebhookPayloadExamplesResponse) GetJSON200() *struct {
 	return r.JSON200
 }
 
-func (r WebhookPayloadExamplesResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r WebhookPayloadExamplesResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r WebhookPayloadExamplesResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -298,6 +367,7 @@ func (r WebhookPayloadExamplesResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r WebhookPayloadExamplesResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -305,6 +375,7 @@ func (r WebhookPayloadExamplesResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r WebhookPayloadExamplesResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -312,6 +383,13 @@ func (r WebhookPayloadExamplesResponse) ContentType() string {
 	return ""
 }
 
+// GetCrmIntegrationsWithResponse CRM Entegrasyon Ayarlarını Getirme
+//
+// Çağrı olayları (çalma, cevaplanma, kapanma) için mevcut CRM webhook entegrasyon ayarlarını getirir. Bu endpoint ile hangi olaylar için webhook bildirimleri aktif olduğunu ve webhook URL'ini öğrenebilirsiniz.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /crm_integrations (the `GetCrmIntegrations` operationId).
 func (c *ClientWithResponses) GetCrmIntegrationsWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*GetCrmIntegrationsResponse, error) {
 	rsp, err := c.GetCrmIntegrations(ctx, reqEditors...)
 	if err != nil {
@@ -320,6 +398,13 @@ func (c *ClientWithResponses) GetCrmIntegrationsWithResponse(ctx context.Context
 	return ParseGetCrmIntegrationsResponse(rsp)
 }
 
+// UpdateCrmIntegrationsWithResponse CRM Entegrasyon Ayarlarını Güncelleme
+//
+// Çağrı olayları için CRM webhook entegrasyon ayarlarını günceller. Çalma, cevaplanma ve kapanma olayları için bildirimleri etkinleştirir veya devre dışı bırakır. Webhook URL'i de güncellenebilir.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /crm_integrations (the `UpdateCrmIntegrations` operationId).
 func (c *ClientWithResponses) UpdateCrmIntegrationsWithResponse(ctx context.Context, params *UpdateCrmIntegrationsParams, reqEditors ...RequestEditorFn) (*UpdateCrmIntegrationsResponse, error) {
 	rsp, err := c.UpdateCrmIntegrations(ctx, params, reqEditors...)
 	if err != nil {
@@ -328,6 +413,13 @@ func (c *ClientWithResponses) UpdateCrmIntegrationsWithResponse(ctx context.Cont
 	return ParseUpdateCrmIntegrationsResponse(rsp)
 }
 
+// WebhookPayloadExamplesWithResponse CRM Webhook Payload Örnekleri
+//
+// CRM entegrasyonu aktif olduğunda gönderilen webhook payload örnekleri. Bu endpoint gerçek bir API değildir, sadece dokümantasyon amaçlıdır.
+//
+// Returns a wrapper object for the known response body format(s).
+//
+// Corresponds with GET /webhook-payload-examples (the `WebhookPayloadExamples` operationId).
 func (c *ClientWithResponses) WebhookPayloadExamplesWithResponse(ctx context.Context, reqEditors ...RequestEditorFn) (*WebhookPayloadExamplesResponse, error) {
 	rsp, err := c.WebhookPayloadExamples(ctx, reqEditors...)
 	if err != nil {
@@ -336,55 +428,77 @@ func (c *ClientWithResponses) WebhookPayloadExamplesWithResponse(ctx context.Con
 	return ParseWebhookPayloadExamplesResponse(rsp)
 }
 
+// ParseGetCrmIntegrationsResponse parses an HTTP response from a GetCrmIntegrationsWithResponse call
 func ParseGetCrmIntegrationsResponse(rsp *http.Response) (*GetCrmIntegrationsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &GetCrmIntegrationsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &GetCrmIntegrationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
-			Answered        GetCrmIntegrations200JSONResponseBodyAnswered `json:"answered"`
-			Hangup          GetCrmIntegrations200JSONResponseBodyHangup   `json:"hangup"`
-			NotificationUrl string                                        `json:"notification_url"`
-			Ringing         GetCrmIntegrations200JSONResponseBodyRinging  `json:"ringing"`
+			// Answered Çağrı cevaplanma olayları için webhook bildirimi (on: aktif, off: pasif)
+			Answered GetCrmIntegrations200JSONResponseBodyAnswered `json:"answered"`
+
+			// Hangup Çağrı kapanma olayları için webhook bildirimi (on: aktif, off: pasif)
+			Hangup GetCrmIntegrations200JSONResponseBodyHangup `json:"hangup"`
+
+			// NotificationUrl CRM bildirimlerinin gönderileceği webhook URL adresi
+			NotificationUrl string `json:"notification_url"`
+
+			// Ringing Çağrı çalma olayları için webhook bildirimi (on: aktif, off: pasif)
+			Ringing GetCrmIntegrations200JSONResponseBodyRinging `json:"ringing"`
 		}
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseUpdateCrmIntegrationsResponse parses an HTTP response from a UpdateCrmIntegrationsWithResponse call
 func ParseUpdateCrmIntegrationsResponse(rsp *http.Response) (*UpdateCrmIntegrationsResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &UpdateCrmIntegrationsResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &UpdateCrmIntegrationsResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	return response, nil
 }
 
+// ParseWebhookPayloadExamplesResponse parses an HTTP response from a WebhookPayloadExamplesWithResponse call
 func ParseWebhookPayloadExamplesResponse(rsp *http.Response) (*WebhookPayloadExamplesResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &WebhookPayloadExamplesResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &WebhookPayloadExamplesResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
 		var dest struct {
+			// AnsweredEvent Çağrı cevaplandığında gönderilen payload
 			AnsweredEvent *struct {
 				AnswerTime   *string `json:"answer_time,omitempty"`
 				CallId       *string `json:"call_id,omitempty"`
@@ -392,6 +506,8 @@ func ParseWebhookPayloadExamplesResponse(rsp *http.Response) (*WebhookPayloadExa
 				CallerNumber *string `json:"caller_number,omitempty"`
 				Event        *string `json:"event,omitempty"`
 			} `json:"answered_event,omitempty"`
+
+			// HangupEvent Çağrı sonlandığında gönderilen payload
 			HangupEvent *struct {
 				CallId       *string `json:"call_id,omitempty"`
 				CalledNumber *string `json:"called_number,omitempty"`
@@ -400,6 +516,8 @@ func ParseWebhookPayloadExamplesResponse(rsp *http.Response) (*WebhookPayloadExa
 				Event        *string `json:"event,omitempty"`
 				HangupCause  *string `json:"hangup_cause,omitempty"`
 			} `json:"hangup_event,omitempty"`
+
+			// RingingEvent Çağrı çalmaya başladığında gönderilen payload
 			RingingEvent *struct {
 				CallId       *string `json:"call_id,omitempty"`
 				CalledNumber *string `json:"called_number,omitempty"`
@@ -412,9 +530,8 @@ func ParseWebhookPayloadExamplesResponse(rsp *http.Response) (*WebhookPayloadExa
 			return nil, err
 		}
 		response.JSON200 = &dest
+
 	}
+
 	return response, nil
 }
-
-// Status returns HTTPResponse.Status
-// RingingEvent Çağrı çalmaya başladığında gönderilen payload

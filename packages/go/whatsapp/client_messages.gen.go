@@ -16,60 +16,75 @@ import (
 	"strings"
 )
 
+// AsValidationErrorLoc0 returns the union data inside the ValidationError_Loc_Item as a ValidationErrorLoc0
 func (t ValidationError_Loc_Item) AsValidationErrorLoc0() (ValidationErrorLoc0, error) {
 	var body ValidationErrorLoc0
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
+// FromValidationErrorLoc0 overwrites any union data inside the ValidationError_Loc_Item as the provided ValidationErrorLoc0
 func (t *ValidationError_Loc_Item) FromValidationErrorLoc0(v ValidationErrorLoc0) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
+// MergeValidationErrorLoc0 performs a merge with any union data inside the ValidationError_Loc_Item, using the provided ValidationErrorLoc0
 func (t *ValidationError_Loc_Item) MergeValidationErrorLoc0(v ValidationErrorLoc0) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
+
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
 }
 
+// AsValidationErrorLoc1 returns the union data inside the ValidationError_Loc_Item as a ValidationErrorLoc1
 func (t ValidationError_Loc_Item) AsValidationErrorLoc1() (ValidationErrorLoc1, error) {
 	var body ValidationErrorLoc1
 	err := json.Unmarshal(t.union, &body)
 	return body, err
 }
 
+// FromValidationErrorLoc1 overwrites any union data inside the ValidationError_Loc_Item as the provided ValidationErrorLoc1
 func (t *ValidationError_Loc_Item) FromValidationErrorLoc1(v ValidationErrorLoc1) error {
 	b, err := json.Marshal(v)
 	t.union = b
 	return err
 }
 
+// MergeValidationErrorLoc1 performs a merge with any union data inside the ValidationError_Loc_Item, using the provided ValidationErrorLoc1
 func (t *ValidationError_Loc_Item) MergeValidationErrorLoc1(v ValidationErrorLoc1) error {
 	b, err := json.Marshal(v)
 	if err != nil {
 		return err
 	}
+
 	merged, err := runtime.JSONMerge(t.union, b)
 	t.union = merged
 	return err
 }
-func (t ValidationError_Loc_Item) MarshalJSON() ([]byte,// AsValidationErrorLoc0 returns the union data inside the ValidationError_Loc_Item as a ValidationErrorLoc0
-// MergeValidationErrorLoc1 performs a merge with any union data inside the ValidationError_Loc_Item, using the provided ValidationErrorLoc1
-error) {
+
+func (t ValidationError_Loc_Item) MarshalJSON() ([]byte, error) {
 	b, err := t.union.MarshalJSON()
 	return b, err
 }
+
 func (t *ValidationError_Loc_Item) UnmarshalJSON(b []byte) error {
 	err := t.union.UnmarshalJSON(b)
 	return err
 }
 
+// SendOtpV1MessagesOtpPostWithBody OTP / Kimlik Doğrulama Mesajı Gönder
+//
+// WhatsApp AUTHENTICATION kategorisindeki onaylı şablon ile OTP veya kimlik doğrulama mesajı gönderir. Yüksek öncelikli kuyruğa (`high_priority_otp`) yönlendirilir.
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/messages/otp (the `SendOtpV1MessagesOtpPost` operationId).
 func (c *Client) SendOtpV1MessagesOtpPostWithBody(ctx context.Context, params *SendOtpV1MessagesOtpPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendOtpV1MessagesOtpPostRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -82,6 +97,13 @@ func (c *Client) SendOtpV1MessagesOtpPostWithBody(ctx context.Context, params *S
 	return c.Client.Do(req)
 }
 
+// SendOtpV1MessagesOtpPost OTP / Kimlik Doğrulama Mesajı Gönder
+//
+// WhatsApp AUTHENTICATION kategorisindeki onaylı şablon ile OTP veya kimlik doğrulama mesajı gönderir. Yüksek öncelikli kuyruğa (`high_priority_otp`) yönlendirilir.
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/messages/otp (the `SendOtpV1MessagesOtpPost` operationId).
 func (c *Client) SendOtpV1MessagesOtpPost(ctx context.Context, params *SendOtpV1MessagesOtpPostParams, body SendOtpV1MessagesOtpPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendOtpV1MessagesOtpPostRequest(c.Server, params, body)
 	if err != nil {
@@ -94,6 +116,13 @@ func (c *Client) SendOtpV1MessagesOtpPost(ctx context.Context, params *SendOtpV1
 	return c.Client.Do(req)
 }
 
+// SendUtilityV1MessagesUtilityPostWithBody Utility / İşlemsel Mesaj Gönder
+//
+// WhatsApp UTILITY kategorisindeki onaylı şablon ile işlemsel mesaj gönderir (sipariş onayı, fatura bildirimi vb.).
+//
+// Takes any type of body and a specified content type.
+//
+// Corresponds with POST /v1/messages/utility (the `SendUtilityV1MessagesUtilityPost` operationId).
 func (c *Client) SendUtilityV1MessagesUtilityPostWithBody(ctx context.Context, params *SendUtilityV1MessagesUtilityPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendUtilityV1MessagesUtilityPostRequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
@@ -106,6 +135,13 @@ func (c *Client) SendUtilityV1MessagesUtilityPostWithBody(ctx context.Context, p
 	return c.Client.Do(req)
 }
 
+// SendUtilityV1MessagesUtilityPost Utility / İşlemsel Mesaj Gönder
+//
+// WhatsApp UTILITY kategorisindeki onaylı şablon ile işlemsel mesaj gönderir (sipariş onayı, fatura bildirimi vb.).
+//
+// Takes a body of the `application/json` content type.
+//
+// Corresponds with POST /v1/messages/utility (the `SendUtilityV1MessagesUtilityPost` operationId).
 func (c *Client) SendUtilityV1MessagesUtilityPost(ctx context.Context, params *SendUtilityV1MessagesUtilityPostParams, body SendUtilityV1MessagesUtilityPostJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewSendUtilityV1MessagesUtilityPostRequest(c.Server, params, body)
 	if err != nil {
@@ -118,6 +154,7 @@ func (c *Client) SendUtilityV1MessagesUtilityPost(ctx context.Context, params *S
 	return c.Client.Do(req)
 }
 
+// NewSendOtpV1MessagesOtpPostRequest calls the generic SendOtpV1MessagesOtpPost builder with application/json body
 func NewSendOtpV1MessagesOtpPostRequest(server string, params *SendOtpV1MessagesOtpPostParams, body SendOtpV1MessagesOtpPostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -128,38 +165,51 @@ func NewSendOtpV1MessagesOtpPostRequest(server string, params *SendOtpV1Messages
 	return NewSendOtpV1MessagesOtpPostRequestWithBody(server, params, "application/json", bodyReader)
 }
 
+// NewSendOtpV1MessagesOtpPostRequestWithBody constructs an http.Request for the SendOtpV1MessagesOtpPost method, with any body, and a specified content type
 func NewSendOtpV1MessagesOtpPostRequestWithBody(server string, params *SendOtpV1MessagesOtpPostParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v1/messages/otp")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	if params != nil {
+
 		if params.XApiKey != nil {
 			var headerParam0 string
+
 			headerParam0, err = runtime.StyleParamWithOptions("simple", false, "x-api-key", *params.XApiKey, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "", Format: ""})
 			if err != nil {
 				return nil, err
 			}
+
 			req.Header.Set("x-api-key", headerParam0)
 		}
+
 	}
+
 	return req, nil
 }
 
+// NewSendUtilityV1MessagesUtilityPostRequest calls the generic SendUtilityV1MessagesUtilityPost builder with application/json body
 func NewSendUtilityV1MessagesUtilityPostRequest(server string, params *SendUtilityV1MessagesUtilityPostParams, body SendUtilityV1MessagesUtilityPostJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
@@ -170,58 +220,66 @@ func NewSendUtilityV1MessagesUtilityPostRequest(server string, params *SendUtili
 	return NewSendUtilityV1MessagesUtilityPostRequestWithBody(server, params, "application/json", bodyReader)
 }
 
+// NewSendUtilityV1MessagesUtilityPostRequestWithBody constructs an http.Request for the SendUtilityV1MessagesUtilityPost method, with any body, and a specified content type
 func NewSendUtilityV1MessagesUtilityPostRequestWithBody(server string, params *SendUtilityV1MessagesUtilityPostParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/v1/messages/utility")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), body)
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Add("Content-Type", contentType)
+
 	if params != nil {
+
 		if params.XApiKey != nil {
 			var headerParam0 string
+
 			headerParam0, err = runtime.StyleParamWithOptions("simple", false, "x-api-key", *params.XApiKey, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationHeader, Type: "", Format: ""})
 			if err != nil {
 				return nil, err
 			}
+
 			req.Header.Set("x-api-key", headerParam0)
 		}
+
 	}
+
 	return req, nil
 }
 
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
 func (r SendOtpV1MessagesOtpPostResponse) GetJSON202() *MessageResponse {
 	return r.JSON202
 }
 
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
 func (r SendOtpV1MessagesOtpPostResponse) GetJSON422() *HTTPValidationError {
 	return r.JSON422
 }
 
-func (r SendOtpV1MessagesOtpPostResponse) GetBody() []byte {// SendOtpV1MessagesOtpPostWithBody OTP / Kimlik Doğrulama Mesajı Gönder
-	//
-	// WhatsApp AUTHENTICATION kategorisindeki onaylı şablon ile OTP veya kimlik doğrulama mesajı gönderir. Yüksek öncelikli kuyruğa (`high_priority_otp`) yönlendirilir.
-	//
-	// Takes any type of body and a specified content type.
-	//
-	// Corresponds with POST /v1/messages/otp (the `SendOtpV1MessagesOtpPost` operationId).
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r SendOtpV1MessagesOtpPostResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r SendOtpV1MessagesOtpPostResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -229,6 +287,7 @@ func (r SendOtpV1MessagesOtpPostResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r SendOtpV1MessagesOtpPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -236,6 +295,7 @@ func (r SendOtpV1MessagesOtpPostResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r SendOtpV1MessagesOtpPostResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -243,20 +303,22 @@ func (r SendOtpV1MessagesOtpPostResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON202 returns the response for an HTTP 202 `application/json` response
 func (r SendUtilityV1MessagesUtilityPostResponse) GetJSON202() *MessageResponse {
 	return r.JSON202
 }
 
+// GetJSON422 returns the response for an HTTP 422 `application/json` response
 func (r SendUtilityV1MessagesUtilityPostResponse) GetJSON422() *HTTPValidationError {
 	return r.JSON422
 }
 
-func (r SendUtilityV1MessagesUtilityPostResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r SendUtilityV1MessagesUtilityPostResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r SendUtilityV1MessagesUtilityPostResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -264,6 +326,7 @@ func (r SendUtilityV1MessagesUtilityPostResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r SendUtilityV1MessagesUtilityPostResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -271,6 +334,7 @@ func (r SendUtilityV1MessagesUtilityPostResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r SendUtilityV1MessagesUtilityPostResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -278,6 +342,13 @@ func (r SendUtilityV1MessagesUtilityPostResponse) ContentType() string {
 	return ""
 }
 
+// SendOtpV1MessagesOtpPostWithBodyWithResponse OTP / Kimlik Doğrulama Mesajı Gönder
+//
+// WhatsApp AUTHENTICATION kategorisindeki onaylı şablon ile OTP veya kimlik doğrulama mesajı gönderir. Yüksek öncelikli kuyruğa (`high_priority_otp`) yönlendirilir.
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/messages/otp (the `SendOtpV1MessagesOtpPost` operationId).
 func (c *ClientWithResponses) SendOtpV1MessagesOtpPostWithBodyWithResponse(ctx context.Context, params *SendOtpV1MessagesOtpPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendOtpV1MessagesOtpPostResponse, error) {
 	rsp, err := c.SendOtpV1MessagesOtpPostWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
@@ -286,6 +357,13 @@ func (c *ClientWithResponses) SendOtpV1MessagesOtpPostWithBodyWithResponse(ctx c
 	return ParseSendOtpV1MessagesOtpPostResponse(rsp)
 }
 
+// SendOtpV1MessagesOtpPostWithResponse OTP / Kimlik Doğrulama Mesajı Gönder
+//
+// WhatsApp AUTHENTICATION kategorisindeki onaylı şablon ile OTP veya kimlik doğrulama mesajı gönderir. Yüksek öncelikli kuyruğa (`high_priority_otp`) yönlendirilir.
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/messages/otp (the `SendOtpV1MessagesOtpPost` operationId).
 func (c *ClientWithResponses) SendOtpV1MessagesOtpPostWithResponse(ctx context.Context, params *SendOtpV1MessagesOtpPostParams, body SendOtpV1MessagesOtpPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SendOtpV1MessagesOtpPostResponse, error) {
 	rsp, err := c.SendOtpV1MessagesOtpPost(ctx, params, body, reqEditors...)
 	if err != nil {
@@ -294,6 +372,13 @@ func (c *ClientWithResponses) SendOtpV1MessagesOtpPostWithResponse(ctx context.C
 	return ParseSendOtpV1MessagesOtpPostResponse(rsp)
 }
 
+// SendUtilityV1MessagesUtilityPostWithBodyWithResponse Utility / İşlemsel Mesaj Gönder
+//
+// WhatsApp UTILITY kategorisindeki onaylı şablon ile işlemsel mesaj gönderir (sipariş onayı, fatura bildirimi vb.).
+//
+// Takes any type of body and a specified content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/messages/utility (the `SendUtilityV1MessagesUtilityPost` operationId).
 func (c *ClientWithResponses) SendUtilityV1MessagesUtilityPostWithBodyWithResponse(ctx context.Context, params *SendUtilityV1MessagesUtilityPostParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*SendUtilityV1MessagesUtilityPostResponse, error) {
 	rsp, err := c.SendUtilityV1MessagesUtilityPostWithBody(ctx, params, contentType, body, reqEditors...)
 	if err != nil {
@@ -302,6 +387,13 @@ func (c *ClientWithResponses) SendUtilityV1MessagesUtilityPostWithBodyWithRespon
 	return ParseSendUtilityV1MessagesUtilityPostResponse(rsp)
 }
 
+// SendUtilityV1MessagesUtilityPostWithResponse Utility / İşlemsel Mesaj Gönder
+//
+// WhatsApp UTILITY kategorisindeki onaylı şablon ile işlemsel mesaj gönderir (sipariş onayı, fatura bildirimi vb.).
+//
+// Takes a body of the `application/json` content type, and returns a wrapper object for the known response body format(s).
+//
+// Corresponds with POST /v1/messages/utility (the `SendUtilityV1MessagesUtilityPost` operationId).
 func (c *ClientWithResponses) SendUtilityV1MessagesUtilityPostWithResponse(ctx context.Context, params *SendUtilityV1MessagesUtilityPostParams, body SendUtilityV1MessagesUtilityPostJSONRequestBody, reqEditors ...RequestEditorFn) (*SendUtilityV1MessagesUtilityPostResponse, error) {
 	rsp, err := c.SendUtilityV1MessagesUtilityPost(ctx, params, body, reqEditors...)
 	if err != nil {
@@ -310,15 +402,19 @@ func (c *ClientWithResponses) SendUtilityV1MessagesUtilityPostWithResponse(ctx c
 	return ParseSendUtilityV1MessagesUtilityPostResponse(rsp)
 }
 
+// ParseSendOtpV1MessagesOtpPostResponse parses an HTTP response from a SendOtpV1MessagesOtpPostWithResponse call
 func ParseSendOtpV1MessagesOtpPostResponse(rsp *http.Response) (*SendOtpV1MessagesOtpPostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &SendOtpV1MessagesOtpPostResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &SendOtpV1MessagesOtpPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
 		var dest MessageResponse
@@ -326,25 +422,32 @@ func ParseSendOtpV1MessagesOtpPostResponse(rsp *http.Response) (*SendOtpV1Messag
 			return nil, err
 		}
 		response.JSON202 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
 		var dest HTTPValidationError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON422 = &dest
+
 	}
+
 	return response, nil
 }
 
+// ParseSendUtilityV1MessagesUtilityPostResponse parses an HTTP response from a SendUtilityV1MessagesUtilityPostWithResponse call
 func ParseSendUtilityV1MessagesUtilityPostResponse(rsp *http.Response) (*SendUtilityV1MessagesUtilityPostResponse, error) {
 	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
+	defer func() { _ = rsp.Body.Close() }()
 	if err != nil {
 		return nil, err
 	}
-	response := &SendUtilityV1MessagesUtilityPostResponse{Body: bodyBytes, HTTPResponse: rsp}
+
+	response := &SendUtilityV1MessagesUtilityPostResponse{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 202:
 		var dest MessageResponse
@@ -352,15 +455,15 @@ func ParseSendUtilityV1MessagesUtilityPostResponse(rsp *http.Response) (*SendUti
 			return nil, err
 		}
 		response.JSON202 = &dest
+
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 422:
 		var dest HTTPValidationError
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
 		response.JSON422 = &dest
+
 	}
+
 	return response, nil
 }
-
-// Status returns HTTPResponse.Status
-// ParseSendUtilityV1MessagesUtilityPostResponse parses an HTTP response from a SendUtilityV1MessagesUtilityPostWithResponse call

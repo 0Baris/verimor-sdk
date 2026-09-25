@@ -9,7 +9,6 @@ import "net/http"
 type HealthHealthGetResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *interface{}
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *interface{}
 }
-
-// JSON200 the response for an HTTP 200 `application/json` response

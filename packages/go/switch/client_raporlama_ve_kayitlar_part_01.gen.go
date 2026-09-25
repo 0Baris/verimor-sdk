@@ -6,15 +6,14 @@ package verimorswitch
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"github.com/oapi-codegen/runtime"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
+// Valid indicates whether the value is a known member of the GetCdrs200JSONResponseBodyCdrsResult enum.
 func (e GetCdrs200JSONResponseBodyCdrsResult) Valid() bool {
 	switch e {
 	case AramaIçinSantralUygunDurumdaDeğil:
@@ -74,6 +73,11 @@ func (e GetCdrs200JSONResponseBodyCdrsResult) Valid() bool {
 	}
 }
 
+// GetCdrs Çağrı Detay Kayıtları (CDR) Listesi
+//
+// Farklı filtrelerle ve sayfalama ile çağrı detay kayıtlarını (CDR) listeler. Bu endpoint dakikada en fazla 6 istek ile sınırlıdır.
+//
+// Corresponds with GET /cdrs (the `GetCdrs` operationId).
 func (c *Client) GetCdrs(ctx context.Context, params *GetCdrsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCdrsRequest(c.Server, params)
 	if err != nil {
@@ -86,6 +90,11 @@ func (c *Client) GetCdrs(ctx context.Context, params *GetCdrsParams, reqEditors 
 	return c.Client.Do(req)
 }
 
+// GetCdr Belirli Bir Çağrının Detaylı CDR Kaydı
+//
+// Belirli bir çağrıya ait tüm detayları ve çağrı akışını getirir. Bu endpoint dakikada en fazla 6 istek ile sınırlıdır.
+//
+// Corresponds with GET /cdrs/{id} (the `GetCdr` operationId).
 func (c *Client) GetCdr(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetCdrRequest(c.Server, id)
 	if err != nil {
@@ -98,6 +107,11 @@ func (c *Client) GetCdr(ctx context.Context, id string, reqEditors ...RequestEdi
 	return c.Client.Do(req)
 }
 
+// CreateRecordingUrl Ses Kaydı için Geçici URL Oluşturma
+//
+// Santralinizdeki veya Google Drive'a aktarılmış ses kayıtlarınıza erişmek için geçici bir URL oluşturur. URL 1 saat geçerlidir ve dakikada en fazla 5 istek yapılabilir.
+//
+// Corresponds with POST /recording_url (the `CreateRecordingUrl` operationId).
 func (c *Client) CreateRecordingUrl(ctx context.Context, params *CreateRecordingUrlParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateRecordingUrlRequest(c.Server, params)
 	if err != nil {
@@ -110,6 +124,11 @@ func (c *Client) CreateRecordingUrl(ctx context.Context, params *CreateRecording
 	return c.Client.Do(req)
 }
 
+// GetVoicemailMessages Telesekreter Arama Kayıtlarına Erişim
+//
+// Santralinizdeki telesekreter arama kayıtlarına ve ses kayıtlarına erişmek için kullanılır. HTTP GET metodu ile api.bulutsantralim.com adresi parametrelerle çağrılır. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde mesajlar döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner.
+//
+// Corresponds with GET /voicemail_messages (the `GetVoicemailMessages` operationId).
 func (c *Client) GetVoicemailMessages(ctx context.Context, params *GetVoicemailMessagesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewGetVoicemailMessagesRequest(c.Server, params)
 	if err != nil {
@@ -122,6 +141,11 @@ func (c *Client) GetVoicemailMessages(ctx context.Context, params *GetVoicemailM
 	return c.Client.Do(req)
 }
 
+// CreateVoicemailRecordingUrl Telesekreter Ses Kaydı için Geçici URL Oluşturma
+//
+// CDR'ın ses kaydına erişimde olduğu gibi, bu ses kayıtlarına erişim de iki aşamalıdır. Birinci aşamada URL elde edilir. İkinci aşamada ise o URL'den ses dosyası indirilir/dinlenir. HTTP POST metodu ile api.bulutsantralim.com adresine parametreler gönderilir. İstek başarılı olduğunda HTTP 200 Status kodu ile mesajın Body'sinde ses kaydına ait olan bir URL döner. İstek başarısız olduğunda ise ilgili HTTP Status kodu ile mesajın Body'sinde hata mesajı döner. URL yaşam süresi 1 saattir.
+//
+// Corresponds with POST /voicemail_recording_url (the `CreateVoicemailRecordingUrl` operationId).
 func (c *Client) CreateVoicemailRecordingUrl(ctx context.Context, params *CreateVoicemailRecordingUrlParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCreateVoicemailRecordingUrlRequest(c.Server, params)
 	if err != nil {
@@ -134,28 +158,36 @@ func (c *Client) CreateVoicemailRecordingUrl(ctx context.Context, params *Create
 	return c.Client.Do(req)
 }
 
+// NewGetCdrsRequest constructs an http.Request for the GetCdrs method
 func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/cdrs")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// Valid indicates whether the value is a known member of the GetCdrs200JSONResponseBodyCdrsResult enum.
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.StartStampFrom != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_stamp_from", *params.StartStampFrom, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -163,8 +195,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.StartStampTo != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_stamp_to", *params.StartStampTo, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -172,8 +207,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.RecordingPresent != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "recording_present", *params.RecordingPresent, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -181,8 +219,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Direction != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "direction", *params.Direction, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -190,8 +231,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.CallerIdNumber != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "caller_id_number", *params.CallerIdNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -199,8 +243,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.DestinationNumber != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "destination_number", *params.DestinationNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -208,8 +255,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Missed != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "missed", *params.Missed, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -217,8 +267,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Queue != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "queue", *params.Queue, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -226,8 +279,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Page != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -235,8 +291,11 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -244,65 +303,84 @@ func NewGetCdrsRequest(server string, params *GetCdrsParams) (*http.Request, err
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetCdrRequest constructs an http.Request for the GetCdr method
 func NewGetCdrRequest(server string, id string) (*http.Request, error) {
 	var err error
+
 	var pathParam0 string
+
 	pathParam0, err = runtime.StyleParamWithOptions("simple", false, "id", id, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationPath, Type: "string", Format: ""})
 	if err != nil {
 		return nil, err
 	}
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/cdrs/%s", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateRecordingUrlRequest constructs an http.Request for the CreateRecordingUrl method
 func NewCreateRecordingUrlRequest(server string, params *CreateRecordingUrlParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/recording_url")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewGetCdrRequest constructs an http.Request for the GetCdr method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "call_uuid", params.CallUuid, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -311,40 +389,51 @@ func NewCreateRecordingUrlRequest(server string, params *CreateRecordingUrlParam
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewGetVoicemailMessagesRequest constructs an http.Request for the GetVoicemailMessages method
 func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/voicemail_messages")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewGetVoicemailMessagesRequest constructs an http.Request for the GetVoicemailMessages method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if params.StartStampFrom != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_stamp_from", *params.StartStampFrom, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -352,8 +441,11 @@ func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.StartStampTo != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "start_stamp_to", *params.StartStampTo, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -361,8 +453,11 @@ func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Read != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "read", *params.Read, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -370,8 +465,11 @@ func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.UserNumber != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "user_number", *params.UserNumber, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -379,8 +477,11 @@ func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Uuid != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "uuid", *params.Uuid, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -388,8 +489,11 @@ func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Page != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "page", *params.Page, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -397,8 +501,11 @@ func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if params.Limit != nil {
+
 			if queryFrag, err := runtime.StyleParamWithOptions("form", true, "limit", *params.Limit, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "integer", Format: ""}); err != nil {
 				return nil, err
 			} else {
@@ -406,39 +513,50 @@ func NewGetVoicemailMessagesRequest(server string, params *GetVoicemailMessagesP
 					rawQueryFragments = append(rawQueryFragments, qp)
 				}
 			}
+
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodGet, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// NewCreateVoicemailRecordingUrlRequest constructs an http.Request for the CreateVoicemailRecordingUrl method
 func NewCreateVoicemailRecordingUrlRequest(server string, params *CreateVoicemailRecordingUrlParams) (*http.Request, error) {
 	var err error
+
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
+
 	operationPath := fmt.Sprintf("/voicemail_recording_url")
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
+
 	queryURL, err := serverURL.Parse(operationPath)
 	if err != nil {
 		return nil, err
 	}
+
 	if params != nil {
+		// queryValues collects non-styled parameters (passthrough, JSON)
+		// that are safe to round-trip through url.Values.Encode().
 		queryValues := queryURL.Query()
-		var rawQueryFragments []string// NewCreateVoicemailRecordingUrlRequest constructs an http.Request for the CreateVoicemailRecordingUrl method
 		// rawQueryFragments collects pre-encoded query fragments from
 		// styled parameters, preserving literal commas as delimiters
 		// per the OpenAPI spec (e.g. "color=blue,black,brown").
+		var rawQueryFragments []string
 
 		if queryFrag, err := runtime.StyleParamWithOptions("form", true, "uuid", params.Uuid, runtime.StyleParamOptions{ParamLocation: runtime.ParamLocationQuery, Type: "string", Format: ""}); err != nil {
 			return nil, err
@@ -447,56 +565,101 @@ func NewCreateVoicemailRecordingUrlRequest(server string, params *CreateVoicemai
 				rawQueryFragments = append(rawQueryFragments, qp)
 			}
 		}
+
 		if encoded := queryValues.Encode(); encoded != "" {
 			rawQueryFragments = append(rawQueryFragments, encoded)
 		}
 		queryURL.RawQuery = strings.Join(rawQueryFragments, "&")
 	}
+
 	req, err := http.NewRequest(http.MethodPost, queryURL.String(), nil)
 	if err != nil {
 		return nil, err
 	}
+
 	return req, nil
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetCdrsResponse) GetJSON200() *struct {
-	Cdrs *[]struct// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
-		AnswerStamp          *string                               `json:"answer_stamp,omitempty"`
-		CallUuid             *string                               `json:"call_uuid,omitempty"`
-		CallerIdName         *string                               `json:"caller_id_name,omitempty"`
-		CallerIdNumber       *string                               `json:"caller_id_number,omitempty"`
-		DestinationName      *string                               `json:"destination_name,omitempty"`
-		DestinationNumber    *string                               `json:"destination_number,omitempty"`
-		Direction            *string                               `json:"direction,omitempty"`
-		Duration             *string                               `json:"duration,omitempty"`
-		EndStamp             *string                               `json:"end_stamp,omitempty"`
-		Missed               *bool                                 `json:"missed,omitempty"`
-		Queue                *string                               `json:"queue,omitempty"`
-		QueueWaitSeconds     *string                               `json:"queue_wait_seconds,omitempty"`
-		RecordingPresent     *string                               `json:"recording_present,omitempty"`
-		Result               *GetCdrs200JSONResponseBodyCdrsResult `json:"result,omitempty"`
-		ReturnUuid           *string                               `json:"return_uuid,omitempty"`
-		SipHangupDisposition *string                               `json:"sip_hangup_disposition,omitempty"`
-		StartStamp           *string                               `json:"start_stamp,omitempty"`
-		TalkDuration         *string                               `json:"talk_duration,omitempty"`
+	Cdrs *[]struct {
+		// AnswerStamp Çağrı cevaplanma zamanı
+		AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+		// CallUuid Çağrı UUID
+		CallUuid *string `json:"call_uuid,omitempty"`
+
+		// CallerIdName Arayan isim
+		CallerIdName *string `json:"caller_id_name,omitempty"`
+
+		// CallerIdNumber Arayan numara
+		CallerIdNumber *string `json:"caller_id_number,omitempty"`
+
+		// DestinationName Hedef isim
+		DestinationName *string `json:"destination_name,omitempty"`
+
+		// DestinationNumber Hedef numara
+		DestinationNumber *string `json:"destination_number,omitempty"`
+
+		// Direction Çağrı yönü (insan okunabilir)
+		Direction *string `json:"direction,omitempty"`
+
+		// Duration Çağrı süresi (SS:dd:ss)
+		Duration *string `json:"duration,omitempty"`
+
+		// EndStamp Çağrı bitiş zamanı
+		EndStamp *string `json:"end_stamp,omitempty"`
+
+		// Missed Cevapsız çağrı mı?
+		Missed *bool `json:"missed,omitempty"`
+
+		// Queue Kuyruk adı
+		Queue *string `json:"queue,omitempty"`
+
+		// QueueWaitSeconds Kuyruk bekleme süresi (SS:dd:ss)
+		QueueWaitSeconds *string `json:"queue_wait_seconds,omitempty"`
+
+		// RecordingPresent Kayıt durumu
+		RecordingPresent *string `json:"recording_present,omitempty"`
+
+		// Result Human-readable call result in Turkish
+		Result *GetCdrs200JSONResponseBodyCdrsResult `json:"result,omitempty"`
+
+		// ReturnUuid Return UUID
+		ReturnUuid *string `json:"return_uuid,omitempty"`
+
+		// SipHangupDisposition SIP sonlandırma nedeni
+		SipHangupDisposition *string `json:"sip_hangup_disposition,omitempty"`
+
+		// StartStamp Çağrı başlangıç zamanı
+		StartStamp *string `json:"start_stamp,omitempty"`
+
+		// TalkDuration Konuşma süresi (SS:dd:ss)
+		TalkDuration *string `json:"talk_duration,omitempty"`
 	} `json:"cdrs,omitempty"`
 	Pagination *struct {
-		Limit      *int `json:"limit,omitempty"`
-		Page       *int `json:"page,omitempty"`
+		// Limit Sayfa başına kayıt sayısı
+		Limit *int `json:"limit,omitempty"`
+
+		// Page Mevcut sayfa numarası
+		Page *int `json:"page,omitempty"`
+
+		// TotalCount Toplam kayıt sayısı
 		TotalCount *int `json:"total_count,omitempty"`
+
+		// TotalPages Toplam sayfa sayısı
 		TotalPages *int `json:"total_pages,omitempty"`
 	} `json:"pagination,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetCdrsResponse) GetBody() []byte {// AnswerStamp Çağrı cevaplanma zamanı
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetCdrsResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetCdrsResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -504,6 +667,7 @@ func (r GetCdrsResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetCdrsResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -511,6 +675,7 @@ func (r GetCdrsResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetCdrsResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
@@ -518,48 +683,95 @@ func (r GetCdrsResponse) ContentType() string {
 	return ""
 }
 
+// GetJSON200 returns the response for an HTTP 200 `application/json` response
 func (r GetCdrResponse) GetJSON200() *struct {
-	CallFlow *[]struct// Status returns HTTPResponse.Status
-	// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
-		AnswerStamp       *string `json:"answer_stamp,omitempty"`
+	CallFlow *[]struct {
+		// AnswerStamp Bu bacak için cevaplanma zamanı
+		AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+		// DestinationNumber Bu bacak için hedef numara
 		DestinationNumber *string `json:"destination_number,omitempty"`
-		Duration          *string `json:"duration,omitempty"`
-		EndStamp          *string `json:"end_stamp,omitempty"`
-		IpAddress         *string `json:"ip_address,omitempty"`
-		ReadCodec         *string `json:"read_codec,omitempty"`
-		Result            *string `json:"result,omitempty"`
-		SipUserAgent      *string `json:"sip_user_agent,omitempty"`
-		StartStamp        *string `json:"start_stamp,omitempty"`
-		WriteCodec        *string `json:"write_codec,omitempty"`
+
+		// Duration Bu bacak için süre (SS:dd:ss)
+		Duration *string `json:"duration,omitempty"`
+
+		// EndStamp Bu bacak için bitiş zamanı
+		EndStamp *string `json:"end_stamp,omitempty"`
+
+		// IpAddress Kullanılan IP adresi
+		IpAddress *string `json:"ip_address,omitempty"`
+
+		// ReadCodec Okuma codec'i
+		ReadCodec *string `json:"read_codec,omitempty"`
+
+		// Result Bu bacak için sonuç
+		Result *string `json:"result,omitempty"`
+
+		// SipUserAgent SIP User Agent
+		SipUserAgent *string `json:"sip_user_agent,omitempty"`
+
+		// StartStamp Bu bacak için başlangıç zamanı
+		StartStamp *string `json:"start_stamp,omitempty"`
+
+		// WriteCodec Yazma codec'i
+		WriteCodec *string `json:"write_codec,omitempty"`
 	} `json:"call_flow,omitempty"`
 	Cdr *struct {
-		AnswerStamp          *string `json:"answer_stamp,omitempty"`
-		CallUuid             *string `json:"call_uuid,omitempty"`
-		CallerIdNumber       *string `json:"caller_id_number,omitempty"`
-		DestinationNumber    *string `json:"destination_number,omitempty"`
-		Direction            *string `json:"direction,omitempty"`
-		Duration             *string `json:"duration,omitempty"`
-		EndStamp             *string `json:"end_stamp,omitempty"`
-		Missed               *bool   `json:"missed,omitempty"`
-		QueueWaitSeconds     *string `json:"queue_wait_seconds,omitempty"`
-		RecordingPresent     *string `json:"recording_present,omitempty"`
-		Result               *string `json:"result,omitempty"`
-		ReturnUuid           *string `json:"return_uuid,omitempty"`
+		// AnswerStamp Çağrı cevaplanma zamanı
+		AnswerStamp *string `json:"answer_stamp,omitempty"`
+
+		// CallUuid Çağrı UUID
+		CallUuid *string `json:"call_uuid,omitempty"`
+
+		// CallerIdNumber Arayan numara
+		CallerIdNumber *string `json:"caller_id_number,omitempty"`
+
+		// DestinationNumber Hedef numara
+		DestinationNumber *string `json:"destination_number,omitempty"`
+
+		// Direction Çağrı yönü
+		Direction *string `json:"direction,omitempty"`
+
+		// Duration Çağrı süresi (SS:dd:ss)
+		Duration *string `json:"duration,omitempty"`
+
+		// EndStamp Çağrı bitiş zamanı
+		EndStamp *string `json:"end_stamp,omitempty"`
+
+		// Missed Cevapsız çağrı mı?
+		Missed *bool `json:"missed,omitempty"`
+
+		// QueueWaitSeconds Kuyruk bekleme süresi (SS:dd:ss)
+		QueueWaitSeconds *string `json:"queue_wait_seconds,omitempty"`
+
+		// RecordingPresent Kayıt durumu
+		RecordingPresent *string `json:"recording_present,omitempty"`
+
+		// Result Çağrı sonucu
+		Result *string `json:"result,omitempty"`
+
+		// ReturnUuid Return UUID
+		ReturnUuid *string `json:"return_uuid,omitempty"`
+
+		// SipHangupDisposition SIP sonlandırma nedeni
 		SipHangupDisposition *string `json:"sip_hangup_disposition,omitempty"`
-		StartStamp           *string `json:"start_stamp,omitempty"`
-		TalkDuration         *string `json:"talk_duration,omitempty"`
+
+		// StartStamp Çağrı başlangıç zamanı
+		StartStamp *string `json:"start_stamp,omitempty"`
+
+		// TalkDuration Konuşma süresi (SS:dd:ss)
+		TalkDuration *string `json:"talk_duration,omitempty"`
 	} `json:"cdr,omitempty"`
 } {
 	return r.JSON200
 }
 
-func (r GetCdrResponse) GetBody() []byte {// AnswerStamp Bu bacak için cevaplanma zamanı
-	// GetBody returns the raw response body bytes
-
+// GetBody returns the raw response body bytes
+func (r GetCdrResponse) GetBody() []byte {
 	return r.Body
 }
 
+// Status returns HTTPResponse.Status
 func (r GetCdrResponse) Status() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Status
@@ -567,6 +779,7 @@ func (r GetCdrResponse) Status() string {
 	return http.StatusText(0)
 }
 
+// StatusCode returns HTTPResponse.StatusCode
 func (r GetCdrResponse) StatusCode() int {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.StatusCode
@@ -574,204 +787,10 @@ func (r GetCdrResponse) StatusCode() int {
 	return 0
 }
 
+// ContentType is a convenience method to retrieve the Content-Type value from the HTTP response headers
 func (r GetCdrResponse) ContentType() string {
 	if r.HTTPResponse != nil {
 		return r.HTTPResponse.Header.Get("Content-Type")
 	}
 	return ""
 }
-
-func (r CreateRecordingUrlResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r CreateRecordingUrlResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r CreateRecordingUrlResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r CreateRecordingUrlResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (r GetVoicemailMessagesResponse) GetJSON200() *struct {
-	Messages []struct// Status returns HTTPResponse.Status
-	// GetJSON200 returns the response for an HTTP 200 `application/json` response
-	{
-		CallerIdName   string `json:"caller_id_name"`
-		CallerIdNumber string `json:"caller_id_number"`
-		Duration       string `json:"duration"`
-		ReadStamp      string `json:"read_stamp"`
-		StartStamp     string `json:"start_stamp"`
-		UserNumber     string `json:"user_number"`
-		Uuid           string `json:"uuid"`
-	} `json:"messages"`
-	Pagination struct {
-		Limit      int `json:"limit"`
-		Page       int `json:"page"`
-		TotalCount int `json:"total_count"`
-		TotalPages int `json:"total_pages"`
-	} `json:"pagination"`
-} {
-	return r.JSON200
-}
-
-func (r GetVoicemailMessagesResponse) GetBody() []byte {// CallerIdName Mesajı bırakan kişinin ismi
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r GetVoicemailMessagesResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r GetVoicemailMessagesResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r GetVoicemailMessagesResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (r CreateVoicemailRecordingUrlResponse) GetBody() []byte {// Status returns HTTPResponse.Status
-	// GetBody returns the raw response body bytes
-
-	return r.Body
-}
-
-func (r CreateVoicemailRecordingUrlResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-func (r CreateVoicemailRecordingUrlResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
-func (r CreateVoicemailRecordingUrlResponse) ContentType() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Header.Get("Content-Type")
-	}
-	return ""
-}
-
-func (c *ClientWithResponses) GetCdrsWithResponse(ctx context.Context, params *GetCdrsParams, reqEditors ...RequestEditorFn) (*GetCdrsResponse, error) {
-	rsp, err := c.GetCdrs(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetCdrsResponse(rsp)
-}
-
-func (c *ClientWithResponses) GetCdrWithResponse(ctx context.Context, id string, reqEditors ...RequestEditorFn) (*GetCdrResponse, error) {
-	rsp, err := c.GetCdr(ctx, id, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetCdrResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateRecordingUrlWithResponse(ctx context.Context, params *CreateRecordingUrlParams, reqEditors ...RequestEditorFn) (*CreateRecordingUrlResponse, error) {
-	rsp, err := c.CreateRecordingUrl(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateRecordingUrlResponse(rsp)
-}
-
-func (c *ClientWithResponses) GetVoicemailMessagesWithResponse(ctx context.Context, params *GetVoicemailMessagesParams, reqEditors ...RequestEditorFn) (*GetVoicemailMessagesResponse, error) {
-	rsp, err := c.GetVoicemailMessages(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseGetVoicemailMessagesResponse(rsp)
-}
-
-func (c *ClientWithResponses) CreateVoicemailRecordingUrlWithResponse(ctx context.Context, params *CreateVoicemailRecordingUrlParams, reqEditors ...RequestEditorFn) (*CreateVoicemailRecordingUrlResponse, error) {
-	rsp, err := c.CreateVoicemailRecordingUrl(ctx, params, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCreateVoicemailRecordingUrlResponse(rsp)
-}
-
-func ParseGetCdrsResponse(rsp *http.Response) (*GetCdrsResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() {
-		_ = rsp.Body.Close()
-	}()
-	if err != nil {
-		return nil, err
-	}
-	response := &GetCdrsResponse{Body: bodyBytes, HTTPResponse: rsp}
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest struct {
-			Cdrs *[]struct// Status returns HTTPResponse.Status
-			// ParseGetCdrsResponse parses an HTTP response from a GetCdrsWithResponse call
-			{
-				AnswerStamp          *string                               `json:"answer_stamp,omitempty"`
-				CallUuid             *string                               `json:"call_uuid,omitempty"`
-				CallerIdName         *string                               `json:"caller_id_name,omitempty"`
-				CallerIdNumber       *string                               `json:"caller_id_number,omitempty"`
-				DestinationName      *string                               `json:"destination_name,omitempty"`
-				DestinationNumber    *string                               `json:"destination_number,omitempty"`
-				Direction            *string                               `json:"direction,omitempty"`
-				Duration             *string                               `json:"duration,omitempty"`
-				EndStamp             *string                               `json:"end_stamp,omitempty"`
-				Missed               *bool                                 `json:"missed,omitempty"`
-				Queue                *string                               `json:"queue,omitempty"`
-				QueueWaitSeconds     *string                               `json:"queue_wait_seconds,omitempty"`
-				RecordingPresent     *string                               `json:"recording_present,omitempty"`
-				Result               *GetCdrs200JSONResponseBodyCdrsResult `json:"result,omitempty"`
-				ReturnUuid           *string                               `json:"return_uuid,omitempty"`
-				SipHangupDisposition *string                               `json:"sip_hangup_disposition,omitempty"`
-				StartStamp           *string                               `json:"start_stamp,omitempty"`
-				TalkDuration         *string                               `json:"talk_duration,omitempty"`
-			} `json:"cdrs,omitempty"`
-			Pagination *struct {
-				Limit      *int `json:"limit,omitempty"`
-				Page       *int `json:"page,omitempty"`
-				TotalCount *int `json:"total_count,omitempty"`
-				TotalPages *int `json:"total_pages,omitempty"`
-			} `json:"pagination,omitempty"`
-		}
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-	}
-	return response, nil
-}
-
-// AnswerStamp Çağrı cevaplanma zamanı
-// TotalPages Toplam sayfa sayısı

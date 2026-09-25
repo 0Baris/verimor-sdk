@@ -9,46 +9,87 @@ import (
 	"time"
 )
 
+// GetV2IysCampaignsParams defines parameters for GetV2IysCampaigns.
 type GetV2IysCampaignsParams struct {
-	Username string  `form:"username" json:"username"`
-	Password string  `form:"password" json:"password"`
-	Offset   *int    `form:"offset,omitempty" json:"offset,omitempty"`
-	Limit    *int    `form:"limit,omitempty" json:"limit,omitempty"`
-	Source   *string `form:"source,omitempty" json:"source,omitempty"`
-}
-
-type GetV2IysCampaignsIdConsentsParams struct {
+	// Username Kullanıcı adı
 	Username string `form:"username" json:"username"`
+
+	// Password Şifre
 	Password string `form:"password" json:"password"`
-	Offset   *int   `form:"offset,omitempty" json:"offset,omitempty"`
-	Limit    *int   `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Offset Sayfalama başlangıcı
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Sayfalama limiti
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+
+	// Source Kaynak (örn., list, csv, api, sms, web, iys):
+	//  * `list`
+	//  * `csv`
+	//  * `api`
+	//  * `sms`
+	//  * `web`
+	//  * `iys`
+	//
+	Source *string `form:"source,omitempty" json:"source,omitempty"`
 }
 
+// GetV2IysCampaignsIdConsentsParams defines parameters for GetV2IysCampaignsIdConsents.
+type GetV2IysCampaignsIdConsentsParams struct {
+	// Username Kullanıcı adı
+	Username string `form:"username" json:"username"`
+
+	// Password Şifre
+	Password string `form:"password" json:"password"`
+
+	// Offset Sayfalama başlangıcı
+	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Limit Sayfalama limiti
+	Limit *int `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// PostV2IysConsentsJsonJSONBody defines parameters for PostV2IysConsentsJson.
 type PostV2IysConsentsJsonJSONBody struct {
-	Consents []struct// GetV2IysCampaignsParams defines parameters for GetV2IysCampaigns.
-	// PostV2IysConsentsJsonJSONBody defines parameters for PostV2IysConsentsJson.
-	{
-		ConsentDate   time.Time `json:"consent_date"`
-		Recipient     string    `json:"recipient"`
-		RecipientType string    `json:"recipient_type"`
-		Source        string    `json:"source"`
-		Status        string    `json:"status"`
-		Type          string    `json:"type"`
+	Consents []struct {
+		// ConsentDate İzin Tarihi (örn., 2022-04-14 13:30:30)
+		ConsentDate time.Time `json:"consent_date"`
+
+		// Recipient Alıcı (Telefon no veya e-posta adresi)
+		Recipient string `json:"recipient"`
+
+		// RecipientType Alıcı Tipi (örn., BIREYSEL)
+		RecipientType string `json:"recipient_type"`
+
+		// Source İzin Kaynağı (örn., HS_WEB, HS_MESAJ)
+		Source string `json:"source"`
+
+		// Status İzin Durumu (örn., ONAY, RET)
+		Status string `json:"status"`
+
+		// Type İzin tipi (örn., MESAJ, ARAMA, EPOSTA)
+		Type string `json:"type"`
 	} `json:"consents"`
-	Password   string `json:"password"`
+
+	// Password Şifre
+	Password string `json:"password"`
+
+	// SourceAddr Başlık
 	SourceAddr string `json:"source_addr"`
-	Username   string `json:"username"`
+
+	// Username Kullanıcı Adı
+	Username string `json:"username"`
 }
 
+// PostV2IysConsentsJsonJSONRequestBody defines body for PostV2IysConsentsJson for application/json ContentType.
 type PostV2IysConsentsJsonJSONRequestBody PostV2IysConsentsJsonJSONBody
-type GetV2IysCampaignsResponse struct {
-	Body []byte// ConsentDate İzin Tarihi (örn., 2022-04-14 13:30:30)
-	// PostV2IysConsentsJsonJSONRequestBody defines body for PostV2IysConsentsJson for application/json ContentType.
 
+type GetV2IysCampaignsResponse struct {
+	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Records []struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Records []struct {
 			CreatedAt    *time.Time `json:"created_at,omitempty"`
 			HeaderName   *string    `json:"header_name,omitempty"`
 			Id           *int       `json:"id,omitempty"`
@@ -59,12 +100,13 @@ type GetV2IysCampaignsResponse struct {
 		Total int `json:"total"`
 	}
 }
+
 type GetV2IysCampaignsIdConsentsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *struct {
-		Records []struct// JSON200 the response for an HTTP 200 `application/json` response
-		{
+	// JSON200 the response for an HTTP 200 `application/json` response
+	JSON200 *struct {
+		Records []struct {
 			ConsentDate   *time.Time `json:"consent_date,omitempty"`
 			Recipient     *string    `json:"recipient,omitempty"`
 			RecipientType *string    `json:"recipient_type,omitempty"`
@@ -79,6 +121,7 @@ type GetV2IysCampaignsIdConsentsResponse struct {
 		Total      int    `json:"total"`
 	}
 }
+
 type PostV2IysConsentsJsonResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response

@@ -19,9 +19,9 @@ yoktur.
 
 | Dil | Paket | Gereksinim | Yayın durumu |
 | --- | --- | --- | --- |
-| TypeScript | [`@bariscemant/verimor`](https://www.npmjs.com/package/@bariscemant/verimor) | Node.js >=22.14, ESM | npm `0.2.1` |
-| Python | [`verimor-sdk`](https://pypi.org/project/verimor-sdk/) / import `verimor` | Python >=3.11 | PyPI `0.2.1` |
-| Go | `github.com/0Baris/verimor-sdk/packages/go` | Go >=1.24 | module tag `v0.2.1` |
+| TypeScript | [`@bariscemant/verimor`](https://www.npmjs.com/package/@bariscemant/verimor) | Node.js >=22.14, ESM | npm `0.2.2` |
+| Python | [`verimor-sdk`](https://pypi.org/project/verimor-sdk/) / import `verimor` | Python >=3.11 | PyPI `0.2.2` |
+| Go | `github.com/0Baris/verimor-sdk/packages/go` | Go >=1.24 | module tag `v0.2.2` |
 | Dart / Flutter | `verimor_sms`, `verimor_switch`, `verimor_whatsapp` | Dart >=2.18 | kaynak mevcut, pub.dev'de değil |
 
 Toplam kapsam 68 operasyondur: SMS 13, Switch 52 ve WhatsApp 3. Tam metot ve
@@ -121,7 +121,7 @@ Ayrıntılı Python rehberi: [`packages/python/README.md`](packages/python/READM
 ## Go
 
 ```bash
-go get github.com/0Baris/verimor-sdk/packages/go@v0.2.1
+go get github.com/0Baris/verimor-sdk/packages/go@v0.2.2
 ```
 
 Go paketi generated istemci davranışını korur. Timeout'u `http.Client`, tek

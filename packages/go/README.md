@@ -12,7 +12,7 @@ değildir.
 Go 1.24 veya daha yeni bir sürüm gerekir:
 
 ```sh
-go get github.com/0Baris/verimor-sdk/packages/go@v0.2.1
+go get github.com/0Baris/verimor-sdk/packages/go@v0.2.2
 ```
 
 Production bağımlılığında yeniden üretilebilirlik için `go.mod` ve `go.sum`
@@ -297,7 +297,7 @@ localhost servers, not live Verimor accounts.
 ### Installation
 
 ```bash
-go get github.com/0Baris/verimor-sdk/packages/go@v0.2.1
+go get github.com/0Baris/verimor-sdk/packages/go@v0.2.2
 ```
 
 Import the root package for the recommended façade clients. Product subpackages

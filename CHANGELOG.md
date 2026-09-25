@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.2.2 — 2026-09-25
+
+- TypeScript ve Go generated kaynakları ürün, tag ve model sınırlarına göre
+  küçük, kararlı modüllere ayrıldı; public import yolları ve SDK API'leri
+  değişmedi.
+- Generated dosyalar için deterministik bölümleme, tekil sembol sahipliği ve
+  800 satır üst sınırı doğrulamaları eklendi.
+- Go generated kaynaklarındaki dokümantasyon ve iç açıklamalar modüler üretimde
+  korunacak şekilde generator düzeltildi.
+- TypeScript toolchain kararlı `5.9.3` sürümünde sabitlendi.
+- Operasyon kapsamı değişmedi: SMS 13, Switch 52 ve WhatsApp 3 olmak üzere
+  toplam 68 operasyon. Dart/Flutter pub.dev yayını bu sürümde yapılmaz.
+
 ## 0.2.1 — 2026-09-19
 
 - npm ve PyPI paket sayfalarında görüntülenen README'ler kurulumdan hata

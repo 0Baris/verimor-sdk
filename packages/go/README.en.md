@@ -97,6 +97,26 @@ when applicable. Directly instantiated generated clients do not add the façade
 timeout or error normalization. No automatic retries or rate limiter are
 provided.
 
+## Modular generated sources
+
+Generated declarations are partitioned by product tag into `client_*.gen.go`
+and `models_*.gen.go`. No generated file may exceed **800 physical lines**.
+This limit is intended to make reviews and diffs manageable; total generated
+code is not expected to shrink materially.
+
+The root, `/sms`, `/switch`, and `/whatsapp` import paths and every exported
+symbol remain unchanged. Never edit generated modules directly. Run `make
+generate-go` from the generator repository root, then verify with:
+
+```bash
+(cd packages/go && go test -race ./... && go vet ./...)
+packages/python/.venv/bin/python -m scripts.verify_modular_codegen \
+  --plan build/modular-plan \
+  --typescript packages/typescript/src/generated \
+  --go packages/go \
+  --max-lines 800
+```
+
 ```bash
 cd packages/go
 go test ./...

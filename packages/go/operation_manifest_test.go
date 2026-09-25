@@ -4,6 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	"io"
 	"net"
 	"net/http"
@@ -108,7 +111,7 @@ whatsapp	health_health_get	GET	/health
 func TestGeneratedOperationMatrix(t *testing.T) {
 	fixtures := parseFixtures(t)
 	manifest := readManifest(t)
-	generated := generatedOperations(t)
+	generated := generatedOperations(t, fixtures)
 	assertOperations(t, generated.identities(), generatedManifest(manifest), "generated identities differ from manifest")
 	want := make([]operation, len(fixtures))
 	for i := range fixtures {
@@ -261,32 +264,74 @@ func (g generatedMap) identities() []operation {
 	return out
 }
 
-var generatedResponse = regexp.MustCompile("(?s)// Corresponds with ([A-Z]+) ([^ ]+) \\(the `([A-Za-z0-9_]+)` operationId\\)\\.\\nfunc \\(c \\*ClientWithResponses\\) ([A-Za-z0-9]+WithResponse)\\(")
-
-func generatedOperations(t *testing.T) generatedMap {
+func generatedOperations(t *testing.T, fixtures []fixture) generatedMap {
 	t.Helper()
 	out := generatedMap{}
 	for _, product := range []string{"sms", "switch", "whatsapp"} {
-		source, err := os.ReadFile(filepath.Join(product, "client.gen.go"))
+		files, err := filepath.Glob(filepath.Join(product, "client_*.gen.go"))
 		if err != nil {
 			t.Fatal(err)
 		}
-		for _, m := range generatedResponse.FindAllStringSubmatch(string(source), -1) {
-			v := generatedOperation{operation: operation{product, m[3], m[1], m[2]}, MethodName: m[4]}
-			id := key(v.operation)
-			if old, ok := out[id]; !ok || generatedMethodScore(v.MethodName) < generatedMethodScore(old.MethodName) {
-				out[id] = v
+		if len(files) == 0 {
+			t.Fatalf("no generated clients for %s", product)
+		}
+		methods := map[string]bool{}
+		for _, file := range files {
+			source, err := parser.ParseFile(token.NewFileSet(), file, nil, 0)
+			if err != nil {
+				t.Fatal(err)
 			}
+			for _, declaration := range source.Decls {
+				function, ok := declaration.(*ast.FuncDecl)
+				if !ok || function.Recv == nil || len(function.Recv.List) != 1 {
+					continue
+				}
+				pointer, ok := function.Recv.List[0].Type.(*ast.StarExpr)
+				if !ok {
+					continue
+				}
+				receiver, ok := pointer.X.(*ast.Ident)
+				if ok && receiver.Name == "ClientWithResponses" {
+					methods[function.Name.Name] = true
+				}
+			}
+		}
+		expected := 0
+		bases := make([]string, 0)
+		for _, current := range fixtures {
+			if current.Product != product {
+				continue
+			}
+			expected++
+			base := goOperationID(current.OperationID)
+			bases = append(bases, base)
+			method := base + "WithResponse"
+			if current.ContentType == "application/x-www-form-urlencoded" {
+				method = base + "WithFormdataBodyWithResponse"
+			}
+			if !methods[method] {
+				t.Fatalf("missing generated method %s", method)
+			}
+			identity := generatedIdentity(current.operation)
+			out[key(identity)] = generatedOperation{operation: identity, MethodName: method}
+		}
+		for method := range methods {
+			if !strings.HasSuffix(method, "WithResponse") {
+				continue
+			}
+			matched := false
+			for _, base := range bases {
+				matched = matched || strings.HasPrefix(method, base+"With")
+			}
+			if !matched {
+				t.Fatalf("unexpected generated method %s", method)
+			}
+		}
+		if expected == 0 {
+			t.Fatalf("manifest has no operations for %s", product)
 		}
 	}
 	return out
-}
-
-func generatedMethodScore(name string) int {
-	if strings.Contains(name, "WithBodyWithResponse") {
-		return 1
-	}
-	return 0
 }
 
 func clients(t *testing.T, base string) map[string]any {

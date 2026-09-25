@@ -1,5 +1,5 @@
 import { once } from "node:events";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { createServer, type IncomingMessage } from "node:http";
 import { resolve } from "node:path";
 import { expect, it } from "vitest";
@@ -34,20 +34,23 @@ function assertRoutes(actual: Array<Pick<Entry, "product" | "operationId" | "met
 }
 
 async function generatedRoutes(product: Product): Promise<Entry[]> {
-  const source = await readFile(resolve(import.meta.dirname, `../src/generated/${product}.ts`), "utf8");
-  const starts = [...source.matchAll(/^    "([^"]+)": \{/gm)];
-  const pathSectionEnd = source.indexOf("export interface webhooks");
-  return starts.flatMap((match, index) => {
-    const path = match[1];
-    if (!path) return [];
-    const block = source.slice(match.index, starts[index + 1]?.index ?? pathSectionEnd);
-    return (["GET", "POST", "PATCH", "DELETE"] as Method[]).filter(method => new RegExp(`^        ${method.toLowerCase()}:`, "m").test(block)).map(method => ({
-      product,
-      operationId: block.match(new RegExp(`^        ${method.toLowerCase()}: operations\\["([^"]+)"\\];`, "m"))?.[1] ?? fallbackOperationId(method, path),
-      method,
-      path,
-    }));
-  });
+  const directory = resolve(import.meta.dirname, `../src/generated/${product}/paths`);
+  const files = (await readdir(directory)).filter(file => file.endsWith(".gen.ts")).sort();
+  return (await Promise.all(files.map(async file => {
+    const source = await readFile(resolve(directory, file), "utf8");
+    const starts = [...source.matchAll(/^  "([^"]+)": \{/gm)];
+    return starts.flatMap((match, index) => {
+      const path = match[1];
+      if (!path) return [];
+      const block = source.slice(match.index, starts[index + 1]?.index ?? source.length);
+      return (["GET", "POST", "PATCH", "DELETE"] as Method[]).filter(method => new RegExp(`^        ${method.toLowerCase()}:`, "m").test(block)).map(method => ({
+        product,
+        operationId: block.match(new RegExp(`^        ${method.toLowerCase()}: operations\\["([^"]+)"\\];`, "m"))?.[1] ?? fallbackOperationId(method, path),
+        method,
+        path,
+      }));
+    });
+  }))).flat();
 }
 async function bodyOf(request: IncomingMessage) { let body = ""; for await (const chunk of request) body += chunk; return body; }
 

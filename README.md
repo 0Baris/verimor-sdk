@@ -183,6 +183,25 @@ alan doğrudan ilgili request modeline yazılır.
 - Gerçek Verimor credentials hiçbir repository testinde veya CI job'ında
   kullanılmaz.
 
+## Modüler generated kaynaklar
+
+TypeScript ve Go generated kodu ürün/tag/model bazında küçük dosyalara ayrılır;
+hiçbir generated dosya **800 fiziksel satırı** geçmez. Toplam generated kodun
+belirgin biçimde azalması beklenmez. Amaç dev tek dosyalar yerine okunabilir,
+kararlı ve incelemesi kolay diff'ler üretmektir.
+
+Bu yalnız kaynak yerleşimi değişikliğidir. TypeScript'te
+`@bariscemant/verimor/sms`, `/switch`, `/whatsapp` type import'ları; Go'da kök,
+`/sms`, `/switch` ve `/whatsapp` import path'leri ile exported semboller aynı
+kalır. Generated dosyaları elle düzenlemeyin. Regeneration private generator
+otomasyonu tarafından yapılır; bu public repoda yalnız sonucu doğrulayın:
+
+```bash
+npm run typecheck --workspace packages/typescript
+npm test --workspace packages/typescript
+(cd packages/go && go test -race ./... && go vet ./...)
+```
+
 ## Geliştirme ve test
 
 ```bash

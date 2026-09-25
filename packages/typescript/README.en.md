@@ -126,6 +126,23 @@ Generated path types are also exported from `/switch` and `/whatsapp`.
 The [operation table](https://github.com/0Baris/verimor-sdk/blob/main/docs/operations.md)
 lists every façade method and HTTP path.
 
+## Modular generated types
+
+Declarations below `dist/generated/sms`, `switch`, and `whatsapp` are split by
+tag into small modules. No generated source file may exceed **800 physical
+lines**. The goal is stable, reviewable diffs rather than a material reduction
+in total generated code.
+
+Compatibility aggregators preserve the subpath imports above and every
+`client.raw` type. Never edit generated modules directly; regeneration happens
+in the private generator automation. Verify the public export with:
+
+```bash
+npm run typecheck --workspace packages/typescript
+npm test --workspace packages/typescript
+npm run build --workspace packages/typescript
+```
+
 ## Production precautions
 
 Keep credentials out of code and logs, use a secret manager, verify account

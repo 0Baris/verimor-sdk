@@ -12,7 +12,7 @@ plus generated clients in each product subpackage and `Raw` field.
 ## Install
 
 ```bash
-go get github.com/0Baris/verimor-sdk/packages/go@v0.2.1
+go get github.com/0Baris/verimor-sdk/packages/go@v0.2.2
 ```
 
 Commit your `go.mod` and `go.sum` to pin the module version.

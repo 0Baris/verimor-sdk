@@ -250,14 +250,34 @@ veri içerebileceği için response/request body'lerini kontrolsüz loglamayın.
 
 Generated public metotlar şu dosyalardadır:
 
-- `sms/client.gen.go` — 13 operasyon,
-- `switch/client.gen.go` — 52 operasyon,
-- `whatsapp/client.gen.go` — 3 operasyon.
+- `sms/client_*.gen.go` ve `sms/models_*.gen.go` — 13 operasyon,
+- `switch/client_*.gen.go` ve `switch/models_*.gen.go` — 52 operasyon,
+- `whatsapp/client_*.gen.go` ve `whatsapp/models_*.gen.go` — 3 operasyon.
 
 Metot adları OpenAPI operation ID'lerinden türetilir. Typed body ve parametre
 struct'ları aynı ürün paketindedir. Repo kökündeki
 `../../operation-manifest.json` dosyası bütün operation ID, HTTP method ve path
 eşleşmelerini listeler.
+
+## Modüler generated kaynaklar
+
+Generated declaration'lar ürün tag'lerine göre `client_*.gen.go` ve
+`models_*.gen.go` dosyalarına ayrılır. Hiçbir generated dosya **800 fiziksel
+satırı** geçmez. Bu sınır toplam generated satır sayısını düşürmek için değil,
+büyük tek dosyaları kararlı ve incelenebilir diff'lere dönüştürmek içindir.
+
+`github.com/0Baris/verimor-sdk/packages/go`, `/sms`, `/switch` ve `/whatsapp`
+import path'leri ile exported semboller değişmez. Generated dosyaları doğrudan
+düzenlemeyin; generator packages/go içinde `go test ./...` çalıştırın. Ardından:
+
+```sh
+(cd packages/go && go test -race ./... && go vet ./...)
+packages/python/.venv/bin/python -m scripts.verify_modular_codegen \
+  --plan build/modular-plan \
+  --typescript packages/typescript/src/generated \
+  --go packages/go \
+  --max-lines 800
+```
 
 ## Test
 

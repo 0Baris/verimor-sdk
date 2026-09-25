@@ -127,6 +127,25 @@ production. Review TLS, proxy, and logging behavior when supplying custom
 transports or base URLs. Repository tests and CI never use live Verimor
 credentials.
 
+## Modular generated sources
+
+TypeScript and Go generated code is partitioned by product, tag, and model;
+no generated file may exceed **800 physical lines**. The total generated code
+is not expected to shrink materially. The purpose is to replace giant files
+with readable, stable, reviewable diffs.
+
+This is a source-layout change only. TypeScript type imports from
+`@bariscemant/verimor/sms`, `/switch`, and `/whatsapp` remain valid. Go keeps
+the root, `/sms`, `/switch`, and `/whatsapp` import paths and all exported
+symbols. Never edit generated modules directly. Regeneration runs in the
+private generator automation; verify the exported result in this public repo:
+
+```bash
+npm run typecheck --workspace packages/typescript
+npm test --workspace packages/typescript
+(cd packages/go && go test -race ./... && go vet ./...)
+```
+
 ## Development
 
 CI verifies TypeScript typecheck/test/build/pack, Python Ruff/mypy/pytest/build,

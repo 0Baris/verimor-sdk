@@ -193,6 +193,24 @@ import type { paths as SwitchPaths } from "@bariscemant/verimor/switch";
 import type { paths as WhatsAppPaths } from "@bariscemant/verimor/whatsapp";
 ```
 
+## Modüler generated tipler
+
+Paket içindeki `dist/generated/sms`, `switch` ve `whatsapp` declaration'ları
+tag bazında küçük modüllere ayrılır. Kaynak üretiminde hiçbir generated dosya
+**800 fiziksel satırı** geçmez; toplam generated kodun belirgin biçimde
+azalması beklenmez. Amaç daha okunabilir ve kararlı diff'lerdir.
+
+Uyumluluk aggregator'ları korunduğu için yukarıdaki subpath import'ları ve
+`client.raw` tipleri değişmez. Generated dosyaları doğrudan düzenlemeyin;
+regeneration private generator otomasyonunda yapılır. Public export'u şu
+komutlarla doğrulayın:
+
+```bash
+npm run typecheck --workspace packages/typescript
+npm test --workspace packages/typescript
+npm run build --workspace packages/typescript
+```
+
 ## Operasyon kapsamı ve üretim kullanımı
 
 SDK; SMS 13, Switch 52 ve WhatsApp 3 olmak üzere 68 OpenAPI operasyonunu kapsar.
